@@ -65,11 +65,16 @@ class RequestInterface:
         if rtype not in RequestTypes.valid_types:
             assert False
         
-        json = remove_empty(json)
+        if json:
+            json = remove_empty(json)
+        if query_parameters:
+            query_parameters = remove_empty(query_parameters)
         
         # these requests are all the same input parameters.
         if rtype in [RequestTypes.POST, RequestTypes.PUT, RequestTypes.PATCH]:
+            
 
+                
             func_map = {
                 RequestTypes.POST : requests.post,
                 RequestTypes.PUT : requests.put,
