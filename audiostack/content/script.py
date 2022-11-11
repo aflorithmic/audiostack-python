@@ -93,7 +93,6 @@ class Script():
     # def update(self):
     #     pass
     
-    
     @staticmethod
     def list(projectName="", moduleName: str="", scriptName: str="", scriptId: str="") -> list:
         query_params = {
