@@ -7,13 +7,14 @@ converts text into a format that plays nicely with TTS
 
 from audiostack.helpers.request_interface import RequestInterface
 from audiostack.helpers.request_types import RequestTypes
-from audiostack.helpers.api_item import APIResponse
+from audiostack.helpers.api_item import APIResponseItem
+from audiostack.helpers.api_list import APIResponseList
 
 class Script():
     
     script_interface = RequestInterface(family="content")
         
-    class Item(APIResponse):
+    class Item(APIResponseItem):
         
         def __init__(self, response) -> None:
             super().__init__(response)
@@ -24,43 +25,25 @@ class Script():
             self.scriptName = self.data["scriptName"]
             self.scriptText = self.data["scriptText"]
                 
-        # def update(self):
-        #     Script.update(self.response)
-        #     pass
+        def update(self, scriptText):
+            return Script.update(scriptId=self.scriptId, scriptText=scriptText)
         def delete(self):
             return Script.delete(self.scriptId)
         
             
-        
-        # def __str__(self) -> str:
-        #      return "hello"
+        def __str__(self) -> str:
+             return self.response
     
-    class List(APIResponse):
+    class List(APIResponseList):
         def __init__(self, response, list_type) -> None:
-            super().__init__(response)
+            super().__init__(response, list_type)
 
-            self.items = self.response["data"][list_type]
-            self.idx = 0
-            self.list_type = list_type
-            
-        # todo move this to base class
-        def __iter__(self):
-            return self
-        
-        def __next__(self):
-            
-            self.idx += 1
-            try:
-                item = self.items[self.idx-1]
-                if self.list_type == "scripts":
-                    return Script.Item({"data" : item})
+        def resolve_item(self, list_type, item):
+            if list_type == "scripts":
+                return Script.Item({"data" : item})
+            else:
+                raise Exception()
 
-                
-            except IndexError:
-                self.idx = 0
-                raise StopIteration  # Done iterating.
-
-        
     @staticmethod
     def create(scriptText: str, projectName: str="", moduleName: str="", scriptName: str="", metadata: dict={}) -> Item:
         
@@ -73,25 +56,32 @@ class Script():
         }
         
         r = Script.script_interface.send_request(rtype=RequestTypes.POST, route="script", json=body)
-        return r, Script.Item(r)
+        return Script.Item(r)
     
     @staticmethod
     def get(scriptId: str, version: str="") -> Item:
         
         path_params = f"{scriptId}/{version}" if version else scriptId
         r = Script.script_interface.send_request(rtype=RequestTypes.GET, route="script", path_parameters=path_params)
-        return r, Script.Item(r)
-        
+        return Script.Item(r)
+    
     @staticmethod
-    def delete(scriptId: str, version: str=""):
+    def delete(scriptId: str, version: str="") -> str:
         
         path_params = f"{scriptId}/{version}" if version else scriptId
         r = Script.script_interface.send_request(rtype=RequestTypes.DELETE, route="script", path_parameters=path_params)
         return r
         
-    
-    # def update(self):
-    #     pass
+    @staticmethod
+    def update(scriptId: str, scriptText, version: str=""):
+        body = {
+            "scriptId" : scriptId,
+            "scriptText" : scriptText,
+            "version" : version
+        }
+        r = Script.script_interface.send_request(rtype=RequestTypes.PUT, json=body, route="script")
+        return Script.Item(r)
+
     
     @staticmethod
     def list(projectName="", moduleName: str="", scriptName: str="", scriptId: str="") -> list:
@@ -102,7 +92,7 @@ class Script():
             "scriptId" : scriptId
         }
         r = Script.script_interface.send_request(rtype=RequestTypes.GET, route="scripts", query_parameters=query_params)
-        return r, Script.List(r, list_type="scripts")
+        return Script.List(r, list_type="scripts")
 
     
 

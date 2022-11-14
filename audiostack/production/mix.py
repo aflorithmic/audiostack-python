@@ -1,6 +1,6 @@
 from audiostack.helpers.request_interface import RequestInterface
 from audiostack.helpers.request_types import RequestTypes
-from audiostack.helpers.api_item import APIResponse
+from audiostack.helpers.api_item import APIResponseItem
 
 import requests
 
@@ -19,7 +19,7 @@ class Mix():
     #         else:
     #             full_name = f"{fileName}_{i}.{format}"
     #         RequestInterface.download_url(s["url"], destination=path, name=full_name)
-    class Item(APIResponse):
+    class Item(APIResponseItem):
         
         def __init__(self, response) -> None:
             super().__init__(response)
@@ -48,7 +48,7 @@ class Mix():
         #     print(r.json())
         #     return r
             
-    class List(APIResponse):
+    class List(APIResponseItem):
         def __init__(self, response, list_type) -> None:
             super().__init__(response)
 

@@ -14,10 +14,18 @@ print("response from creating script", response)
 r, tts = audiostack.Speech.TTS.create(scriptItem=script, voice="joanna")
 print(tts.speechId)
 
-r, mix = audiostack.Production.Mix.create(speechItem=tts)
+r, mix = audiostack.Production.Mix.create(speechItem=tts, soundTemplate="vinylhits")
 print(r)
 
-mix.download(fileName="hellotest")
+
+r, encoded = audiostack.Delivery.Encoder.encode_mix(productionItem=mix, prest="mp3")
+print(r)
+
+encoded.download()
+
+
+
+#mix.download(fileName="hellotest")
 
 
 # # mix.encode(format="mp3_low")
