@@ -2,20 +2,22 @@
 import audiostack
 import os
 
-audiostack.api_key = os.environ["AUDIO_STACK_DEV_KEY"]
 
-
-scriptText = "<<soundSegment::intro>><<sectionName::intro>> Hello <<soundSegment::main>> <<sectionName::main>> this is main <<soundSegment::outro>><<sectionName::outro>> goodbye"
-
-script = audiostack.Content.Script.create(scriptText=scriptText)
-print("response from creating script", script.response)
-scriptId = script.scriptId
-
-
-tts = audiostack.Speech.TTS.create(scriptItem=script, voice="liam")
-print(tts.speechId)
 
 if __name__ == "__main__":
+    audiostack.api_key = os.environ["AUDIO_STACK_DEV_KEY"]
+
+
+    scriptText = """<<soundSegment::intro>><<sectionName::intro>> Hello <<soundSegment::main>> 
+    <<sectionName::main>> this is main <<soundSegment::outro>><<sectionName::outro>> goodbye"""
+
+    script = audiostack.Content.Script.create(scriptText=scriptText)
+    print("response from creating script", script.response)
+    scriptId = script.scriptId
+
+
+    tts = audiostack.Speech.TTS.create(scriptItem=script, voice="liam")
+    print(tts.speechId)
     for st in ["vinylhits", "openup", "hotwheels", "whatstillremains", "sunsetbeachcafe", "hourglass", "feelinggood"]:
         print("Mixing and encoding a preview of", st)
         mix = audiostack.Production.Mix.create(speechItem=tts, soundTemplate=st)
