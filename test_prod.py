@@ -1,35 +1,33 @@
-import json
 import audiostack
+import os
 
-audiostack.api_key = "0b1173a6420c4c028690b7beff39c0ad"
-
-
-scriptText = "<<sectionName::intro>> Hello <<sectionName::main>> this is main <<sectionName::outro>> goodbye"
+audiostack.api_key = os.environ["AUDIO_STACK_DEV_KEY"]
 
 
-response, script = audiostack.Content.Script.create(scriptText=scriptText)
-print("response from creating script", response)
+scriptText = "<<soundSegment::intro>><<sectionName::intro>> Hello <<soundSegment::main>> <<sectionName::main>> this is main <<soundSegment::outro>><<sectionName::outro>> goodbye"
+
+script = audiostack.Content.Script.create(scriptText=scriptText)
+print("response from creating script", script.response)
+scriptId = script.scriptId
 
 
-r, tts = audiostack.Speech.TTS.create(scriptItem=script, voice="joanna")
+tts = audiostack.Speech.TTS.create(scriptItem=script, voice="joanna")
 print(tts.speechId)
 
-r, mix = audiostack.Production.Mix.create(speechItem=tts, soundTemplate="vinylhits")
-print(r)
+
+for st in ["vinylhits", "openup", "hotwheels"]:
+    print("Mixing and encoding a preview of", st)
+    mix = audiostack.Production.Mix.create(speechItem=tts, soundTemplate=st)
+    print(mix.productionId)
+    encoded = audiostack.Delivery.Encoder.encode_mix(productionItem=mix, prest="mp3")
+    encoded.download(fileName=st)
 
 
-r, encoded = audiostack.Delivery.Encoder.encode_mix(productionItem=mix, prest="mp3")
-print(r)
+mix_files = audiostack.Production.Mix.list(scriptId=scriptId)
+print(mix_files.response)
+for mix in mix_files:
+    item = audiostack.Production.Mix.get(mix.productionId)  
+    r = item.delete()
+    print(r)
 
-encoded.download()
-
-
-
-#mix.download(fileName="hellotest")
-
-
-# # mix.encode(format="mp3_low")
-# r = mix.encode(preset="mp3_high")
-# print(r)
-# r = mix.download(fileName="hellotest")
-# print(r)
+print("Cost for this session: ", audiostack.credits_used_in_this_session())

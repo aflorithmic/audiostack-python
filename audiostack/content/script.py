@@ -1,10 +1,3 @@
-"""
-# Content/script
-
-converts text into a format that plays nicely with TTS
-"""
-
-
 from audiostack.helpers.request_interface import RequestInterface
 from audiostack.helpers.request_types import RequestTypes
 from audiostack.helpers.api_item import APIResponseItem
@@ -12,7 +5,7 @@ from audiostack.helpers.api_list import APIResponseList
 
 class Script():
     
-    script_interface = RequestInterface(family="content")
+    interface = RequestInterface(family="content")
         
     class Item(APIResponseItem):
         
@@ -55,43 +48,42 @@ class Script():
             "metadata" : metadata
         }
         
-        r = Script.script_interface.send_request(rtype=RequestTypes.POST, route="script", json=body)
+        r = Script.interface.send_request(rtype=RequestTypes.POST, route="script", json=body)
         return Script.Item(r)
     
     @staticmethod
     def get(scriptId: str, version: str="") -> Item:
         
         path_params = f"{scriptId}/{version}" if version else scriptId
-        r = Script.script_interface.send_request(rtype=RequestTypes.GET, route="script", path_parameters=path_params)
+        r = Script.interface.send_request(rtype=RequestTypes.GET, route="script", path_parameters=path_params)
         return Script.Item(r)
     
     @staticmethod
     def delete(scriptId: str, version: str="") -> str:
         
         path_params = f"{scriptId}/{version}" if version else scriptId
-        r = Script.script_interface.send_request(rtype=RequestTypes.DELETE, route="script", path_parameters=path_params)
+        r = Script.interface.send_request(rtype=RequestTypes.DELETE, route="script", path_parameters=path_params)
         return r
         
     @staticmethod
-    def update(scriptId: str, scriptText, version: str=""):
+    def update(scriptId: str, scriptText, version: str="") -> Item:
         body = {
             "scriptId" : scriptId,
             "scriptText" : scriptText,
             "version" : version
         }
-        r = Script.script_interface.send_request(rtype=RequestTypes.PUT, json=body, route="script")
+        r = Script.interface.send_request(rtype=RequestTypes.PUT, json=body, route="script")
         return Script.Item(r)
 
-    
     @staticmethod
-    def list(projectName="", moduleName: str="", scriptName: str="", scriptId: str="") -> list:
+    def list(projectName="", moduleName: str="", scriptName: str="", scriptId: str="") -> List:
         query_params = {
             "projectName" : projectName,
             "moduleName" : moduleName,
             "scriptName" : scriptName,
             "scriptId" : scriptId
         }
-        r = Script.script_interface.send_request(rtype=RequestTypes.GET, route="scripts", query_parameters=query_params)
+        r = Script.interface.send_request(rtype=RequestTypes.GET, route="scripts", query_parameters=query_params)
         return Script.List(r, list_type="scripts")
 
     

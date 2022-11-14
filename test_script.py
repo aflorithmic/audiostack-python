@@ -1,6 +1,7 @@
 import audiostack
+import os
 
-audiostack.api_key = "0b1173a6420c4c028690b7beff39c0ad"
+audiostack.api_key = os.environ["AUDIO_STACK_DEV_KEY"]
 
 
 # create script item
@@ -23,3 +24,4 @@ print(script_list.response)
 for script_item in script_list:
     print(script_item.scriptId, script_item.scriptText[0:200])
 
+print("Cost for this session: ", audiostack.credits_used_in_this_session())

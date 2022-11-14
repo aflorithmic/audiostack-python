@@ -1,9 +1,10 @@
 from audiostack.helpers.request_interface import RequestInterface
 from audiostack.helpers.request_types import RequestTypes
 from audiostack.helpers.api_item import APIResponseItem
+from audiostack.helpers.api_list import APIResponseList
 
 class TTS():
-    speech_interface = RequestInterface(family="speech")
+    interface = RequestInterface(family="speech")
     
     class Item(APIResponseItem):
         
@@ -11,41 +12,29 @@ class TTS():
             super().__init__(response)
             self.speechId = self.data["speechId"]
 
-        def download(self, path="./", fileName="") -> None:
+        def download(self, fileName="", path="./") -> None:
             
             sections = self.data["sections"]
             for i, s in enumerate(sections):
                 if not fileName:
                     full_name = s["sectionName"] + ".wav"
                 else:
-                    full_name = f"{fileName}_{i}.wav"
+                    full_name = f"{fileName}_{i+1}_of_{len(sections)}.wav"
                 RequestInterface.download_url(s["url"], destination=path, name=full_name)
-    
-    class List(APIResponseItem):
-        def __init__(self, response, list_type) -> None:
-            super().__init__(response)
-
-            self.items = self.response["data"][list_type]
-            self.idx = 0
-            self.list_type = list_type
-            
-        # todo move this to base class
-        def __iter__(self):
-            return self
-        
-        def __next__(self):
-            
-            self.idx += 1
-            try:
-                item = self.items[self.idx-1]
-                if self.list_type == "speechIds":
-                    return TTS.Item({"data" : item})
-
                 
-            except IndexError:
-                self.idx = 0
-                raise StopIteration  # Done iterating.
-    
+        def delete(self):
+            return TTS.delete(self.speechId)
+        
+    class List(APIResponseList):
+        def __init__(self, response, list_type) -> None:
+            super().__init__(response, list_type)
+
+        def resolve_item(self, list_type, item):
+            if list_type == "speechIds":
+                return TTS.Item({"data" : item})
+            else:
+                raise Exception()
+
     
     @staticmethod
     def create(scriptId="", scriptItem=None, voice: str="") -> Item:
@@ -63,15 +52,20 @@ class TTS():
             "voice" : voice,
         }
         
-        r = TTS.speech_interface.send_request(rtype=RequestTypes.POST, route="tts", json=body)
-        return r, TTS.Item(r)
+        r = TTS.interface.send_request(rtype=RequestTypes.POST, route="tts", json=body)
+        return TTS.Item(r)
 
     @staticmethod
     def get(speechId: str) -> Item:
         
-        r = TTS.speech_interface.send_request(rtype=RequestTypes.GET, route="tts", path_parameters=speechId)
-        return r, TTS.Item(r)
+        r = TTS.interface.send_request(rtype=RequestTypes.GET, route="tts", path_parameters=speechId)
+        return TTS.Item(r)
 
+    @staticmethod
+    def delete(speechId: str) -> str:
+        r = TTS.interface.send_request(rtype=RequestTypes.DELETE, route="tts", path_parameters=speechId)
+        return r
+    
     @staticmethod
     def list(projectName="", moduleName: str="", scriptName: str="", scriptId: str="") -> list:
         query_params = {
@@ -80,5 +74,5 @@ class TTS():
             "scriptName" : scriptName,
             "scriptId" : scriptId
         }
-        r = TTS.speech_interface.send_request(rtype=RequestTypes.GET, route="tts", query_parameters=query_params)
-        return r, TTS.List(r, list_type="speechIds")
+        r = TTS.interface.send_request(rtype=RequestTypes.GET, route="tts", query_parameters=query_params)
+        return TTS.List(r, list_type="speechIds")

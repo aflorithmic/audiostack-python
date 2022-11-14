@@ -18,3 +18,7 @@ from audiostack import production as Production
 from audiostack import delivery as Delivery
 
 billing_session = 0
+
+def credits_used_in_this_session():
+    return float("{:.2f}".format(billing_session))
+    

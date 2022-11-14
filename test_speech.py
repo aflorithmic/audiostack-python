@@ -1,46 +1,32 @@
-import json
 import audiostack
+import os
 
-audiostack.api_key = "0b1173a6420c4c028690b7beff39c0ad"
+audiostack.api_key = os.environ["AUDIO_STACK_DEV_KEY"]
 
-
-response, script = audiostack.Content.Script.create(scriptText="hello sam")
-print("response from creating script", response)
+script = audiostack.Content.Script.create(scriptText="hello sam")
+print("response from creating script", script.response)
 
 
 scriptId = script.scriptId
 
 for v in ["sara", "joanna", "conrad", "liam"]:
-    r, item = audiostack.Speech.TTS.create(scriptItem=script, voice=v)
-    print(r)
+    item = audiostack.Speech.TTS.create(scriptItem=script, voice=v)
+    print(item.response)
 
 
-r, tts_files = audiostack.Speech.TTS.list(scriptId=scriptId)
+tts_files = audiostack.Speech.TTS.list(scriptId=scriptId)
+print(tts_files.response)
 for tts in tts_files:
     print("getting", tts.speechId)
-    r, item = audiostack.Speech.TTS.get(tts.speechId)
+    item = audiostack.Speech.TTS.get(tts.speechId)
     item.download(fileName=item.speechId)
-    
-
-#item.download(fileName="firstfile")
-#  cx
-# print("Cost for this session", audiostack.billing_session)
-
-# r, item = audiostack.Production.create(...)
-# print(r)
-
-# item.encode(format="mp3")
-# item.download(name="file1")
-
-# #and for another.
-# item.encode(format="wav16")
-# item.download(name="file2")
-
-# #vs
-
-# r = audiostack.Production.create(...)
-
-# r = audiostack.Deliver.encode(id= r["productionId"], format="mp3")
-# r = audiostack.Deliver.download(id = r["enoderId"], name="file2")
 
 
+tts_files = audiostack.Speech.TTS.list(scriptId=scriptId)
+print(tts_files.response)
+for tts in tts_files:
+    item = audiostack.Speech.TTS.get(tts.speechId)
+    r = item.delete()
+    print(r)
+
+print("Cost for this session: ", audiostack.credits_used_in_this_session())
