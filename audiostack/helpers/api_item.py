@@ -7,6 +7,9 @@ class APIResponseItem():
         
         if "data" in response:
             self.data = self.response["data"]
+            # for key in self.data:
+            #     assert key != "data"
+            #     self.__dict__[key] = self.data["key"]
     
     def response(self, indent=0):
         if indent:
