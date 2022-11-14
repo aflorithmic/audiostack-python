@@ -16,7 +16,7 @@ tts = audiostack.Speech.TTS.create(scriptItem=script, voice="liam")
 print(tts.speechId)
 
 if __name__ == "__main__":
-    for st in ["vinylhits", "openup", "hotwheels"]:
+    for st in ["vinylhits", "openup", "hotwheels", "whatstillremains", "sunsetbeachcafe", "hourglass", "feelinggood"]:
         print("Mixing and encoding a preview of", st)
         mix = audiostack.Production.Mix.create(speechItem=tts, soundTemplate=st)
         print(mix.productionId)
