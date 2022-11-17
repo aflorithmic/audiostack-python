@@ -37,7 +37,17 @@ class Mix():
                 raise Exception()
 
     @staticmethod
-    def create(speechId="", speechItem=None, soundTemplate: str="") -> Item:
+    def create(
+        speechId="", 
+        speechItem=None, 
+        soundTemplate: str="",
+        forceLength: float=0.0, # a value of 0 means no force length
+        mediaFiles: dict={},
+        sectionProperties: dict={},
+        masteringPreset: str="",
+        acousticSpace: str="",
+        callbackUrl: str=""
+        ) -> Item:
                 
         if speechId and speechItem:
             raise Exception("speechId or scriptItem should be supplied not both")
@@ -50,6 +60,12 @@ class Mix():
         body = {
             "speechId": speechId,
             "soundTemplate" : soundTemplate,
+            "forceLength": forceLength, 
+            "mediaFiles": mediaFiles, 
+            "sectionProperties": sectionProperties,
+            "masteringPreset": masteringPreset,
+            "acousticSpace": acousticSpace,
+            "callbackUrl": callbackUrl
         }
         
         r = Mix.interface.send_request(rtype=RequestTypes.POST, route="mix", json=body)

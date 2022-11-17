@@ -37,7 +37,18 @@ class TTS():
 
     
     @staticmethod
-    def create(scriptId="", scriptItem=None, voice: str="") -> Item:
+    def create(
+        scriptId="", 
+        scriptItem=None, 
+        voice: str="", 
+        speed: float=1.0,
+        silencePadding: str="", 
+        effect: str="", 
+        audience: dict={},
+        sections: dict={},
+        useDictionary: bool=False,
+        useTextNormalizer: bool=False
+        ) -> Item:
                 
         if scriptId and scriptItem:
             raise Exception("scriptId or scriptItem should be supplied not both")
@@ -50,6 +61,13 @@ class TTS():
         body = {
             "scriptId": scriptId,
             "voice" : voice,
+            "speed" : speed,
+            "silencePadding" : silencePadding,
+            "effect" : effect,
+            "audience" : audience,
+            "sections" : sections, 
+            "useDictionary" : useDictionary,
+            "useTextNormalizer" : useTextNormalizer
         }
         
         r = TTS.interface.send_request(rtype=RequestTypes.POST, route="tts", json=body)
