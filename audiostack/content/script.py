@@ -4,8 +4,8 @@ from audiostack.helpers.api_item import APIResponseItem
 from audiostack.helpers.api_list import APIResponseList
 
 class Script():
-    
-    interface = RequestInterface(family="content")
+    FAMILY = "content"
+    interface = RequestInterface(family=FAMILY)
         
     class Item(APIResponseItem):
         
@@ -87,6 +87,6 @@ class Script():
         return Script.List(r, list_type="scripts")
 
     
-
-        
-    
+    # @staticmethod
+    # def docs() -> dict:
+    #     r = Script.interface.send_request()

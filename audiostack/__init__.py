@@ -16,6 +16,8 @@ from audiostack import content as Content
 from audiostack import speech as Speech
 from audiostack import production as Production
 from audiostack import delivery as Delivery
+from audiostack import orchestrator as Orchestrator
+from audiostack.docs.docs import Documentation
 
 billing_session = 0
 

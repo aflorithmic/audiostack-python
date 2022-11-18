@@ -12,14 +12,21 @@ class TTS():
             super().__init__(response)
             self.speechId = self.data["speechId"]
 
-        def download(self, fileName="", path="./") -> None:
+        def download(self, autoName=False, fileName="", path="./") -> None:
             
             sections = self.data["sections"]
             for i, s in enumerate(sections):
-                if not fileName:
-                    full_name = s["sectionName"] + ".wav"
+                if autoName:
+                    full_name = ""
+                    for k, val in s["audience"].items():
+                        full_name += f"{k}={val}~"
+                    
+                    full_name = full_name[:-1] + ".wav"
                 else:
-                    full_name = f"{fileName}_{i+1}_of_{len(sections)}.wav"
+                    if not fileName:
+                        full_name = s["sectionName"] + ".wav"
+                    else:
+                        full_name = f"{fileName}_{i+1}_of_{len(sections)}.wav"
                 RequestInterface.download_url(s["url"], destination=path, name=full_name)
                 
         def delete(self):

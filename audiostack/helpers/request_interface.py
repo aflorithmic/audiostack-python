@@ -30,8 +30,10 @@ class RequestInterface:
     
 
     def __init__(self, family: str) -> None:
-        self.base_url = audiostack.api_base + f"/{family}"
-        
+        if family:
+            self.base_url = audiostack.api_base + f"/{family}"
+        else:
+            self.base_url = audiostack.api_base
    
     def make_header(self):
         # I guess we might attach something here for testing?
