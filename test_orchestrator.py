@@ -20,9 +20,10 @@ if __name__ == "__main__":
     script = audiostack.Content.Script.create(
         scriptText="""
         <<sectionName::intro>>
-        Happy birthday {{name}}!
+        May the joy that you have spread in the past come back to you on this day. Wishing you a very happy birthday {{name}}!
         <<sectionName::main>>
-        For this occasion you can have 3 drinks on us! Lucky you!!
+        May you be gifted with life’s biggest joys and never-ending bliss. After all, you yourself are a gift to earth, so you deserve the best.
+        Forget the past; look forward to the future, for the best things are yet to come.
         <<sectionName::outro>> 
         Enjoy your special day, happy to have you with us!
         """
@@ -100,4 +101,4 @@ if __name__ == "__main__":
             print("FAIL")
             print(ob)
         else:
-            RequestInterface.download_url(url, f"{url.split('/')[9]}.wav", "./files")
+            RequestInterface.download_url(url, f"{url.split('/')[9]}.mp3", "./files")
