@@ -72,30 +72,15 @@ class Audioform:
                 }
                 bodies.append(body)
 
-        return asyncio.run(Audioform.__as(bodies))
+        return asyncio.run(
+            Audioform.__as(bodies, "https://staging-v2.api.audio/speech/tts")
+        )
 
-    def __awesome(scriptId, bodies):
-        with ThreadPoolExecutor(max_workers=100) as exec:
-            futures = {}
-            for i, body in enumerate(bodies):
-                futures[i] = exec.submit(TTS.create, **body)
-
-            for i, body in enumerate(bodies):
-
-                exception = futures[i].exception()
-                if exception:
-                    raise RuntimeError(exception)
-
-                r = futures[i].result()
-                print(r.response)
-
-        return f"use scriptId {scriptId} to list all created files."
-
-    async def __as(bodies):
+    async def __as(bodies, url):
         async def as_call(body, session):
             r = await session.request(
                 "POST",
-                url="https://staging-v2.api.audio/speech/tts",
+                url=url,
                 json=body,
                 headers={"x-api-key": "0b1173a6420c4c028690b7beff39c0ad"},
             )
@@ -108,37 +93,53 @@ class Audioform:
             for b in bodies:
                 tasks.append(as_call(b, session))
             results = await asyncio.gather(*tasks, return_exceptions=True)
+        return results
+
+    async def __asg(urls: list):
+        async def as_call(url, session):
+            r = await session.request(
+                "GET",
+                url=url,
+                headers={"x-api-key": "0b1173a6420c4c028690b7beff39c0ad"},
+            )
+            print(r["statusCode"])
+            return (r, url.split("/")[-1])
+
+        async with aiohttp.ClientSession() as session:
+            tasks = []
+            for url in urls:
+                tasks.append(as_call(url, session))
+            results = await asyncio.gather(*tasks, return_exceptions=True)
+        return results
 
     @staticmethod
     def create_mastering(
         speechIdList: List[str],
         soundTemplateList: List[str],
     ) -> object:
-        asyncio.run(
+        bodies = []
+        for spid in speechIdList:
+            for st in soundTemplateList:
+                bodies.append({"speechId": spid, "soundTemplate": st})
+        return asyncio.run(
             Audioform.__as(
-                [
-                    {"speechId": spid, "soundTemplate": st}
-                    for spid, st in zip(speechIdList, soundTemplateList)
-                ]
+                bodies,
+                "https://staging-v2.api.audio/production/mix",
             )
         )
 
-        # with ThreadPoolExecutor(max_workers=100) as exec:
-        #     futures = {}
-        #     for id in speechIdList:
-        #         for st in soundTemplateList:
-        #             futures[f"{id}-{st}"] = exec.submit(
-        #                 Mix.create, speechId=id, soundTemplate=st
-        #             )
-
-        #     for id in speechIdList:
-        #         for st in soundTemplateList:
-        #             exception = futures[f"{id}-{st}"].exception()
-        #             if exception:
-        #                 raise RuntimeError(exception)
-
-        #             r = futures[f"{id}-{st}"].result()
-        #             print(r.response)
+    @staticmethod
+    def batch_encode(productionIdList: List[str], presets: List[str]):
+        bodies = []
+        for pid in productionIdList:
+            for pr in presets:
+                bodies.append({"productionId": pid, "preset": pr})
+        return asyncio.run(
+            Audioform.__as(
+                bodies,
+                "https://staging-v2.api.audio/delivery/encoder",
+            )
+        )
 
 
 # import requests

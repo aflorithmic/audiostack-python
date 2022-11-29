@@ -2,14 +2,21 @@ import os
 import audiostack
 import json
 from time import time
+from audiostack.helpers.request_interface import RequestInterface
 
-
+# ISSUES:
+# Lots of shaven yaks for this demo. Fixed some bugs here and there, but there are still issues to be addressed for Audioform to be fully functional.
+#
+# ProvisionedThroughput in sound templates dynamo causes throtthling. Change BillingType to PAY_PER_DEMAND
+# Mastering ocasionally times out.
+# Encoder ocasionally cannot find a file.
+#
 if __name__ == "__main__":
     t0 = time()
     audiostack.api_key = "0b1173a6420c4c028690b7beff39c0ad"
 
     script = audiostack.Content.Script.create(
-        scriptText="Happy {{holiday}} employee {{name}}. For this occasion you can have 3 drinks on us! Lucky you!!"
+        scriptText="<<sectionName::intro>>Happy birthday {{name}}! <<sectionName::main>>For this occasion you can have 3 drinks on us! Lucky you!!"
     )
     print(script.response)
 
@@ -26,18 +33,6 @@ if __name__ == "__main__":
             "Hugo",
             "Liana",
             "Tim",
-        ],
-        "holiday": [
-            "hanukkah",
-            "birthday",
-            "christmas",
-            "easter",
-            "thanksgiving",
-            "day of independence",
-            "new year",
-            "all saints",
-            "constitution day",
-            "valentine's day",
         ],
     }
 
@@ -65,22 +60,31 @@ if __name__ == "__main__":
 
     r = audiostack.Orchestrator.Audioform.create_mastering(
         speechIdList=[d["speechId"] for d in tts_files.response["data"]["speechIds"]],
-        soundTemplateList=["copacabana"],
+        soundTemplateList=[
+            "copacabana",
+            "deepsea",
+            "bullmarket",
+            "breakingnews",
+            "bluewater",
+            "articles",
+            "driftingoff",
+            "hotwheels",
+            "house",
+            "heatwave",
+        ],
     )
     mastered_files = audiostack.Production.Mix.list(scriptId=script.scriptId)
     print(mastered_files.response)
     print("TOTAL TIME b4 download:", time() - t0)
 
-    for mf in mastered_files:
-        audiostack.Delivery.Encoder.encode_mix(
-            productionId=mf.productionId, preset="mp3_high"
-        ).download(mf.productionId, "./files")
+    pids = [mf.productionId for mf in mastered_files]
+    r = audiostack.Orchestrator.Audioform.batch_encode(pids, presets=["mp3_high"])
+
+    for i, ob in enumerate(r):
+        url = ob.get("data", {}).get("url", "")
+        if not url:
+            print("FAIL")
+            print(ob)
+        else:
+            RequestInterface.download_url(url, f"{i}.mp3", "./files")
     print("TOTAL TIME after download:", time() - t0)
-    """
-    for tts in tts_files:
-        print("getting", tts.speechId)
-        # simple syntax, get TTS and then download
-        item = audiostack.Speech.TTS.get(tts.speechId)
-        print(item.response)
-        item.download(autoName=True)
-    """
