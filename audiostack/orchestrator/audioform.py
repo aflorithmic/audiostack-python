@@ -95,32 +95,19 @@ class Audioform:
             results = await asyncio.gather(*tasks, return_exceptions=True)
         return results
 
-    async def __asg(urls: list):
-        async def as_call(url, session):
-            r = await session.request(
-                "GET",
-                url=url,
-                headers={"x-api-key": "0b1173a6420c4c028690b7beff39c0ad"},
-            )
-            print(r["statusCode"])
-            return (r, url.split("/")[-1])
-
-        async with aiohttp.ClientSession() as session:
-            tasks = []
-            for url in urls:
-                tasks.append(as_call(url, session))
-            results = await asyncio.gather(*tasks, return_exceptions=True)
-        return results
-
     @staticmethod
     def create_mastering(
         speechIdList: List[str],
         soundTemplateList: List[str],
+        forceLengthList: List[float],
     ) -> object:
         bodies = []
         for spid in speechIdList:
             for st in soundTemplateList:
-                bodies.append({"speechId": spid, "soundTemplate": st})
+                for fl in forceLengthList:
+                    bodies.append(
+                        {"speechId": spid, "soundTemplate": st, "forceLength": fl}
+                    )
         return asyncio.run(
             Audioform.__as(
                 bodies,
