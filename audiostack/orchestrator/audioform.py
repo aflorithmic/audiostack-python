@@ -106,7 +106,6 @@ class Audioform:
         async with aiohttp.ClientSession() as session:
             tasks = []
             for b in bodies:
-                print(b["audience"], b["voice"])
                 tasks.append(as_call(b, session))
             results = await asyncio.gather(*tasks, return_exceptions=True)
 
