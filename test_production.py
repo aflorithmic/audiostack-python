@@ -11,7 +11,7 @@ scriptText = """
 script = audiostack.Content.Script.create(scriptText=scriptText)
 print("response from creating script", script.response)
 scriptId = script.scriptId
-
+import pdb; pdb.set_trace()
 
 # create one tts resource
 tts = audiostack.Speech.TTS.create(scriptItem=script, voice="joanna")
