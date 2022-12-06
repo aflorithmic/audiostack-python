@@ -65,6 +65,31 @@ class TTS():
         if scriptItem:
             scriptId = scriptItem.scriptId
         
+        try:
+            isinstance(scriptItem.voice, str)
+        except:
+            raise Exception("voice argument should be a string")
+        
+        try:
+            isinstance(scriptItem.effect, str)
+        except:
+            raise Exception("effect argument should be a string")
+
+        try:
+            isinstance(scriptItem.silencePadding, str)
+        except:
+            raise Exception("silencePadding argument should be a string")
+
+        try:
+            isinstance(scriptItem.useDictionary, bool)
+        except:
+            raise Exception("useDictionary argument should be a boolean")
+
+        try:
+            isinstance(scriptItem.useTextNormaliser, bool)
+        except:
+            raise Exception("useTextNormaliser argument should be a boolean")
+
         body = {
             "scriptId": scriptId,
             "voice" : voice,
