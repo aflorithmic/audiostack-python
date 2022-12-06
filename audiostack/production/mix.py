@@ -53,6 +53,12 @@ class Mix():
             raise Exception("speechId or scriptItem should be supplied not both")
         if not (speechId or speechItem):
             raise Exception("speechId or scriptItem should be supplied")
+        
+        try:
+            isinstance(speechItem.soundTemplate, str)
+        except:
+            raise Exception("soundTemplate argument should be a string")
+
             
         if speechItem:
             speechId = speechItem.speechId

@@ -11,14 +11,13 @@ scriptText = """
 script = audiostack.Content.Script.create(scriptText=scriptText)
 print("response from creating script", script.response)
 scriptId = script.scriptId
-import pdb; pdb.set_trace()
 
 # create one tts resource
 tts = audiostack.Speech.TTS.create(scriptItem=script, voice="joanna")
 print(tts.speechId)
 
-# now generate 3 different templates of this
-for st in ["vinylhits", "openup", "hotwheels"]:
+# now generate several different templates of this
+for st in ["vinylhits", "openup", "hotwheels", "whatstillremains", "roomtone", "lifestylepodcast", "cityechoes"]:
     print("Mixing and encoding a preview of", st)
     mix = audiostack.Production.Mix.create(speechItem=tts, soundTemplate=st)
     print(mix.productionId)
