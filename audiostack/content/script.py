@@ -23,10 +23,7 @@ class Script():
         def delete(self):
             return Script.delete(self.scriptId)
         
-            
-        def __str__(self) -> str:
-             return self.response
-    
+
     class List(APIResponseList):
         def __init__(self, response, list_type) -> None:
             super().__init__(response, list_type)
@@ -63,8 +60,8 @@ class Script():
         
         path_params = f"{scriptId}/{version}" if version else scriptId
         r = Script.interface.send_request(rtype=RequestTypes.DELETE, route="script", path_parameters=path_params)
-        return r
-        
+        return APIResponseItem(r)
+
     @staticmethod
     def update(scriptId: str, scriptText, version: str="") -> Item:
         body = {
@@ -85,8 +82,3 @@ class Script():
         }
         r = Script.interface.send_request(rtype=RequestTypes.GET, route="scripts", query_parameters=query_params)
         return Script.List(r, list_type="scripts")
-
-    
-    # @staticmethod
-    # def docs() -> dict:
-    #     r = Script.interface.send_request()

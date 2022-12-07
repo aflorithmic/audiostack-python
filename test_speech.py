@@ -3,7 +3,7 @@ import os
 
 audiostack.api_key = os.environ["AUDIO_STACK_DEV_KEY"]
 
-script = audiostack.Content.Script.create(scriptText="hello sam")
+script = audiostack.Content.Script.create(scriptText="hello sam this is a realy long script. hello sam this is a realy long script. hello sam this is a realy long script. hello sam this is a realy long script. hello sam this is a realy long script")
 print("response from creating script", script.response)
 
 # store scriptId for later
@@ -13,7 +13,6 @@ scriptId = script.scriptId
 for v in ["sara", "joanna", "conrad", "liam"]:
     item = audiostack.Speech.TTS.create(scriptItem=script, voice=v)
     print(item.response)
-
 
 # now lets get our files with the list method
 tts_files = audiostack.Speech.TTS.list(scriptId=scriptId)

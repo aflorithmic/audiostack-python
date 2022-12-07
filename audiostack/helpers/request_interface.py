@@ -3,7 +3,6 @@ import shutil
 
 import requests
 
-
 from audiostack.helpers.util import bcolors
 from audiostack.helpers.response import Response
 from audiostack.helpers.request_types import RequestTypes
@@ -30,33 +29,42 @@ class RequestInterface:
     
 
     def __init__(self, family: str) -> None:
+
         if family:
             self.base_url = audiostack.api_base + f"/{family}"
         else:
             self.base_url = audiostack.api_base
    
+    
     def make_header(self):
-        # I guess we might attach something here for testing?
+
         return {
             "x-api-key": audiostack.api_key,
             "x-python-sdk-version": audiostack.sdk_version
             #"x-assume-org": audiostack.assume_org_id,
         }
-        
-
+    
+    
     def resolve_response(self, r):
         if r.status_code >= 500:
             raise Exception("Internal server error - aborting")
-        
+
         if self.DEBUG_PRINT:
             print(json.dumps(r.json(), indent=4))
         
         if "meta" in r.json():
             if "creditsUsed" in r.json()["meta"]:
                 audiostack.billing_session += r.json()["meta"]["creditsUsed"]
+
+        if r.status_code == 403:
+            raise Exception("Not authorised - check API key is valid")
         
+        if r.status_code >= 400:
+            msg = r.json()["message"] + ". Errors listed as follows: \n\t" + '\t'.join(r.json()["errors"])
+            raise Exception(msg)
+
         return {**r.json(), **{"statusCode" : r.status_code}}
-#        return Response(**{**{"statusCode" : r.status_code}, **r.json() })
+
     
     def send_request(self, rtype, route, json=None, path_parameters=None, query_parameters=None, overwrite_base_url=None):
         
@@ -75,23 +83,20 @@ class RequestInterface:
         # these requests are all the same input parameters.
         if rtype in [RequestTypes.POST, RequestTypes.PUT, RequestTypes.PATCH]:
             
-
-                
-            func_map = {
+            FUNC_MAP = {
                 RequestTypes.POST : requests.post,
                 RequestTypes.PUT : requests.put,
                 RequestTypes.PATCH : requests.patch
             }
             
             return self.resolve_response(
-                func_map[rtype]
-                (
+                FUNC_MAP[rtype](
                     url=url, 
                     json=json, 
                     headers=self.make_header()
                 )
             )
-        if rtype == RequestTypes.GET:
+        elif rtype == RequestTypes.GET:
             
             if path_parameters:
                 url = f"{url}/{path_parameters}"
@@ -103,8 +108,7 @@ class RequestInterface:
                     headers=self.make_header()
                 )
             )
-                
-        if rtype == RequestTypes.DELETE:
+        elif rtype == RequestTypes.DELETE:
             
             if path_parameters:
                 url = f"{url}/{path_parameters}"
@@ -119,7 +123,15 @@ class RequestInterface:
     
     @staticmethod
     def download_url(url, name, destination):
-        r = requests.get(url, stream=True)
+        r = requests.get(
+            url=url, 
+            stream=True, 
+            headers={"x-api-key": audiostack.api_key}
+        )
+
+        if r.status_code >= 400:
+            raise Exception("Failed to download file")
+
         local_filename = f"{destination}/{name}"
         with open(local_filename, "wb") as f:
             shutil.copyfileobj(r.raw, f)

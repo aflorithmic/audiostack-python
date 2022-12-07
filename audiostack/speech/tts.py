@@ -100,7 +100,7 @@ class TTS():
     @staticmethod
     def delete(speechId: str) -> str:
         r = TTS.interface.send_request(rtype=RequestTypes.DELETE, route="tts", path_parameters=speechId)
-        return r
+        return APIResponseItem(r)
     
     @staticmethod
     def list(projectName="", moduleName: str="", scriptName: str="", scriptId: str="") -> list:

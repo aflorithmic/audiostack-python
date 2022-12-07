@@ -35,6 +35,6 @@ class Voice():
         @staticmethod
         def get() -> dict:
             r = Voice.interface.send_request(rtype=RequestTypes.GET, route="parameter")
-            return r
+            return APIResponseItem(r)
 
    

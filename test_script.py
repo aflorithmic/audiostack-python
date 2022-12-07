@@ -3,7 +3,6 @@ import os
 
 audiostack.api_key = os.environ["AUDIO_STACK_DEV_KEY"]
 
-
 # create script item
 item = audiostack.Content.Script.create(scriptText="hello sam", projectName="__test")
 print(item.response)
@@ -14,7 +13,7 @@ print(item.response)
 
 #delete script item
 r = item.delete()
-print(r)
+print(r.message)
 
 # list all script items
 script_list = audiostack.Content.Script.list(projectName="__test")

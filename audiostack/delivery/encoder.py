@@ -21,7 +21,7 @@ class Encoder():
             
         
     @staticmethod
-    def encode_mix(productionId: str="", productionItem: object=None, preset: str="") -> Item:
+    def encode_mix(productionId: str="", productionItem: object=None, preset: str="", public: bool=False) -> Item:
                 
         if productionId and productionItem:
             raise Exception("productionId or productionItem should be supplied not both")
@@ -33,7 +33,8 @@ class Encoder():
         
         body = {
             "productionId": productionId,
-            "preset": preset
+            "preset": preset,
+            "public": public,
         }
         
         r = Encoder.interface.send_request(rtype=RequestTypes.POST, route="encoder", json=body)
