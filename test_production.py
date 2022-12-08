@@ -20,8 +20,9 @@ print(tts.speechId)
 for st in ["vinylhits", "openup", "hotwheels", "whatstillremains", "roomtone", "lifestylepodcast", "cityechoes"]:
     print("Mixing and encoding a preview of", st)
     mix = audiostack.Production.Mix.create(speechItem=tts, soundTemplate=st)
-    print(mix.productionId)
-    encoded = audiostack.Delivery.Encoder.encode_mix(productionItem=mix, preset="ogg")
+    mix.download(fileName=st)
+
+    encoded = audiostack.Delivery.Encoder.encode_mix(productionItem=mix, preset="mp3")
     encoded.download(fileName=st)
 
 # lets list what we created and deleted it 

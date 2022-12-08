@@ -8,8 +8,8 @@ class Root:
 
     def list_projects() -> list:
         r = Root.interface.send_request(rtype=RequestTypes.GET, route="list_projects")
-        return r, r.json()["data"]
+        return APIResponseItem(r)
 
     def list_modules(projectName: str) -> list:
         r = Root.interface.send_request(rtype=RequestTypes.GET, route="list_projects", query_parameters={"projectName" : projectName})
-        return r, r.json()["data"]
+        return APIResponseItem(r)

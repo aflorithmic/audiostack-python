@@ -4,6 +4,7 @@ from audiostack.helpers.api_item import APIResponseItem
 from audiostack.helpers.api_list import APIResponseList
 
 class Voice():
+    
     interface = RequestInterface(family="speech/voice")
     
     class Item(APIResponseItem):
@@ -30,11 +31,12 @@ class Voice():
         print(r)
         return Voice.List(r, list_type="voices")
 
+
     class Parameter():
         
         @staticmethod
         def get() -> dict:
             r = Voice.interface.send_request(rtype=RequestTypes.GET, route="parameter")
-            return r
+            return APIResponseItem(r)
 
    

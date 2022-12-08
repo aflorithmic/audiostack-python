@@ -17,6 +17,6 @@ for t in templates:
 
 # list sound parameters
 r = audiostack.Production.Sound.Parameter.get()
-print(r)
+print(r.data)
 
 print("Cost for this session: ", audiostack.credits_used_in_this_session())
