@@ -4,6 +4,7 @@ from audiostack.helpers.api_item import APIResponseItem
 from audiostack.helpers.api_list import APIResponseList
 
 class TTS():
+
     interface = RequestInterface(family="speech")
     
     class Item(APIResponseItem):
@@ -91,16 +92,19 @@ class TTS():
         r = TTS.interface.send_request(rtype=RequestTypes.POST, route="tts", json=body)
         return TTS.Item(r)
 
+
     @staticmethod
     def get(speechId: str) -> Item:
         
         r = TTS.interface.send_request(rtype=RequestTypes.GET, route="tts", path_parameters=speechId)
         return TTS.Item(r)
 
+
     @staticmethod
     def delete(speechId: str) -> str:
         r = TTS.interface.send_request(rtype=RequestTypes.DELETE, route="tts", path_parameters=speechId)
         return APIResponseItem(r)
+    
     
     @staticmethod
     def list(projectName="", moduleName: str="", scriptName: str="", scriptId: str="") -> list:

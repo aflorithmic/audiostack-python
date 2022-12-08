@@ -20,11 +20,13 @@ class Script():
                 
         def update(self, scriptText):
             return Script.update(scriptId=self.scriptId, scriptText=scriptText)
+
         def delete(self):
             return Script.delete(self.scriptId)
         
 
     class List(APIResponseList):
+        
         def __init__(self, response, list_type) -> None:
             super().__init__(response, list_type)
 
@@ -33,6 +35,7 @@ class Script():
                 return Script.Item({"data" : item})
             else:
                 raise Exception()
+
 
     @staticmethod
     def create(scriptText: str, projectName: str="", moduleName: str="", scriptName: str="", metadata: dict={}) -> Item:
@@ -48,6 +51,7 @@ class Script():
         r = Script.interface.send_request(rtype=RequestTypes.POST, route="script", json=body)
         return Script.Item(r)
     
+
     @staticmethod
     def get(scriptId: str, version: str="") -> Item:
         
@@ -55,12 +59,14 @@ class Script():
         r = Script.interface.send_request(rtype=RequestTypes.GET, route="script", path_parameters=path_params)
         return Script.Item(r)
     
+
     @staticmethod
     def delete(scriptId: str, version: str="") -> str:
         
         path_params = f"{scriptId}/{version}" if version else scriptId
         r = Script.interface.send_request(rtype=RequestTypes.DELETE, route="script", path_parameters=path_params)
         return APIResponseItem(r)
+
 
     @staticmethod
     def update(scriptId: str, scriptText, version: str="") -> Item:
@@ -71,6 +77,7 @@ class Script():
         }
         r = Script.interface.send_request(rtype=RequestTypes.PUT, json=body, route="script")
         return Script.Item(r)
+
 
     @staticmethod
     def list(projectName="", moduleName: str="", scriptName: str="", scriptId: str="") -> List:

@@ -65,7 +65,6 @@ class Sound():
             assert False, "not ready"
     
     # ----------------------------------------- TEMPLATE SEGMENT -----------------------------------------
-
     class Segment():
         def create():
             route = "segment"
