@@ -21,5 +21,5 @@ DELETE
 
 ## Installing
 ```
-pip install -e git+ssh://git@github.com/aflorithmic/audiostack-python.git@v0.0.1
+pip install -e git+ssh://git@github.com/aflorithmic/audiostack-python.git@v0.0.1#egg=audiostack
 ```
