@@ -20,4 +20,6 @@ DELETE
     Deletes a resource, in the SDK this does not return any object
 
 ## Installing
+```
 pip install -e git+ssh://git@github.com/aflorithmic/audiostack-python.git@v0.0.1
+```
