@@ -1,4 +1,5 @@
 from audiostack.content.script import Script
+from audiostack.content.media import Media
 
 
 def list_projects():

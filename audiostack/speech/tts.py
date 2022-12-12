@@ -55,7 +55,8 @@ class TTS():
         audience: dict={},
         sections: dict={},
         useDictionary: bool=False,
-        useTextNormalizer: bool=False
+        useTextNormalizer: bool=False,
+        public: bool=False,
         ) -> Item:
                 
         if scriptId and scriptItem:
@@ -86,7 +87,8 @@ class TTS():
             "audience" : audience,
             "sections" : sections, 
             "useDictionary" : useDictionary,
-            "useTextNormalizer" : useTextNormalizer
+            "useTextNormalizer" : useTextNormalizer,
+            "public" : public,
         }
         
         r = TTS.interface.send_request(rtype=RequestTypes.POST, route="tts", json=body)

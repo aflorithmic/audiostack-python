@@ -66,12 +66,26 @@ class RequestInterface:
         return {**r.json(), **{"statusCode" : r.status_code}}
 
     
+    def send_upload_request(self, local_path, upload_url):
+        with open(local_path, 'rb') as data:
+            r = requests.put(url=upload_url, data=data)
+
+            if r.status_code >= 400:
+                raise Exception("Failed to upload file")
+
+            return r.status_code
+
+
     def send_request(self, rtype, route, json=None, path_parameters=None, query_parameters=None, overwrite_base_url=None):
         
         if overwrite_base_url:
-            url = overwrite_base_url + "/" + route
+            url = overwrite_base_url
         else:
-            url = self.base_url + "/" + route
+            url = self.base_url
+        
+        if route:
+               url += "/" + route 
+
         if rtype not in RequestTypes.valid_types:
             assert False
         
