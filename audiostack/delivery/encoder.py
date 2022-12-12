@@ -29,8 +29,14 @@ class Encoder():
             raise Exception("productionId or productionItem should be supplied")
             
         if productionItem:
-            productionId = productionItem.productionId
-        
+            try:
+                productionId = productionItem.productionId
+            except Exception:
+                raise Exception("supplied productionItem is missing an attribute, productionItem should be type object and a response from Production.Mix")
+        elif productionId:
+            if not isinstance(productionId, str):
+                raise Exception("supplied productionId should be a uuid string.")
+
         body = {
             "productionId": productionId,
             "preset": preset,
