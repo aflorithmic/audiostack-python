@@ -46,6 +46,8 @@ class Audioform():
             scriptId = scriptItem.scriptId
             
         audiences = []
+        if not isinstance(audience, dict):
+            raise Exception(f"audience should be type dict but is type {type(audience)}")
         for key, value in audience.items():
             assert isinstance(value, list)
         
