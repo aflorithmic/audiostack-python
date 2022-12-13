@@ -31,4 +31,5 @@ setup(
     ],
     install_requires=['requests >= 2.28.1; python_version >= "3.6"'],
     python_requires=">=3.6",
+    py_modules=["audiostack"],
 )
