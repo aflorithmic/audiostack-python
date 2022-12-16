@@ -1,7 +1,6 @@
 import json
-from pydantic import BaseModel
 
-class Response(BaseModel):
+class Response():
     
     statusCode: int
     
