@@ -1,6 +1,6 @@
 
 sdk_version = "0.0.1"
-api_base = "https://staging-v2.api.audio"
+api_base = "https://v2.api.audio"
 api_key = None
 
 api_version = None
