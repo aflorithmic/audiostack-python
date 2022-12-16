@@ -20,7 +20,7 @@ print(tts.speechId)
 for st in ["vinylhits", "openup", "hotwheels", "whatstillremains", "roomtone", "lifestylepodcast", "cityechoes"]:
     print("Mixing and encoding a preview of", st)
     mix = audiostack.Production.Mix.create(speechItem=tts, soundTemplate=st)
-    mix.download(fileName=st)
+    #mix.download(fileName=st)
 
     encoded = audiostack.Delivery.Encoder.encode_mix(productionItem=mix, preset="mp3")
     encoded.download(fileName=st)
