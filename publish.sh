@@ -1,5 +1,5 @@
 function deploy {
-    rm -rf apiaudio.egg-info build dist
+    rm -rf audiostack.egg-info build dist
     pip3 install twine wheel
     python3 setup.py sdist bdist_wheel
     echo '============'
@@ -9,10 +9,10 @@ function deploy {
 }
 
 while true; do
-    read -p "Do you wish to publish a new version $(sed -n '6p' < apiaudio/__init__.py | cut -d '"' -f 2) to PyPI? " yn
+    read -p "Do you wish to publish a new version $(sed -n '6p' < audiostack/__init__.py | cut -d '"' -f 2) to PyPI? " yn
     case $yn in
         [Yy]* ) deploy; break;;
         [Nn]* ) exit;;
-        * ) echo "Please answer yes or no. Its not a game. Its not a kindergarden.";;
+        * ) echo "Please answer yes or no.";;
     esac
 done

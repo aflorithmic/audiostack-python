@@ -10,16 +10,20 @@ from audiostack.helpers.request_types import RequestTypes
 import audiostack
 
 
-def remove_empty(d):
+def remove_empty(data):
+
+    if not (isinstance(data, dict) or isinstance(data, list)):
+        return data
+
     final_dict = {}
-    for a, b in d.items():
-        if b:
-            if isinstance(b, dict):
-                final_dict[a] = remove_empty(b)
-            elif isinstance(b, list):
-                final_dict[a] = list(filter(None, [remove_empty(i) for i in b]))
+    for key, val in data.items():
+        if val:
+            if isinstance(val, dict):
+                final_dict[key] = remove_empty(val)
+            elif isinstance(val, list):
+                final_dict[key] = list(filter(None, [remove_empty(i) for i in val]))
             else:
-                final_dict[a] = b
+                final_dict[key] = val
     return final_dict
 
 class RequestInterface:

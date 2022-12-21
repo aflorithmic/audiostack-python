@@ -15,6 +15,10 @@ class Sound():
             
             def __init__(self, response) -> None:
                 super().__init__(response)
+
+                if "template" in self.data: #
+                    self.data = self.data["template"]
+
                 self.templateName = self.data["templateName"]
                 self.collections = self.data["collections"]
                 self.genre = self.data["genre"]
@@ -57,18 +61,52 @@ class Sound():
             r = Sound.interface.send_request(rtype=RequestTypes.GET, route="template", query_parameters=query_params)
             return Sound.Template.List(r, list_type="templates")
         
-        def create():
-            assert False, "not ready"
-        def delete():
-            assert False, "not ready"
-        def update():
-            assert False, "not ready"
+
+        def create(templateName: str, description: str=""):
+            body = {
+                "templateName" : templateName,
+                "description" : description
+            }
+            r = Sound.interface.send_request(rtype=RequestTypes.POST, route="template", json=body)
+            print(r)
+            return Sound.Template.Item(r)
+
+
+        def delete(templateName: str):
+            r = Sound.interface.send_request(rtype=RequestTypes.DELETE, route="template", path_parameters=templateName)
+            return APIResponseItem(r)
+
+
+        def update(
+            templateName: str, 
+            description: str ="", 
+            genre: str="", 
+            collections: list=None, 
+            tags: list=None):
+
+            body = {
+                "templateName" : templateName,
+                "description" : description,
+                "genre" : genre,
+                "collections" : collections,
+                "tags" : tags,
+            }
+            print(body)
+            r = Sound.interface.send_request(rtype=RequestTypes.PUT, route="template", json=body)
+            return Sound.Template.Item(r)
     
     # ----------------------------------------- TEMPLATE SEGMENT -----------------------------------------
     class Segment():
-        def create():
-            route = "segment"
-            assert False, "not ready"
+        def create(mediaId: str, templateName: str, soundSegmentName: str):
+            segment = {
+                "templateName" : templateName,
+                "segmentName" : soundSegmentName,
+                "mediaId" : mediaId
+            }
+            r = Sound.interface.send_request(rtype=RequestTypes.POST, route="segment", json=segment)
+            return Sound.Template.Item(r)
+
+
 
     # ----------------------------------------- TEMPLATE PARAMETERS -----------------------------------------
     class Parameter():
