@@ -53,10 +53,16 @@ class Script():
     
 
     @staticmethod
-    def get(scriptId: str, version: str="") -> Item:
+    def get(scriptId: str, version: str="", previewWithVoice: str="") -> Item:
         
         path_params = f"{scriptId}/{version}" if version else scriptId
-        r = Script.interface.send_request(rtype=RequestTypes.GET, route="script", path_parameters=path_params)
+        query_params = {"preview" : bool(previewWithVoice), "voice" : previewWithVoice}
+        r = Script.interface.send_request(
+            rtype=RequestTypes.GET, 
+            route="script", 
+            path_parameters=path_params,
+            query_parameters=query_params
+        )
         return Script.Item(r)
     
 
