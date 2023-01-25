@@ -33,22 +33,17 @@ class RequestInterface:
     
 
     def __init__(self, family: str) -> None:
+        self.family = family
 
-        if family:
-            self.base_url = audiostack.api_base + f"/{family}"
-        else:
-            self.base_url = audiostack.api_base
-   
     
     def make_header(self):
-
         return {
             "x-api-key": audiostack.api_key,
             "x-python-sdk-version": audiostack.sdk_version
             #"x-assume-org": audiostack.assume_org_id,
         }
     
-    
+
     def resolve_response(self, r):
         if r.status_code >= 500:
             raise Exception("Internal server error - aborting")
@@ -85,7 +80,10 @@ class RequestInterface:
         if overwrite_base_url:
             url = overwrite_base_url
         else:
-            url = self.base_url
+            if self.family:
+                url =  f"{audiostack.api_base}/{self.family}"
+            else:
+                url = audiostack.api_base
         
         if route:
                url += "/" + route 
