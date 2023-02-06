@@ -2,8 +2,11 @@ from audiostack.helpers.request_interface import RequestInterface
 from audiostack.helpers.request_types import RequestTypes
 from audiostack.helpers.api_item import APIResponseItem
 from audiostack.helpers.api_list import APIResponseList
+from audiostack.content.media import Media
 
 from typing import Union
+import requests
+import shutil
 
 class Sound():
     interface = RequestInterface(family="production/sound")
@@ -94,7 +97,52 @@ class Sound():
             print(body)
             r = Sound.interface.send_request(rtype=RequestTypes.PUT, route="template", json=body)
             return Sound.Template.Item(r)
-    
+
+
+        def generate(energy):
+
+
+            url = "https://api.soundstripe.com/v1/songs"
+            headers = {
+                "accept": "application/vnd.api+json",
+                "content-type": "application/vnd.api+json",
+                "Authorization": "Token 5CHhcP8gDa3Dn6yUYsAn8cedxEctdY0BYp2MZJLUYVIusDG0zpgnid2GCBO0KWFP"
+            }
+
+            response = requests.get(url, headers=headers, params={"filter[energy]" : energy, "filter[duration][max]" : 120})
+
+            if response.json()["data"]:
+                songId = response.json()["data"][0]["relationships"]["audio_files"]["data"][0]["id"]
+                
+                for resource in response.json()["included"]:
+                    if resource["id"] == songId: 
+                        print(resource)
+                        url = resource["attributes"]["versions"]["wav"]
+                        print(url)
+                        r = requests.get(
+                            url=url, 
+                            stream=True, 
+                            headers=headers
+                        )
+
+                        if r.status_code >= 400:
+                            raise Exception("Failed to download file")
+
+                        local_filename = f"file.wav"
+                        with open(local_filename, "wb") as f:
+                            shutil.copyfileobj(r.raw, f)
+            print("Uploading......")
+            mediaId = Media.create(local_filename).mediaId
+            print(mediaId)
+            try:
+                Sound.Template.delete("soundstripe")
+            except:
+                pass
+            r = Sound.Template.create("soundstripe", "hello world")
+            print(r.message)
+            r = Sound.Segment.create(mediaId, "soundstripe", "main")
+            print(r.message)
+
     # ----------------------------------------- TEMPLATE SEGMENT -----------------------------------------
     class Segment():
         def create(mediaId: str, templateName: str, soundSegmentName: str):
@@ -104,6 +152,7 @@ class Sound():
                 "mediaId" : mediaId
             }
             r = Sound.interface.send_request(rtype=RequestTypes.POST, route="segment", json=segment)
+            print(r)
             return Sound.Template.Item(r)
 
 
