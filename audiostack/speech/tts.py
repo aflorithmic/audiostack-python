@@ -57,6 +57,7 @@ class TTS():
         useDictionary: bool=False,
         useTextNormalizer: bool=False,
         public: bool=False,
+        sync: bool=True
         ) -> Item:
                 
         if scriptId and scriptItem:
@@ -89,6 +90,7 @@ class TTS():
             "useDictionary" : useDictionary,
             "useTextNormalizer" : useTextNormalizer,
             "public" : public,
+            "sync" : sync
         }
         
         r = TTS.interface.send_request(rtype=RequestTypes.POST, route="tts", json=body)
