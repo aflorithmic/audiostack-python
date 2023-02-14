@@ -28,7 +28,6 @@ class Voice():
     @staticmethod
     def list() -> list:
         r = Voice.interface.send_request(rtype=RequestTypes.GET, route="")
-        print(r)
         return Voice.List(r, list_type="voices")
 
 
