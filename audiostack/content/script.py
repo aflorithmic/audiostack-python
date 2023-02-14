@@ -38,7 +38,7 @@ class Script():
 
 
     @staticmethod
-    def create(scriptText: str, projectName: str="", moduleName: str="", scriptName: str="", metadata: dict={}, syntax: str="v1") -> Item:
+    def create(scriptText: str, projectName: str="", moduleName: str="", scriptName: str="", metadata: dict={}) -> Item:
         
         body = {
             "scriptText" : scriptText,
@@ -47,10 +47,8 @@ class Script():
             "scriptName" : scriptName,
             "metadata" : metadata
         }
-        if syntax == "v1":
-            r = Script.interface.send_request(rtype=RequestTypes.POST, route="script", json=body)
-        else:
-            r = Script.interface.send_request(rtype=RequestTypes.POST, route="script-new", json=body)
+        
+        r = Script.interface.send_request(rtype=RequestTypes.POST, route="script", json=body)
         return Script.Item(r)
     
 
