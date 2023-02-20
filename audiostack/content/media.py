@@ -43,7 +43,7 @@ class Media():
         
         name = filePath.rpartition("/")[2]
          
-        r = Media.interface.send_request(rtype=RequestTypes.GET, route="media/create-upload-url", path_parameters=name)
+        r = Media.interface.send_request(rtype=RequestTypes.POST, route="media/create-upload-url", json={"fileName" : name})
         response = APIResponseItem(r)
         url = response.data["fileUploadUrl"]
         mediaId = response.data["mediaId"]
