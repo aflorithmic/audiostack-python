@@ -1,10 +1,10 @@
 import json
 
-class APIResponseItem():
-    
+
+class APIResponseItem:
     def __init__(self, response):
         self.response = response
-        
+
         if "data" in response:
             self.data = self.response["data"]
         if "message" in response:
@@ -15,12 +15,12 @@ class APIResponseItem():
             # for key in self.data:
             #     assert key != "data"
             #     self.__dict__[key] = self.data["key"]
-    
+
     def print_response(self, indent=0):
         if indent:
             return json.dumps(self.response, indent=indent)
         else:
             return self.response
-    
+
     def __str__(self) -> str:
         return json.dumps(self.response)

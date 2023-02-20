@@ -1,8 +1,8 @@
 import json
 from .api_item import APIResponseItem
 
+
 class APIResponseList(APIResponseItem):
-    
     def __init__(self, response, list_type):
         super().__init__(response)
         self.idx = 0
@@ -11,11 +11,11 @@ class APIResponseList(APIResponseItem):
 
     def __iter__(self):
         return self
-        
-    def __next__(self):            
+
+    def __next__(self):
         self.idx += 1
         try:
-            item = self.items[self.idx-1]
+            item = self.items[self.idx - 1]
             return self.resolve_item(self.list_type, item)
 
         except IndexError:
@@ -23,8 +23,8 @@ class APIResponseList(APIResponseItem):
             raise StopIteration  # Done iterating.
 
     def __getitem__(self, x):
-          return self.items[x]
-          
-    # child classes should override this method, failing to do so will raise an exception!        
+        return self.items[x]
+
+    # child classes should override this method, failing to do so will raise an exception!
     def resolve_item(self, list_type):
         raise Exception()

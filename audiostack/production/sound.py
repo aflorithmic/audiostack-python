@@ -5,18 +5,17 @@ from audiostack.helpers.api_list import APIResponseList
 
 from typing import Union
 
-class Sound():
+
+class Sound:
     interface = RequestInterface(family="production/sound")
 
     # ----------------------------------------- TEMPLATE -----------------------------------------
-    class Template():
-        
+    class Template:
         class Item(APIResponseItem):
-            
             def __init__(self, response) -> None:
                 super().__init__(response)
 
-                if "template" in self.data: #
+                if "template" in self.data:  #
                     self.data = self.data["template"]
 
                 self.templateName = self.data["templateName"]
@@ -25,7 +24,6 @@ class Sound():
                 self.description = self.data["description"]
                 self.tempo = self.data["tempo"]
                 self.tags = self.data["tags"]
-                
 
         class List(APIResponseList):
             def __init__(self, response, list_type) -> None:
@@ -33,84 +31,88 @@ class Sound():
 
             def resolve_item(self, list_type, item):
                 if list_type == "templates":
-                    return Sound.Template.Item({"data" : item})
+                    return Sound.Template.Item({"data": item})
                 else:
                     raise Exception()
 
         @staticmethod
         def list(
-            tags: Union[str, list] = "", 
+            tags: Union[str, list] = "",
             contents: Union[str, list] = "",
             collections: Union[str, list] = "",
             genre: str = "",
             tempo: str = "",
-            type: str = "all"
-            ) -> list:
-            
+            type: str = "all",
+        ) -> list:
             if type not in ["all", "custom", "standard"]:
-                raise Exception("Invalid type supplied, should be 'all', 'custom', 'standard'")
-            
-            query_params = {
-                "tags" : tags,
-                "contents" : contents,
-                "collections" : collections,
-                "genre" : genre,
-                "tempo" : tempo,
-                "type" : type
-            }
-            r = Sound.interface.send_request(rtype=RequestTypes.GET, route="template", query_parameters=query_params)
-            return Sound.Template.List(r, list_type="templates")
-        
+                raise Exception(
+                    "Invalid type supplied, should be 'all', 'custom', 'standard'"
+                )
 
-        def create(templateName: str, description: str=""):
-            body = {
-                "templateName" : templateName,
-                "description" : description
+            query_params = {
+                "tags": tags,
+                "contents": contents,
+                "collections": collections,
+                "genre": genre,
+                "tempo": tempo,
+                "type": type,
             }
-            r = Sound.interface.send_request(rtype=RequestTypes.POST, route="template", json=body)
+            r = Sound.interface.send_request(
+                rtype=RequestTypes.GET, route="template", query_parameters=query_params
+            )
+            return Sound.Template.List(r, list_type="templates")
+
+        def create(templateName: str, description: str = ""):
+            body = {"templateName": templateName, "description": description}
+            r = Sound.interface.send_request(
+                rtype=RequestTypes.POST, route="template", json=body
+            )
             print(r)
             return Sound.Template.Item(r)
 
-
         def delete(templateName: str):
-            r = Sound.interface.send_request(rtype=RequestTypes.DELETE, route="template", path_parameters=templateName)
+            r = Sound.interface.send_request(
+                rtype=RequestTypes.DELETE,
+                route="template",
+                path_parameters=templateName,
+            )
             return APIResponseItem(r)
 
-
         def update(
-            templateName: str, 
-            description: str ="", 
-            genre: str="", 
-            collections: list=None, 
-            tags: list=None):
-
+            templateName: str,
+            description: str = "",
+            genre: str = "",
+            collections: list = None,
+            tags: list = None,
+        ):
             body = {
-                "templateName" : templateName,
-                "description" : description,
-                "genre" : genre,
-                "collections" : collections,
-                "tags" : tags,
+                "templateName": templateName,
+                "description": description,
+                "genre": genre,
+                "collections": collections,
+                "tags": tags,
             }
             print(body)
-            r = Sound.interface.send_request(rtype=RequestTypes.PUT, route="template", json=body)
+            r = Sound.interface.send_request(
+                rtype=RequestTypes.PUT, route="template", json=body
+            )
             return Sound.Template.Item(r)
-    
+
     # ----------------------------------------- TEMPLATE SEGMENT -----------------------------------------
-    class Segment():
+    class Segment:
         def create(mediaId: str, templateName: str, soundSegmentName: str):
             segment = {
-                "templateName" : templateName,
-                "segmentName" : soundSegmentName,
-                "mediaId" : mediaId
+                "templateName": templateName,
+                "segmentName": soundSegmentName,
+                "mediaId": mediaId,
             }
-            r = Sound.interface.send_request(rtype=RequestTypes.POST, route="segment", json=segment)
+            r = Sound.interface.send_request(
+                rtype=RequestTypes.POST, route="segment", json=segment
+            )
             return Sound.Template.Item(r)
 
-
-
     # ----------------------------------------- TEMPLATE PARAMETERS -----------------------------------------
-    class Parameter():
-        
+    class Parameter:
         @staticmethod
         def get() -> dict:
             r = Sound.interface.send_request(rtype=RequestTypes.GET, route="parameter")

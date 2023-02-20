@@ -3,18 +3,16 @@ from audiostack.helpers.request_types import RequestTypes
 from audiostack.helpers.api_item import APIResponseItem
 from audiostack.helpers.api_list import APIResponseList
 
-class Mix():
 
+class Mix:
     interface = RequestInterface(family="production")
-    
+
     class Item(APIResponseItem):
-        
         def __init__(self, response) -> None:
             super().__init__(response)
             self.productionId = self.data["productionId"]
 
         def download(self, fileName="", path="./") -> None:
-            
             sections = self.data["files"]
             for i, s in enumerate(sections):
                 format = s["format"]
@@ -23,11 +21,12 @@ class Mix():
                 else:
                     full_name = f"{fileName}.{format}"
 
-                RequestInterface.download_url(s["url"], destination=path, name=full_name)
-                
+                RequestInterface.download_url(
+                    s["url"], destination=path, name=full_name
+                )
+
         def delete(self):
             return Mix.delete(self.productionId)
- 
 
     class List(APIResponseList):
         def __init__(self, response, list_type) -> None:
@@ -35,24 +34,23 @@ class Mix():
 
         def resolve_item(self, list_type, item):
             if list_type == "productionIds":
-                return Mix.Item({"data" : item})
+                return Mix.Item({"data": item})
             else:
                 raise Exception()
 
     @staticmethod
     def create(
-        speechId="", 
-        speechItem=None, 
-        soundTemplate: str="",
-        forceLength: float=0.0, # a value of 0 means no force length
-        mediaFiles: dict={},
-        sectionProperties: dict={},
-        masteringPreset: str="",
-        acousticSpace: str="",
-        callbackUrl: str="",
-        public: bool=False,
-        ) -> Item:
-                
+        speechId="",
+        speechItem=None,
+        soundTemplate: str = "",
+        forceLength: float = 0.0,  # a value of 0 means no force length
+        mediaFiles: dict = {},
+        sectionProperties: dict = {},
+        masteringPreset: str = "",
+        acousticSpace: str = "",
+        callbackUrl: str = "",
+        public: bool = False,
+    ) -> Item:
         if speechId and speechItem:
             raise Exception("speechId or scriptItem should be supplied not both")
         if not (speechId or speechItem):
@@ -68,47 +66,48 @@ class Mix():
             raise Exception("masteringPreset should be a string")
         if not isinstance(acousticSpace, str):
             raise Exception("acousticSpace should be a string")
-        
-        
+
         body = {
             "speechId": speechId,
-            "soundTemplate" : soundTemplate,
-            "forceLength": forceLength, 
-            "mediaFiles": mediaFiles, 
+            "soundTemplate": soundTemplate,
+            "forceLength": forceLength,
+            "mediaFiles": mediaFiles,
             "sectionProperties": sectionProperties,
             "masteringPreset": masteringPreset,
             "acousticSpace": acousticSpace,
             "callbackUrl": callbackUrl,
-            "public": public
+            "public": public,
         }
-        
+
         r = Mix.interface.send_request(rtype=RequestTypes.POST, route="mix", json=body)
         return Mix.Item(r)
 
-
     @staticmethod
     def get(productionId: str) -> Item:
-        
-        r = Mix.interface.send_request(rtype=RequestTypes.GET, route="mix", path_parameters=productionId)
+        r = Mix.interface.send_request(
+            rtype=RequestTypes.GET, route="mix", path_parameters=productionId
+        )
         return Mix.Item(r)
-
 
     @staticmethod
     def delete(productionId: str) -> str:
-        r = Mix.interface.send_request(rtype=RequestTypes.DELETE, route="mix", path_parameters=productionId)
+        r = Mix.interface.send_request(
+            rtype=RequestTypes.DELETE, route="mix", path_parameters=productionId
+        )
         return APIResponseItem(r)
 
-
     @staticmethod
-    def list(projectName="", moduleName: str="", scriptName: str="", scriptId: str="") -> list:
-
+    def list(
+        projectName="", moduleName: str = "", scriptName: str = "", scriptId: str = ""
+    ) -> list:
         query_params = {
-            "projectName" : projectName,
-            "moduleName" : moduleName,
-            "scriptName" : scriptName,
-            "scriptId" : scriptId
+            "projectName": projectName,
+            "moduleName": moduleName,
+            "scriptName": scriptName,
+            "scriptId": scriptId,
         }
 
-        r = Mix.interface.send_request(rtype=RequestTypes.GET, route="mixes", query_parameters=query_params)
+        r = Mix.interface.send_request(
+            rtype=RequestTypes.GET, route="mixes", query_parameters=query_params
+        )
         return Mix.List(r, list_type="productionIds")
-    
