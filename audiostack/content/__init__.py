@@ -5,10 +5,15 @@ from audiostack.content.media import Media
 def list_projects():
     from audiostack.content.root_functions import Root
 
-    Root.list_projects()
+    return Root.list_projects()
 
 
 def list_modules():
     from audiostack.content.root_functions import Root
 
-    Root.list_projects()
+    return Root.list_modules()
+
+def generate(prompt: str, max_length: int = 100):
+    from audiostack.content.root_functions import Root
+
+    return Root.generate(prompt, max_length)

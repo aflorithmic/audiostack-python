@@ -80,6 +80,10 @@ class Mix:
         }
 
         r = Mix.interface.send_request(rtype=RequestTypes.POST, route="mix", json=body)
+        if r["statusCode"] == 202:
+            print("Response in progress please wait...")
+            return Mix.get(Mix.Item(r).productionId)
+        
         return Mix.Item(r)
 
     @staticmethod

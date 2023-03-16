@@ -92,6 +92,9 @@ class TTS:
         }
 
         r = TTS.interface.send_request(rtype=RequestTypes.POST, route="tts", json=body)
+        if r["statusCode"] == 202:
+            print("Response in progress please wait...")
+            return TTS.get(TTS.Item(r).speechId)
         return TTS.Item(r)
 
     @staticmethod
