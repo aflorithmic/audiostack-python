@@ -67,7 +67,6 @@ class Sound:
             r = Sound.interface.send_request(
                 rtype=RequestTypes.POST, route="template", json=body
             )
-            print(r)
             return Sound.Template.Item(r)
 
         def delete(templateName: str):
@@ -92,7 +91,6 @@ class Sound:
                 "collections": collections,
                 "tags": tags,
             }
-            print(body)
             r = Sound.interface.send_request(
                 rtype=RequestTypes.PUT, route="template", json=body
             )
