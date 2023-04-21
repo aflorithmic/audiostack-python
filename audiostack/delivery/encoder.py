@@ -21,6 +21,7 @@ class Encoder:
         productionId: str = "",
         productionItem: object = None,
         preset: str = "",
+        settings: dict = {},                    # possible settings -> bitRateType, bitRate, sampleRate, format, ...
         public: bool = False,
     ) -> Item:
         if productionId and productionItem:
@@ -46,6 +47,8 @@ class Encoder:
             "preset": preset,
             "public": public,
         }
+
+        body.update(settings)
 
         r = Encoder.interface.send_request(
             rtype=RequestTypes.POST, route="encoder", json=body
