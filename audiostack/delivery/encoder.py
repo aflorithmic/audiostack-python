@@ -23,11 +23,11 @@ class Encoder:
         preset: str = "",
         public: bool = False,
         bitRateType: str = "",
-        bitRate: int = -1,          
-        sampleRate: int = -1,
+        bitRate: int = None,          
+        sampleRate: int = None,
         format: str = "",
-        bitDepth: int = -1,
-        channels: int = -1,
+        bitDepth: int = None,
+        channels: int = None,
     ) -> Item:
         
         if productionId and productionItem:
@@ -52,22 +52,13 @@ class Encoder:
             "productionId": productionId,
             "preset": preset,
             "public": public,
+            "bitRateType": bitRateType,
+            "bitRate": bitRate,
+            "sampleRate": sampleRate,
+            "format": format,
+            "bitDepth": bitDepth,
+            "channels": channels
         }
-
-        if bitRateType:
-            body["bitRateType"] = bitRateType
-        if bitRate != -1:
-            body["bitRate"] = int(bitRate)
-        if sampleRate != -1:
-            body["sampleRate"] = sampleRate
-        if format:
-            body["format"] = format
-        if bitDepth != -1:
-            body["bitDepth"] = bitDepth
-        if channels != -1:
-            body["channels"] = channels
-
-
         r = Encoder.interface.send_request(
             rtype=RequestTypes.POST, route="encoder", json=body
         )
