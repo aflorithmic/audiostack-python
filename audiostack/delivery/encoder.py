@@ -21,9 +21,15 @@ class Encoder:
         productionId: str = "",
         productionItem: object = None,
         preset: str = "",
-        settings: dict = {},                    # possible settings -> bitRateType, bitRate, sampleRate, format, ...
         public: bool = False,
+        bitRateType: str = "",
+        bitRate: int = -1,          
+        sampleRate: int = -1,
+        format: str = "",
+        bitDepth: int = -1,
+        channels: int = -1,
     ) -> Item:
+        
         if productionId and productionItem:
             raise Exception(
                 "productionId or productionItem should be supplied not both"
@@ -41,14 +47,26 @@ class Encoder:
         elif productionId:
             if not isinstance(productionId, str):
                 raise Exception("supplied productionId should be a uuid string.")
-
+        
         body = {
             "productionId": productionId,
             "preset": preset,
             "public": public,
         }
 
-        body.update(settings)
+        if bitRateType:
+            body["bitRateType"] = bitRateType
+        if bitRate != -1:
+            body["bitRate"] = int(bitRate)
+        if sampleRate != -1:
+            body["sampleRate"] = sampleRate
+        if format:
+            body["format"] = format
+        if bitDepth != -1:
+            body["bitDepth"] = bitDepth
+        if channels != -1:
+            body["channels"] = channels
+
 
         r = Encoder.interface.send_request(
             rtype=RequestTypes.POST, route="encoder", json=body
