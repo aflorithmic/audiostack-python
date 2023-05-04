@@ -43,12 +43,11 @@ class Mix:
         speechId="",
         speechItem=None,
         soundTemplate: str = "",
-        forceLength: float = 0.0,  # a value of 0 means no force length
         mediaFiles: dict = {},
+        fxFiles: dict = {},
         sectionProperties: dict = {},
+        timelineProperties: dict = {},
         masteringPreset: str = "",
-        acousticSpace: str = "",
-        callbackUrl: str = "",
         public: bool = False,
     ) -> Item:
         if speechId and speechItem:
@@ -60,22 +59,18 @@ class Mix:
 
         if not isinstance(soundTemplate, str):
             raise Exception("soundTemplate argument should be a string")
-        if not isinstance(forceLength, float):
-            raise Exception("forceLength should be a float")
         if not isinstance(masteringPreset, str):
             raise Exception("masteringPreset should be a string")
-        if not isinstance(acousticSpace, str):
-            raise Exception("acousticSpace should be a string")
+        
 
         body = {
             "speechId": speechId,
             "soundTemplate": soundTemplate,
-            "forceLength": forceLength,
             "mediaFiles": mediaFiles,
+            "fxFiles": fxFiles,
             "sectionProperties": sectionProperties,
+            "timelineProperties": timelineProperties,
             "masteringPreset": masteringPreset,
-            "acousticSpace": acousticSpace,
-            "callbackUrl": callbackUrl,
             "public": public,
         }
 
