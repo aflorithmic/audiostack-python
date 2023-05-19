@@ -16,10 +16,12 @@ class Mix:
             sections = self.data["files"]
             for i, s in enumerate(sections):
                 format = s["format"]
+                original_name = s["filename"]
+
                 if not fileName:
-                    full_name = f"default_mix.{format}"
+                    full_name = f"{original_name}.{format}"
                 else:
-                    full_name = f"{fileName}.{format}"
+                    full_name = f"{fileName}_{i}.{format}"
 
                 RequestInterface.download_url(
                     s["url"], destination=path, name=full_name
@@ -49,6 +51,8 @@ class Mix:
         timelineProperties: dict = {},
         masteringPreset: str = "",
         public: bool = False,
+        exportSettings: dict = {},
+        strictValidation: bool = True
     ) -> Item:
         if speechId and speechItem:
             raise Exception("speechId or scriptItem should be supplied not both")
@@ -72,6 +76,8 @@ class Mix:
             "timelineProperties": timelineProperties,
             "masteringPreset": masteringPreset,
             "public": public,
+            "exportSettings" : exportSettings,
+            "strictValidation" : strictValidation
         }
 
         r = Mix.interface.send_request(rtype=RequestTypes.POST, route="mix", json=body)
