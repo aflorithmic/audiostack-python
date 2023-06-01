@@ -1,8 +1,8 @@
-sdk_version = "0.0.6"
+sdk_version = "0.0.7"
 api_base = "https://v2.api.audio"
 api_key = None
 
-api_version = "0.0.6"
+api_version = "0.0.7"
 verify_ssl_certs = True
 proxy = None
 default_http_client = None

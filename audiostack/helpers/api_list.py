@@ -20,10 +20,14 @@ class APIResponseList(APIResponseItem):
 
         except IndexError:
             self.idx = 0
-            raise StopIteration  # Done iterating.
+            raise StopIteration  
 
     def __getitem__(self, x):
-        return self.items[x]
+        if isinstance(x, slice):
+            return [self.resolve_item(self.list_type, x) for x in self.items[x.start: x.stop]]
+        else:
+            return self.resolve_item(self.list_type, x)
+        
 
     # child classes should override this method, failing to do so will raise an exception!
     def resolve_item(self, list_type):
