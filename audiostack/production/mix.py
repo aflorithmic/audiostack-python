@@ -81,9 +81,11 @@ class Mix:
         }
 
         r = Mix.interface.send_request(rtype=RequestTypes.POST, route="mix", json=body)
-        if r["statusCode"] == 202:
+        while r["statusCode"] == 202:
             print("Response in progress please wait...")
-            return Mix.get(Mix.Item(r).productionId)
+            r = Mix.interface.send_request(
+                rtype=RequestTypes.GET, route="mix", path_parameters=r["data"]["productionId"]
+            )
         
         return Mix.Item(r)
 
