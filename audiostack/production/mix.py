@@ -52,7 +52,8 @@ class Mix:
         masteringPreset: str = "",
         public: bool = False,
         exportSettings: dict = {},
-        strictValidation: bool = True
+        strictValidation: bool = True,
+        validate: bool = False
     ) -> Item:
         if speechId and speechItem:
             raise Exception("speechId or scriptItem should be supplied not both")
@@ -79,8 +80,11 @@ class Mix:
             "exportSettings" : exportSettings,
             "strictValidation" : strictValidation
         }
-
-        r = Mix.interface.send_request(rtype=RequestTypes.POST, route="mix", json=body)
+        if validate:
+            r = Mix.interface.send_request(rtype=RequestTypes.POST, route="validate", json=body)
+        else:
+            r = Mix.interface.send_request(rtype=RequestTypes.POST, route="mix", json=body)
+            
         while r["statusCode"] == 202:
             print("Response in progress please wait...")
             r = Mix.interface.send_request(
