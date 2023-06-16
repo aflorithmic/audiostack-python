@@ -3,14 +3,14 @@ import os
 
 audiostack.api_key = os.environ["AUDIO_STACK_DEV_KEY"]
 
-script = audiostack.Content.Script.create(scriptText="hello sam this is a realy long script. hello sam this is a realy long script. hello sam this is a realy long script. hello sam this is a realy long script. hello sam this is a realy long script")
+script = audiostack.Content.Script.create(scriptText="Hello this is a problematic voice with lots of noise.", projectName="boo")
 print("response from creating script", script.response)
 
 # store scriptId for later
 scriptId = script.scriptId
 
 # do 4 requests - 1 for each voice :) 
-for v in ["sara", "joanna", "conrad", "liam"]:
+for v in ["Hollie"]:
     item = audiostack.Speech.TTS.create(scriptItem=script, voice=v)
     print(item.response)
 

@@ -33,6 +33,15 @@ class TTS:
         def delete(self):
             return TTS.delete(self.speechId)
 
+    class BytesItem(APIResponseItem):
+        def __init__(self, response) -> None:
+            super().__init__(response)
+            self.bytes = response["bytes"]
+        # def download(self, autoName=False, fileName="default", path="./") -> None:
+        #     with open("")
+
+
+
     class List(APIResponseList):
         def __init__(self, response, list_type) -> None:
             super().__init__(response, list_type)
@@ -63,7 +72,16 @@ class TTS:
             return TTS._create(**locals())
             # (end) modify
 
-
+    @staticmethod
+    def preview(text: str, voice: str):
+        body = {
+            "text" : text,
+            "voice" : voice
+        }
+        r = TTS.interface.send_request(
+            rtype=RequestTypes.POST, route="tts/preview", json=body
+        )
+        return TTS.BytesItem(r)
 
     @staticmethod
     def create(
