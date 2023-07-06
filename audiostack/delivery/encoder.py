@@ -22,10 +22,7 @@ class Encoder:
 
         def resolve_item(self, list_type, item):
             if list_type == "encodedItems":
-                return Encoder.Item({"data": item})
-            elif list_type == "presets":
-                return
-            
+                return Encoder.Item({"data": item})            
             else:
                 raise Exception()
 
@@ -85,7 +82,7 @@ class Encoder:
         return Encoder.Item(r)
 
     @staticmethod
-    def presets() -> Item:
+    def list_presets() -> Item:
         r = Encoder.interface.send_request(
             rtype=RequestTypes.GET, route="encoder/presets", path_parameters=""
         )

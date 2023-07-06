@@ -59,11 +59,11 @@ scriptText = """
 # mix.download()
 
 # test mixing presets
-a = audiostack.Production.Mix.presets()
+a = audiostack.Production.Mix.list_presets()
 print(a)
 
 # test list encoder and loudness presets
-a = audiostack.Delivery.Encoder.presets()
+a = audiostack.Delivery.Encoder.list_presets()
 print(a)
 
 # test wav encoding with spotify loudness

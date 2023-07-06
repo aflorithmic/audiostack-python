@@ -127,7 +127,7 @@ class Mix:
         return Mix.List(r, list_type="productionIds")
 
     @staticmethod
-    def presets() -> Item:
+    def list_presets() -> Item:
         r = Mix.interface.send_request(
             rtype=RequestTypes.GET, route="mix/presets", path_parameters=""
         )
