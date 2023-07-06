@@ -18,10 +18,10 @@ class Encoder:
 
     @staticmethod
     def encode_mix(
+        preset: str ,
         productionId: str = "",
         productionItem: object = None,
-        preset: str = "",
-        # loudnessPreset: str = "",
+        loudnessPreset: str = "",
         public: bool = False,
         bitRateType: str = "",
         bitRate: int = None,          
@@ -49,10 +49,10 @@ class Encoder:
             if not isinstance(productionId, str):
                 raise Exception("supplied productionId should be a uuid string.")
         
-        # if not preset and not loudnessPreset:
-        #     raise Exception(
-        #         "Either a an encoding preset (preset) or a loudness preset (loudnessPreset) should be supplied"
-        #         )
+        if not preset:
+            raise Exception(
+                "Either a an encoding preset (preset) or a loudness preset (loudnessPreset) should be supplied"
+                )
 
         body = {
             "productionId": productionId,
@@ -64,7 +64,7 @@ class Encoder:
             "format": format,
             "bitDepth": bitDepth,
             "channels": channels,
-            # "loudnessPreset": loudnessPreset
+            "loudnessPreset": loudnessPreset
         }
         r = Encoder.interface.send_request(
             rtype=RequestTypes.POST, route="encoder", json=body
