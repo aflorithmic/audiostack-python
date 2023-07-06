@@ -1,7 +1,7 @@
 import audiostack
 import os
 
-#audiostack.api_base = "https://staging-v2.api.audio"
+audiostack.api_base = "https://staging-v2.api.audio"
 audiostack.api_key = os.environ["AUDIO_STACK_DEV_KEY"]
 
 scriptText = """
@@ -38,15 +38,15 @@ scriptText = """
 # """
 
 
-script = audiostack.Content.Script.create(scriptText=scriptText, scriptName="21b")
-print("response from creating script", script.response)
-scriptId = script.scriptId
-print(scriptId)
+# script = audiostack.Content.Script.create(scriptText=scriptText, scriptName="21b")
+# print("response from creating script", script.response)
+# scriptId = script.scriptId
+# print(scriptId)
 # create one tts resource
 
-tts = audiostack.Speech.TTS.Section.create(scriptItem=script, voice='sara', sectionToProduce="intro")#, useDictionary=True, useTextNormalizer=True)
-print(tts)
-tts.download()
+# tts = audiostack.Speech.TTS.Section.create(scriptItem=script, voice='sara', sectionToProduce="intro")#, useDictionary=True, useTextNormalizer=True)
+# print(tts)
+# tts.download()
 
 # tts = audiostack.Speech.TTS.create(scriptItem=script, voice='sara')#, useDictionary=True, useTextNormalizer=True)
 # print(tts)
@@ -58,7 +58,16 @@ tts.download()
 # print(mix)
 # mix.download()
 
-# # encoded = audiostack.Delivery.Encoder.encode_mix(productionItem=mix, preset="mp3")
-# # encoded.download(fileName="final")
+# test mixing presets
+a = audiostack.Production.Mix.presets()
+print(a)
+
+# test list encoder and loudness presets
+a = audiostack.Delivery.Encoder.presets()
+print(a)
+
+# test wav encoding with spotify loudness
+encoded = audiostack.Delivery.Encoder.encode_mix(productionId='8f7bb5c2-c6fd-4a69-8e9f-34fd77eb4cf9', preset='wav', loudnessPreset="spotify")
+encoded.download(fileName="finalLow")
 
 # # print(audiostack.billing_session)
