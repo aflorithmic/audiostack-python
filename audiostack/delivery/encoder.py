@@ -21,6 +21,7 @@ class Encoder:
         productionId: str = "",
         productionItem: object = None,
         preset: str = "",
+        loudnessPreset: str = "",
         public: bool = False,
         bitRateType: str = "",
         bitRate: int = None,          
@@ -48,6 +49,11 @@ class Encoder:
             if not isinstance(productionId, str):
                 raise Exception("supplied productionId should be a uuid string.")
         
+        if not preset and not loudnessPreset:
+            raise Exception(
+                "Either a an encoding preset (preset) or a loudness preset (loudnessPreset) should be supplied"
+                )
+
         body = {
             "productionId": productionId,
             "preset": preset,
@@ -57,7 +63,8 @@ class Encoder:
             "sampleRate": sampleRate,
             "format": format,
             "bitDepth": bitDepth,
-            "channels": channels
+            "channels": channels,
+            "loudnessPreset": loudnessPreset
         }
         r = Encoder.interface.send_request(
             rtype=RequestTypes.POST, route="encoder", json=body
