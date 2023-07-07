@@ -37,6 +37,9 @@ class Mix:
         def resolve_item(self, list_type, item):
             if list_type == "productionIds":
                 return Mix.Item({"data": item})
+            elif list_type == "presets":
+                return
+
             else:
                 raise Exception()
 
@@ -122,3 +125,10 @@ class Mix:
             rtype=RequestTypes.GET, route="mixes", query_parameters=query_params
         )
         return Mix.List(r, list_type="productionIds")
+
+    @staticmethod
+    def list_presets() -> Item:
+        r = Mix.interface.send_request(
+            rtype=RequestTypes.GET, route="mix/presets", path_parameters=""
+        )
+        return Mix.List(response=r, list_type="presets")

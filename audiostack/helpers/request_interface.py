@@ -56,22 +56,22 @@ class RequestInterface:
             )
             raise Exception(msg)
 
-        if isinstance(r.content, bytes):
-            if self.DEBUG_PRINT:
-                print("Is bytes")
-            return {
-                "bytes" : r.content,
-                "statusCode" : r.status_code
-            }
+        # if isinstance(r.content, bytes):
+        #     if self.DEBUG_PRINT:
+        #         print("Is bytes")
+        #     return {
+        #         "bytes" : r.content,
+        #         "statusCode" : r.status_code
+        #     }
             
-        else:
-            if self.DEBUG_PRINT:
-                print(json.dumps(r.json(), indent=4))
-            if "meta" in r.json():
-                if "creditsUsed" in r.json()["meta"]:
-                    audiostack.billing_session += r.json()["meta"]["creditsUsed"]
+        # else:
+        if self.DEBUG_PRINT:
+            print(json.dumps(r.json(), indent=4))
+        if "meta" in r.json():
+            if "creditsUsed" in r.json()["meta"]:
+                audiostack.billing_session += r.json()["meta"]["creditsUsed"]
 
-            return {**r.json(), **{"statusCode": r.status_code}}
+        return {**r.json(), **{"statusCode": r.status_code}}
 
     def send_upload_request(self, local_path, upload_url):
         with open(local_path, "rb") as data:

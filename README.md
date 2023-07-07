@@ -674,10 +674,10 @@ todo
 		 - `productionId` *[required] (string) - 
 
 ---
-- `list()` Lists available encoder presets.
+- `list()` Lists available mix presets.
 
 
-	``` audiostack.Production.Mix.get(<args>)```
+	``` audiostack.Production.Mix.list_presets(<args>)```
 
 	- Parameters:
 		 - (none) 
@@ -712,7 +712,7 @@ Out Delivery endpoints put the finishing touches on your mixed audio assets. Our
 - `create()` Changes the audio encoding of a mixed audio file
 
 
-	``` audiostack.Delivery.Encoder.create(<args>)```
+	``` audiostack.Delivery.Encoder.encode_mix(<args>)```
 
 
 	For most use cases, the preset can be either `custom` or one of the values returned from the `/encoder/presets` list. When using `custom` the other fields can be supplied. Please note not all fields are supported in conjunction with one another. For example `sampleRate` cannot be used in conjunction with `bitRateType`.
@@ -726,6 +726,15 @@ Out Delivery endpoints put the finishing touches on your mixed audio assets. Our
 		 - `format` (string) - Can be wav, mp3, flac or ogg
 		 - `bitDepth` (int) - Can be 16, 24, or 32
 		 - `channels` (int) - Supply 1 for mono or 2 for stereo
-		 - `masteringPreset` (string) - Mastering preset to use, for example heavyDucking.
+		 - `loudnessPreset` (string) - Loudness standard to use, for example spotify or podcast.
+
+---
+
+- `list()` Lists available encoder presets.
+
+
+	``` audiostack.Delivery.Encoder.list_presets(<args>)```
+
+	Returns a list of encoding presets, for example mp3, wav for alexa, wav 48kHz and a description of these. In addition, returns a list of loudness presets which match the loudness specifications for apple podcasting, spotify advertising and other.
 
 ---
