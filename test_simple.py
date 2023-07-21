@@ -58,16 +58,58 @@ scriptText = """
 # print(mix)
 # mix.download()
 
-# test mixing presets
-a = audiostack.Production.Mix.list_presets()
-print(a)
+# # test mixing presets
+# a = audiostack.Production.Mix.list_presets()
+# print(a)
 
-# test list encoder and loudness presets
-a = audiostack.Delivery.Encoder.list_presets()
-print(a)
+# # test list encoder and loudness presets
+# a = audiostack.Delivery.Encoder.list_presets()
+# print(a)
 
-# test wav encoding with spotify loudness
-encoded = audiostack.Delivery.Encoder.encode_mix(productionId='8f7bb5c2-c6fd-4a69-8e9f-34fd77eb4cf9', preset='wav', loudnessPreset="spotify")
-encoded.download(fileName="finalLow")
+# # test wav encoding with spotify loudness
+# encoded = audiostack.Delivery.Encoder.encode_mix(productionId='8f7bb5c2-c6fd-4a69-8e9f-34fd77eb4cf9', preset='wav', loudnessPreset="spotify")
+# encoded.download(fileName="spotify")
 
 # # print(audiostack.billing_session)
+
+
+
+""" TEST SOUNDTEMPLATES_V3"""
+# test sound
+res = []
+# try:
+#     res = audiostack.Production.Sound.Template.create(templateName="test_2")
+#     print(res)
+# except Exception as e:
+#     print(e)
+
+# try:
+#     res = audiostack.Production.Sound.Segment.create(templateName="test_2", soundSegmentName="intro", mediaId=1111)
+#     print(res)
+# except Exception as e:
+#     print(e)
+
+# try:
+#     res = audiostack.Production.Sound.Template.delete(templateName="test_2")
+#     print(res)
+# except Exception as e:
+#     print(e)
+
+# try:
+#     res = audiostack.Production.Sound.Parameter.get()
+#     print(res)
+# except Exception as e:
+#     print(e)
+
+try:
+    res = audiostack.Production.Sound.get()
+    print(res)
+except Exception as e:
+    print(e)
+
+
+try:
+    res = audiostack.Production.Sound.Template.list(moods="happy,sad")
+    print(res)
+except Exception as e:
+    print(e)

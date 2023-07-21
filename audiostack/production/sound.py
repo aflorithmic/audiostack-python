@@ -18,12 +18,9 @@ class Sound:
                 if "template" in self.data:  #
                     self.data = self.data["template"]
 
-                self.templateName = self.data["templateName"]
-                self.collections = self.data["collections"]
-                self.genre = self.data["genre"]
-                self.description = self.data["description"]
-                self.tempo = self.data["tempo"]
+                self.templateName = self.data["alias"]
                 self.tags = self.data["tags"]
+                self.samples = self.data["samples"]
 
         class List(APIResponseList):
             def __init__(self, response, list_type) -> None:
@@ -37,25 +34,18 @@ class Sound:
 
         @staticmethod
         def list(
-            tags: Union[str, list] = "",
-            contents: Union[str, list] = "",
             collections: Union[str, list] = "",
-            genre: str = "",
-            tempo: str = "",
-            type: str = "all",
+            genres: Union[str, list] = "",
+            instruments: Union[str, list] = "",
+            moods: str = "",
+            # tempo: str = "",  # TO BE DONE its missing in TAG_DATA get_parameters.py in ms-sound-templates-v3
         ) -> list:
-            if type not in ["all", "custom", "standard"]:
-                raise Exception(
-                    "Invalid type supplied, should be 'all', 'custom', 'standard'"
-                )
 
             query_params = {
-                "tags": tags,
-                "contents": contents,
+                "moods": moods,
                 "collections": collections,
-                "genre": genre,
-                "tempo": tempo,
-                "type": type,
+                "insturments": instruments,
+                "genres": genres,
             }
             r = Sound.interface.send_request(
                 rtype=RequestTypes.GET, route="template", query_parameters=query_params
@@ -77,30 +67,30 @@ class Sound:
             )
             return APIResponseItem(r)
 
-        def update(
-            templateName: str,
-            description: str = "",
-            genre: str = "",
-            collections: list = None,
-            tags: list = None,
-        ):
-            body = {
-                "templateName": templateName,
-                "description": description,
-                "genre": genre,
-                "collections": collections,
-                "tags": tags,
-            }
-            r = Sound.interface.send_request(
-                rtype=RequestTypes.PUT, route="template", json=body
-            )
-            return Sound.Template.Item(r)
+        # def update(
+        #     templateName: str,
+        #     description: str = "",
+        #     genre: str = "",
+        #     collections: list = None,
+        #     tags: list = None,
+        # ):
+        #     body = {
+        #         "templateName": templateName,
+        #         "description": description,
+        #         "genre": genre,
+        #         "collections": collections,
+        #         "tags": tags,
+        #     }
+        #     r = Sound.interface.send_request(
+        #         rtype=RequestTypes.PUT, route="template", json=body
+        #     )
+        #     return Sound.Template.Item(r)
 
     # ----------------------------------------- TEMPLATE SEGMENT -----------------------------------------
     class Segment:
         def create(mediaId: str, templateName: str, soundSegmentName: str):
             segment = {
-                "templateName": templateName,
+                "soundtemplateName": templateName,
                 "segmentName": soundSegmentName,
                 "mediaId": mediaId,
             }
