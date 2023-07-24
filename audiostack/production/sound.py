@@ -90,7 +90,7 @@ class Sound:
     class Segment:
         def create(mediaId: str, templateName: str, soundSegmentName: str):
             segment = {
-                "soundtemplateName": templateName,
+                "templateName": templateName,
                 "segmentName": soundSegmentName,
                 "mediaId": mediaId,
             }
