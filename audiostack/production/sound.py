@@ -44,7 +44,7 @@ class Sound:
             query_params = {
                 "moods": moods,
                 "collections": collections,
-                "insturments": instruments,
+                "instruments": instruments,
                 "genres": genres,
             }
             r = Sound.interface.send_request(
