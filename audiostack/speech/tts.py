@@ -84,6 +84,19 @@ class TTS:
         return TTS.BytesItem(r)
 
     @staticmethod
+    def reduce(speechId: str, targetLength: str, sectionId: str =""):
+        body = {
+            "speechId" : speechId,
+            "targetLength" : targetLength,
+            "sectionId" : sectionId
+        }
+        r = TTS.interface.send_request(
+            rtype=RequestTypes.POST, route="tts/reduce", json=body
+        )
+        print(r)
+        return TTS.Item(r)
+
+    @staticmethod
     def create(
         scriptId="",
         scriptItem=None,
