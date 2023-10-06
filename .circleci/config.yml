@@ -48,7 +48,8 @@ jobs:
           name: "units"
           command: |
             python3 increment_version.py
-
+            cat audiostack/__init__.py
+            
 workflows:
   main-workflow:
     jobs:
