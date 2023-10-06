@@ -32,7 +32,7 @@ jobs:
       - run:
           name: "units"
           command: |
-            export AUDIO_STACK_DEV_KEY=$AFLR_API_KEY_PROD
+            export AUDIO_STACK_DEV_KEY=$AFLR_API_KEY_STAGING_TEST
             python3 -m pytest audiostack/tests/ -v
   
 workflows:
