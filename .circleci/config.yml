@@ -39,8 +39,8 @@ workflows:
   main-workflow:
     jobs:
       - unit-tests:
-          filters:
-            branches:
-              only:
-                - main
+          # filters:
+          #   branches:
+          #     only:
+          #       - main
           context: aws
