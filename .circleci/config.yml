@@ -34,7 +34,21 @@ jobs:
           command: |
             export AUDIO_STACK_DEV_KEY=$AFLR_API_KEY_STAGING_TEST
             python3 -m pytest audiostack/tests/ -v
-  
+
+  publish:
+    docker:
+      - image: cimg/python:3.8
+      
+    steps:
+      - checkout 
+      - python/install-packages:
+          pip-dependency-file: requirements.txt
+          pkg-manager: pip
+      - run:
+          name: "units"
+          command: |
+            python3 increment_version.py
+
 workflows:
   main-workflow:
     jobs:
@@ -43,4 +57,13 @@ workflows:
           #   branches:
           #     only:
           #       - main
+          context: aws
+  
+  publish:
+    jobs:
+      - unit-tests:
+          <<: *only_tags
+          context: aws
+      - publish:
+          <<: *only_tags
           context: aws
