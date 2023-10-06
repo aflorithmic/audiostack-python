@@ -1,0 +1,46 @@
+config_blocks:
+
+  only_tags: &only_tags
+    filters:
+      branches:
+        ignore: /.*/
+      tags:
+        only: /^v[0-9]+(\.[0-9]+)*$/
+
+version: 2.1
+
+
+orbs:
+    python: circleci/python@2.1.1
+    aws-s3: circleci/aws-s3@3.0.0
+    serverless: circleci/serverless-framework@1.0.1
+    node: circleci/node@5.0.0
+    aws-cli: circleci/aws-cli@2.1.0
+    #aflr-orb-helpers: aflorithmic/aflr-orb-helpers@1.0.2
+
+jobs:
+  
+  unit-tests:
+    docker:
+      - image: cimg/python:3.8
+      
+    steps:
+      - checkout 
+      - python/install-packages:
+          pip-dependency-file: requirements.txt
+          pkg-manager: pip
+      - run:
+          name: "units"
+          command: |
+            export AUDIO_STACK_DEV_KEY=$AFLR_API_KEY_PROD
+            python3 -m pytest audiostack/tests/ -v
+  
+workflows:
+  main-workflow:
+    jobs:
+      - unit-tests:
+          filters:
+            branches:
+              only:
+                - main
+          context: aws
