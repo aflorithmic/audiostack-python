@@ -1,14 +1,8 @@
-sdk_version = "0.0.7"
+sdk_version = "0.0.11"
 api_base = "https://v2.api.audio"
 api_key = None
 
-api_version = "0.0.7"
-verify_ssl_certs = True
-proxy = None
-default_http_client = None
 app_info = None
-enable_telemetry = True
-max_network_retries = 0
 
 
 from audiostack import content as Content

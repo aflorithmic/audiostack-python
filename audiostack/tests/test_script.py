@@ -3,7 +3,7 @@ import audiostack
 
 from audiostack.content.script import Script
 
-audiostack.api_base = "https://v2.api.audio"
+audiostack.api_base = os.environ.get("AUDIO_STACK_DEV_URL", "https://v2.api.audio")
 audiostack.api_key = os.environ["AUDIO_STACK_DEV_KEY"]
 
 SCRIPT_ID = ""

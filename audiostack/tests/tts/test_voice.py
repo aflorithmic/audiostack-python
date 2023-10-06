@@ -3,7 +3,7 @@ import audiostack
 
 from audiostack.speech.voice import Voice
 
-audiostack.api_base = os.environ.get("AUDIO_STACK_DEV_URL]", "https://v2.api.audio")
+audiostack.api_base = os.environ.get("AUDIO_STACK_DEV_URL", "https://v2.api.audio")
 audiostack.api_key = os.environ["AUDIO_STACK_DEV_KEY"]
 
 
