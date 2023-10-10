@@ -18,9 +18,6 @@ class Sound:
                 if "template" in self.data:  #
                     self.data = self.data["template"]
 
-                self.templateName = self.data["alias"]
-                self.tags = self.data["tags"]
-                self.samples = self.data["samples"]
 
         class List(APIResponseList):
             def __init__(self, response, list_type) -> None:
@@ -28,7 +25,7 @@ class Sound:
 
             def resolve_item(self, list_type, item):
                 if list_type == "templates":
-                    return Sound.Template.Item({"data": item})
+                    return Sound.Template.Item({"data": item, "statusCode" : self.response["statusCode"]})
                 else:
                     raise Exception()
 
@@ -38,7 +35,6 @@ class Sound:
             genres: Union[str, list] = "",
             instruments: Union[str, list] = "",
             moods: str = "",
-            # tempo: str = "",  # TO BE DONE its missing in TAG_DATA get_parameters.py in ms-sound-templates-v3
         ) -> list:
 
             query_params = {
@@ -67,24 +63,6 @@ class Sound:
             )
             return APIResponseItem(r)
 
-        # def update(
-        #     templateName: str,
-        #     description: str = "",
-        #     genre: str = "",
-        #     collections: list = None,
-        #     tags: list = None,
-        # ):
-        #     body = {
-        #         "templateName": templateName,
-        #         "description": description,
-        #         "genre": genre,
-        #         "collections": collections,
-        #         "tags": tags,
-        #     }
-        #     r = Sound.interface.send_request(
-        #         rtype=RequestTypes.PUT, route="template", json=body
-        #     )
-        #     return Sound.Template.Item(r)
 
     # ----------------------------------------- TEMPLATE SEGMENT -----------------------------------------
     class Segment:

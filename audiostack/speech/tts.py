@@ -117,9 +117,9 @@ class TTS:
 
 
     @staticmethod
-    def get(speechId: str) -> Item:
+    def get(speechId: str, public: bool = False) -> Item:
         r = TTS.interface.send_request(
-            rtype=RequestTypes.GET, route="tts", path_parameters=speechId
+            rtype=RequestTypes.GET, route="tts", path_parameters=speechId, query_parameters={"public" : public}
         )
         return TTS.Item(r)
 
@@ -193,7 +193,7 @@ class TTS:
         while r["statusCode"] == 202:
             print("Response in progress please wait...")
             r = TTS.interface.send_request(
-                rtype=RequestTypes.GET, route=route, path_parameters=r["data"]["speechId"]   
+                rtype=RequestTypes.GET, route=route, path_parameters=r["data"]["speechId"], query_parameters={"public" : public}
             )
             
         return TTS.Item(r)

@@ -58,7 +58,11 @@ class Script:
     @staticmethod
     def get(scriptId: str, version: str = "", previewWithVoice: str = "") -> Item:
         path_params = f"{scriptId}/{version}" if version else scriptId
-        query_params = {"preview": bool(previewWithVoice), "voice": previewWithVoice}
+        if previewWithVoice:
+            query_params = {"preview": bool(previewWithVoice), "voice": previewWithVoice}
+        else:
+            query_params = {}
+            
         r = Script.interface.send_request(
             rtype=RequestTypes.GET,
             route="script",
@@ -82,10 +86,6 @@ class Script:
             rtype=RequestTypes.PUT, json=body, route="script"
         )
         return Script.Item(r)
-
-    @staticmethod
-    def update_section(scriptId: str, text: str, sectionName: str):
-        pass
 
     @staticmethod
     def list(
