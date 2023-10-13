@@ -56,7 +56,8 @@ class Mix:
         public: bool = False,
         exportSettings: dict = {},
         strictValidation: bool = True,
-        validate: bool = False
+        validate: bool = False,
+        soundLayer: str = "default"
     ) -> Item:
         if speechId and speechItem:
             raise Exception("speechId or scriptItem should be supplied not both")
@@ -78,6 +79,7 @@ class Mix:
             "fxFiles": fxFiles,
             "sectionProperties": sectionProperties,
             "timelineProperties": timelineProperties,
+            "soundLayer": soundLayer,
             "masteringPreset": masteringPreset,
             "public": public,
             "exportSettings" : exportSettings,
