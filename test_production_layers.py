@@ -1,7 +1,7 @@
 import audiostack
 import os
 
-audiostack.api_key = "0b1173a6420c4c028690b7beff39hdik"
+audiostack.api_key = ""
 audiostack.api_base = "https://staging-v2.api.audio"
 
 print(audiostack.Production.Mix.list_presets())
