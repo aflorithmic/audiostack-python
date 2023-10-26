@@ -96,6 +96,21 @@ class TTS:
         print(r)
         return TTS.Item(r)
 
+    def remove_padding(speechId:str, minSilenceDuration: float = 1.5, silenceThreshold: float = 0.001, position: str = 'end', sectionId: str =""):
+        body = {
+            "speechId" : speechId,
+            "minSilenceDuration" : minSilenceDuration,
+            "silenceThreshold" : silenceThreshold,
+            "position" : position,
+            "sectionId" : sectionId,
+        }
+        r = TTS.interface.send_request(
+            rtype=RequestTypes.POST, route="tts/remove_padding", json=body
+        )
+        print(r)
+        return TTS.Item(r)
+
+
     @staticmethod
     def create(
         scriptId="",
