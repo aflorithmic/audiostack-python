@@ -96,7 +96,8 @@ class TTS:
         print(r)
         return TTS.Item(r)
 
-    def remove_padding(speechId:str, minSilenceDuration: float = 1.5, silenceThreshold: float = 0.001, position: str = 'end', sectionId: str =""):
+    @staticmethod
+    def remove_padding(speechId: str, minSilenceDuration: float = 1.5, silenceThreshold: float = 0.001, position: str = "end", sectionId: str =""):
         body = {
             "speechId" : speechId,
             "minSilenceDuration" : minSilenceDuration,
@@ -110,6 +111,20 @@ class TTS:
         print(r)
         return TTS.Item(r)
 
+    @staticmethod
+    def annotate(speechId: str, scriptReference: str = "", languageCode: str ="", continuousRecognition: bool = False):
+
+        body = {
+            "speechId": speechId,
+            "scriptReference": scriptReference,
+            "language_code": languageCode,
+            "continuous_recognition": continuousRecognition        
+        }
+        r = TTS.interface.send_request(
+            rtype=RequestTypes.POST, route="tts/annotate", json=body
+        )
+        print(r)
+        return (r)
 
     @staticmethod
     def create(
