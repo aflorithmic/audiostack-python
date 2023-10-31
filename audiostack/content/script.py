@@ -56,13 +56,31 @@ class Script:
         return Script.Item(r)
 
     @staticmethod
+    def generate_advert(
+        product_name: str, product_description: str, mood: str = "", tone: str = ""
+    ):
+        body = {"productName": product_name, "productDescription": product_description}
+        if mood:
+            body["mood"] = mood
+        if tone:
+            body["tone"] = tone
+
+        r = Script.interface.send_request(
+            rtype=RequestTypes.POST, route="generate/advert", json=body
+        )
+        return APIResponseItem(r)
+
+    @staticmethod
     def get(scriptId: str, version: str = "", previewWithVoice: str = "") -> Item:
         path_params = f"{scriptId}/{version}" if version else scriptId
         if previewWithVoice:
-            query_params = {"preview": bool(previewWithVoice), "voice": previewWithVoice}
+            query_params = {
+                "preview": bool(previewWithVoice),
+                "voice": previewWithVoice,
+            }
         else:
             query_params = {}
-            
+
         r = Script.interface.send_request(
             rtype=RequestTypes.GET,
             route="script",
