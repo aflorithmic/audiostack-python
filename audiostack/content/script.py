@@ -59,11 +59,12 @@ class Script:
     def generate_advert(
         product_name: str, product_description: str, mood: str = "", tone: str = ""
     ):
-        body = {"productName": product_name, "productDescription": product_description}
-        if mood:
-            body["mood"] = mood
-        if tone:
-            body["tone"] = tone
+        body = {
+            "productName": product_name,
+            "productDescription": product_description,
+            "mood": mood,
+            "tone": tone,
+        }
 
         r = Script.interface.send_request(
             rtype=RequestTypes.POST, route="generate/advert", json=body
