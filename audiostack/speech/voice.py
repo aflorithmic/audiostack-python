@@ -32,9 +32,8 @@ class Voice:
 
         if scriptItem:
             scriptId = scriptItem.scriptId
-        body = {"scriptId": scriptId}
-        if tone:
-            body["tone"] = tone
+
+        body = {"scriptId": scriptId, "tone": tone}
 
         r = Voice.interface.send_request(
             rtype=RequestTypes.POST, route="select", json=body

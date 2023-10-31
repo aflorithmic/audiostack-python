@@ -42,9 +42,7 @@ class Sound:
             if scriptItem:
                 scriptId = scriptItem.scriptId
 
-            body = {"scriptId": scriptId}
-            if mood:
-                body["mood"] = mood
+            body = {"scriptId": scriptId, "mood": mood}
 
             r = Sound.interface.send_request(
                 rtype=RequestTypes.POST, route="select", json=body
