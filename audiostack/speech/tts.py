@@ -6,7 +6,7 @@ from audiostack.helpers.api_list import APIResponseList
 
 class TTS:
     interface = RequestInterface(family="speech")
-    
+
     class Item(APIResponseItem):
         def __init__(self, response) -> None:
             super().__init__(response)
@@ -37,10 +37,9 @@ class TTS:
         def __init__(self, response) -> None:
             super().__init__(response)
             self.bytes = response["bytes"]
+
         # def download(self, autoName=False, fileName="default", path="./") -> None:
         #     with open("")
-
-
 
     class List(APIResponseList):
         def __init__(self, response, list_type) -> None:
@@ -53,7 +52,7 @@ class TTS:
                 raise Exception()
 
     class Section:
-        @staticmethod    
+        @staticmethod
         def create(
             sectionToProduce,
             scriptId="",
@@ -74,21 +73,18 @@ class TTS:
 
     @staticmethod
     def preview(text: str, voice: str):
-        body = {
-            "text" : text,
-            "voice" : voice
-        }
+        body = {"text": text, "voice": voice}
         r = TTS.interface.send_request(
             rtype=RequestTypes.POST, route="tts/preview", json=body
         )
         return TTS.BytesItem(r)
 
     @staticmethod
-    def reduce(speechId: str, targetLength: str, sectionId: str =""):
+    def reduce(speechId: str, targetLength: str, sectionId: str = ""):
         body = {
-            "speechId" : speechId,
-            "targetLength" : targetLength,
-            "sectionId" : sectionId
+            "speechId": speechId,
+            "targetLength": targetLength,
+            "sectionId": sectionId,
         }
         r = TTS.interface.send_request(
             rtype=RequestTypes.POST, route="tts/reduce", json=body
@@ -96,20 +92,25 @@ class TTS:
         print(r)
         return TTS.Item(r)
 
-    def remove_padding(speechId:str, minSilenceDuration: float = 1.5, silenceThreshold: float = 0.001, position: str = 'end', sectionId: str =""):
+    def remove_padding(
+        speechId: str,
+        minSilenceDuration: float = 1.5,
+        silenceThreshold: float = 0.001,
+        position: str = "end",
+        sectionId: str = "",
+    ):
         body = {
-            "speechId" : speechId,
-            "minSilenceDuration" : minSilenceDuration,
-            "silenceThreshold" : silenceThreshold,
-            "position" : position,
-            "sectionId" : sectionId,
+            "speechId": speechId,
+            "minSilenceDuration": minSilenceDuration,
+            "silenceThreshold": silenceThreshold,
+            "position": position,
+            "sectionId": sectionId,
         }
         r = TTS.interface.send_request(
             rtype=RequestTypes.POST, route="tts/remove_padding", json=body
         )
         print(r)
         return TTS.Item(r)
-
 
     @staticmethod
     def create(
@@ -128,13 +129,14 @@ class TTS:
         route = "tts"
         return TTS._create(**locals())
         # (end) modify
-        
-
 
     @staticmethod
     def get(speechId: str, public: bool = False) -> Item:
         r = TTS.interface.send_request(
-            rtype=RequestTypes.GET, route="tts", path_parameters=speechId, query_parameters={"public" : public}
+            rtype=RequestTypes.GET,
+            route="tts",
+            path_parameters=speechId,
+            query_parameters={"public": public},
         )
         return TTS.Item(r)
 
@@ -160,7 +162,6 @@ class TTS:
         )
         return TTS.List(r, list_type="speechIds")
 
-
     @staticmethod
     def _create(
         route: str,
@@ -174,7 +175,7 @@ class TTS:
         voiceIntelligence: bool = False,
         public: bool = False,
         sync: bool = True,
-        sectionToProduce: str = ""
+        sectionToProduce: str = "",
     ):
         if scriptId and scriptItem:
             raise Exception("scriptId or scriptItem should be supplied not both")
@@ -188,7 +189,6 @@ class TTS:
             raise Exception("voice argument should be a string")
         if not isinstance(silencePadding, str):
             raise Exception("silencePadding argument should be a string")
-
 
         body = {
             "scriptId": scriptId,
@@ -208,7 +208,10 @@ class TTS:
         while r["statusCode"] == 202:
             print("Response in progress please wait...")
             r = TTS.interface.send_request(
-                rtype=RequestTypes.GET, route=route, path_parameters=r["data"]["speechId"], query_parameters={"public" : public}
+                rtype=RequestTypes.GET,
+                route=route,
+                path_parameters=r["data"]["speechId"],
+                query_parameters={"public": public},
             )
-            
+
         return TTS.Item(r)

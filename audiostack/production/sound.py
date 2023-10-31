@@ -18,16 +18,49 @@ class Sound:
                 if "template" in self.data:  #
                     self.data = self.data["template"]
 
-
         class List(APIResponseList):
             def __init__(self, response, list_type) -> None:
                 super().__init__(response, list_type)
 
             def resolve_item(self, list_type, item):
                 if list_type == "templates":
-                    return Sound.Template.Item({"data": item, "statusCode" : self.response["statusCode"]})
+                    return Sound.Template.Item(
+                        {"data": item, "statusCode": self.response["statusCode"]}
+                    )
                 else:
                     raise Exception()
+
+        @staticmethod
+        def select_for_script(
+            scriptId="", scriptItem="", mood: str = ""
+        ) -> APIResponseItem:
+            if scriptId and scriptItem:
+                raise Exception("scriptId or scriptItem should be supplied not both")
+            if not (scriptId or scriptItem):
+                raise Exception("scriptId or scriptItem should be supplied")
+
+            if scriptItem:
+                scriptId = scriptItem.scriptId
+
+            body = {"scriptId": scriptId}
+            if mood:
+                body["mood"] = mood
+
+            r = Sound.interface.send_request(
+                rtype=RequestTypes.POST, route="select", json=body
+            )
+            return APIResponseItem(response=r)
+
+        @staticmethod
+        def select_for_content(content: str, mood: str = "") -> APIResponseItem:
+            body = {"content": content}
+            if mood:
+                body["mood"] = mood
+
+            r = Sound.interface.send_request(
+                rtype=RequestTypes.POST, route="select", json=body
+            )
+            return APIResponseItem(response=r)
 
         @staticmethod
         def list(
@@ -36,7 +69,6 @@ class Sound:
             instruments: Union[str, list] = "",
             moods: str = "",
         ) -> list:
-
             query_params = {
                 "moods": moods,
                 "collections": collections,
@@ -62,7 +94,6 @@ class Sound:
                 path_parameters=templateName,
             )
             return APIResponseItem(r)
-
 
     # ----------------------------------------- TEMPLATE SEGMENT -----------------------------------------
     class Segment:

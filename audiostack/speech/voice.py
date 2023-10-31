@@ -24,6 +24,35 @@ class Voice:
                 raise Exception()
 
     @staticmethod
+    def select_for_script(scriptId: str = "", scriptItem="", tone: str = ""):
+        if scriptId and scriptItem:
+            raise Exception("scriptId or scriptItem should be supplied not both")
+        if not (scriptId or scriptItem):
+            raise Exception("scriptId or scriptItem should be supplied")
+
+        if scriptItem:
+            scriptId = scriptItem.scriptId
+        body = {"scriptId": scriptId}
+        if tone:
+            body["tone"] = tone
+
+        r = Voice.interface.send_request(
+            rtype=RequestTypes.POST, route="select", json=body
+        )
+        return APIResponseItem(r)
+
+    @staticmethod
+    def select_for_content(content, tone: str = ""):
+        body = {"content": content}
+        if tone:
+            body["tone"] = tone
+
+        r = Voice.interface.send_request(
+            rtype=RequestTypes.POST, route="select", json=body
+        )
+        return APIResponseItem(r)
+
+    @staticmethod
     def list() -> list:
         r = Voice.interface.send_request(rtype=RequestTypes.GET, route="")
         return Voice.List(r, list_type="voices")
