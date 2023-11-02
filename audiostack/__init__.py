@@ -1,4 +1,4 @@
-sdk_version = "0.0.8"
+sdk_version = "0.0.9"
 api_base = "https://v2.api.audio"
 api_key = None
 
@@ -16,5 +16,3 @@ billing_session = 0
 
 def credits_used_in_this_session():
     return float("{:.2f}".format(billing_session))
-
-
