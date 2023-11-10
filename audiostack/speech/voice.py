@@ -24,7 +24,9 @@ class Voice:
                 raise Exception()
 
     @staticmethod
-    def select_for_script(scriptId: str = "", scriptItem="", tone: str = ""):
+    def select_for_script(
+        scriptId: str = "", scriptItem="", tone: str = "", targetLength: int = 20
+    ):
         if scriptId and scriptItem:
             raise Exception("scriptId or scriptItem should be supplied not both")
         if not (scriptId or scriptItem):
@@ -33,7 +35,7 @@ class Voice:
         if scriptItem:
             scriptId = scriptItem.scriptId
 
-        body = {"scriptId": scriptId, "tone": tone}
+        body = {"scriptId": scriptId, "tone": tone, "targetLength": targetLength}
 
         r = Voice.interface.send_request(
             rtype=RequestTypes.POST, route="select", json=body

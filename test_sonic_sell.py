@@ -14,10 +14,14 @@ advert = audiostack.Content.Script.generate_advert(
     product_name="AWS LAMBDA",
     product_description="i love aws firecracker",
     mood="happy",
+    thirdPerson=False,
+    adLength=20,
 )
 
 # voice
-voices = audiostack.Speech.Voice.select_for_script(scriptId=advert.data["scriptId"])
+voices = audiostack.Speech.Voice.select_for_script(
+    scriptId=advert.data["scriptId"], targetLength=20
+)
 
 # test with tone
 voices = audiostack.Speech.Voice.select_for_content(
@@ -40,3 +44,5 @@ soundTemplates = audiostack.Production.Sound.Template.select_for_content(
 soundTemplates = audiostack.Production.Sound.Template.select_for_content(
     "hello world I am a sonic sell test"
 )
+
+print(soundTemplates.data)

@@ -57,13 +57,20 @@ class Script:
 
     @staticmethod
     def generate_advert(
-        product_name: str, product_description: str, mood: str = "", tone: str = ""
+        product_name: str,
+        product_description: str,
+        mood: str = "",
+        tone: str = "",
+        thirdPerson: bool = True,
+        adLength: int = 30,
     ):
         body = {
             "productName": product_name,
             "productDescription": product_description,
             "mood": mood,
             "tone": tone,
+            "thirdPerson": thirdPerson,
+            "adLength": adLength,
         }
 
         r = Script.interface.send_request(
