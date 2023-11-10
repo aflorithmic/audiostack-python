@@ -29,11 +29,7 @@ jobs:
       - run:
           name: "units"
           command: |
-            if [[ "${STAGE}" == "prod" ]]; then
-              export AUDIO_STACK_DEV_KEY=$AFLR_API_KEY_PROD
-            else
-              export AUDIO_STACK_DEV_KEY=$AFLR_API_KEY_TEST
-            fi
+            export AUDIO_STACK_DEV_KEY=$AFLR_API_KEY_PROD
 
             python3 -m pytest audiostack/tests/ -v
 
