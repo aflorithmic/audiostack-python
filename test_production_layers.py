@@ -72,7 +72,7 @@ tts = audiostack.Speech.TTS.create(scriptItem=script, voice="bryer")
 print(tts.speechId)
 
 sound_template = "chromatic_jazz"
-sound_layer = "intense"
+sound_layer = "default"
 mix = audiostack.Production.Mix.create(speechItem=tts, soundTemplate=sound_template, masteringPreset="musicenhanced", soundLayer=sound_layer)# sectionProperties={"main" : {"endAt" : 120}})
 print(mix)
 #mix.download(fileName=st)
