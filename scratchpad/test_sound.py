@@ -4,19 +4,19 @@ import os
 audiostack.api_key = os.environ["AUDIO_STACK_DEV_KEY"]
 
 # list templates that are custom (user uploaded)
-templates = audiostack.Production.Sound.Template.list(type="custom")
+templates = audiostack.Production.Sound.Template.list()
 print("CUSTOM----\n\n") 
 for t in templates:
-    print("\t", t.templateName, "---", t.description)
+    print("\t", t.data["name"])
     
-# list public templates
-templates = audiostack.Production.Sound.Template.list(type="standard")
-print("STANDARD----\n\n")
-for t in templates:
-    print("\t", t.templateName, "---", t.description)
+# # list public templates
+# templates = audiostack.Production.Sound.Template.list(type="standard")
+# print("STANDARD----\n\n")
+# for t in templates:
+#     print("\t", t.templateName, "---")
 
-# list sound parameters
-r = audiostack.Production.Sound.Parameter.get()
-print(r.data)
+# # list sound parameters
+# r = audiostack.Production.Sound.Parameter.get()
+# print(r.data)
 
-print("Cost for this session: ", audiostack.credits_used_in_this_session())
+# print("Cost for this session: ", audiostack.credits_used_in_this_session())

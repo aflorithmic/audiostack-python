@@ -15,6 +15,10 @@ scriptText = """
     This massively improves usability, aids with learnability and should improve adoption 
 </as:section>"""
 
+script = audiostack.Content.Script.create(scriptText=scriptText)
+print(script)
+
+exit()
 # scriptText = """
 
 # <as:section name="main" soundsegment="main"> 
