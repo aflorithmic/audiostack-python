@@ -1,5 +1,6 @@
 from audiostack.content.script import Script
 from audiostack.content.media import Media
+from audiostack.content.file import File, Folder
 
 
 def list_projects():
