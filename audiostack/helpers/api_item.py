@@ -20,7 +20,7 @@ class APIResponseItem:
             return self.response
 
     def __str__(self) -> str:
-        if hasattr(self, "bytes"):
+        if self.bytes:
             return "bytes object"
         else:
             return json.dumps(self.response)
