@@ -59,7 +59,7 @@ touch hello.py
 
 ### Authentication
 
-This library needs to be configured with your account's api-key which is available in your [api.audio Console](https://console.api.audio). Import the apiaudio package and set `apiaudio.api_key` with the api-key you got from the console:
+This library needs to be configured with your account's api-key which is available in your [api.audio Console](https://console.api.audio). Import the audiostack package and set `audiostack.api_key` with the api-key you got from the console:
 
 ```python
 import audiostack
@@ -147,7 +147,7 @@ audiostack.api_key = "your-key"
 
 ### Authentication with environment variable (recommended) <a name = "authentication_env"></a>
 
-You can also authenticate using `audiostack_key` environment variable and the apiaudio SDK will automatically use it. To setup, open the terminal and type:
+You can also authenticate using `audiostack_key` environment variable and the audiostack SDK will automatically use it. To setup, open the terminal and type:
 
 ```sh
 export audiostack_key=<your-key>
