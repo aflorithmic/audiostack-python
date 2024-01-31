@@ -10,21 +10,7 @@ class Suite:
     class Item(APIResponseItem):
         def __init__(self, response) -> None:
             super().__init__(response)
-            self.fileId = self.data["fileId"]
-
-  
-    # class List(APIResponseList):
-    #     def __init__(self, response, list_type) -> None:
-    #         super().__init__(response, list_type)
-
-    #     def resolve_item(self, list_type, item):
-    #         if list_type == "productionIds":
-    #             return Mix.Item({"data": item})
-    #         elif list_type == "presets":
-    #             return
-
-    #         else:
-    #             raise Exception()
+    
 
     @staticmethod
     def evaluate(
@@ -38,8 +24,7 @@ class Suite:
         if not (fileId):
             raise Exception("fileId should be supplied")
         if text and scriptId:
-            raise Exception("text or scriptId should be supplied not both")
-
+            raise Exception("either text or scriptId or none should be supplied not both")
         if not isinstance(processes, list):
             raise Exception("processes should be a list")
         if not isinstance(preset, str):
@@ -55,8 +40,8 @@ class Suite:
         }
         
         r = Suite.interface.send_request(rtype=RequestTypes.POST, route="suite/evaluate", json=body)
-            
-        while r["statusCode"] != 200 or r["statusCode"] !=404:   # TODO REVISE
+
+        while r["statusCode"] != 200 and r["statusCode"] !=404:   # TODO REVISE
             print("Response in progress please wait...")
             r = Suite.interface.send_request(rtype=RequestTypes.POST, route="suite/evaluate", json=body)
             
