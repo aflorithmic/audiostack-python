@@ -39,8 +39,6 @@ class Suite:
             body["text"] = text
         elif scriptId:
             body["scriptId"] = scriptId
-        else:
-            raise Exception("please supply only one of scriptId or text")
         
         r = Suite.interface.send_request(rtype=RequestTypes.POST, route="suite/evaluate", json=body)
 
