@@ -1,8 +1,7 @@
 import os
 import audiostack
 
-from audiostack.production.sound import File
-from audiostack.production.sound import Sound
+from audiostack.content.file import File
 
 audiostack.api_base = os.environ.get("AUDIO_STACK_DEV_URL", "https://v2.api.audio")
 audiostack.api_key = os.environ["AUDIO_STACK_DEV_KEY"]

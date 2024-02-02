@@ -1,7 +1,6 @@
 from audiostack.helpers.request_interface import RequestInterface
 from audiostack.helpers.request_types import RequestTypes
 from audiostack.helpers.api_item import APIResponseItem
-# from audiostack.helpers.api_list import APIResponseList
 
 
 class Suite:
@@ -14,7 +13,7 @@ class Suite:
 
     @staticmethod
     def evaluate(
-        fileId="",
+        fileId: str,
         preset: str = "",
         processes: list = [],
         text: str = "",
@@ -34,10 +33,14 @@ class Suite:
             "fileId": fileId,
             "preset": preset,
             "processes": processes,
-            "text": text,
-            "scriptId": scriptId,
             "language": language
         }
+        if text:
+            body["text"] = text
+        elif scriptId:
+            body["scriptId"] = scriptId
+        else:
+            raise Exception("please supply only one of scriptId or text")
         
         r = Suite.interface.send_request(rtype=RequestTypes.POST, route="suite/evaluate", json=body)
 
