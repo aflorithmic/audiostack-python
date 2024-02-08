@@ -30,9 +30,12 @@ class File:
                 raise Exception()
 
     @staticmethod
-    def create(localPath: str, uploadPath: str, fileType: str, category: str="", tags: list=[], metadata: dict={}) -> Item:
+    def create(localPath: str, uploadPath: str, fileType: str, category: str="", tags: list=[], metadata: dict={}, filePath: str = None) -> Item:
         if not os.path.isfile(localPath):
             raise Exception("Supplied file does not eixst")
+
+        if not uploadPath or not localPath:
+            raise Exception("Please supply a localPath (path to your local file) and an uploadPath (path to where youd like this to be saved)")
 
         data = {
             "filePath": uploadPath, 
