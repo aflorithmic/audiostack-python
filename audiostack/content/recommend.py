@@ -28,8 +28,7 @@ class RecommendTag:
 
     @staticmethod
     def post(text: str, category: str, tags: List, number_of_results: int = 1) -> Item:
-        path_parameters = ""
-        query_parameters = {
+        payload = {
             "text": text,
             "category": category,
             "tags": tags,
@@ -38,8 +37,7 @@ class RecommendTag:
         r = RecommendTag.interface.send_request(
             rtype=RequestTypes.POST,
             route="recommend/tag",
-            path_parameters=path_parameters,
-            json=query_parameters,
+            json=payload,
         )
         return RecommendTag.Item(r)
     
@@ -66,16 +64,14 @@ class RecommendMood:
 
     @staticmethod
     def post(text: str, number_of_results: int = 1) -> Item:
-        path_parameters = ""
-        query_parameters = {
+        payload = {
             "text": text,
             "number_of_results": number_of_results
         }
         r = RecommendMood.interface.send_request(
             rtype=RequestTypes.POST,
             route="recommend/mood",
-            path_parameters=path_parameters,
-            json=query_parameters,
+            json=payload,
         )
         return RecommendMood.Item(r)
     
@@ -102,15 +98,13 @@ class RecommendTone:
 
     @staticmethod
     def post(text: str, number_of_results: int = 1) -> Item:
-        path_parameters = ""
-        query_parameters = {
+        payload = {
             "text": text,
             "number_of_results": number_of_results
         }
-        r = RecommendMood.interface.send_request(
+        r = RecommendTone.interface.send_request(
             rtype=RequestTypes.POST,
             route="recommend/tone",
-            path_parameters=path_parameters,
-            json=query_parameters,
+            json=payload,
         )
         return RecommendTone.Item(r)
