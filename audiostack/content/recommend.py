@@ -27,7 +27,7 @@ class RecommendTag:
                 raise Exception()
 
     @staticmethod
-    def post(text: str, category: str, tags: List, number_of_results: int = 1) -> Item:
+    def create(text: str, category: str, tags: List, number_of_results: int = 1) -> Item:
         payload = {
             "text": text,
             "category": category,
@@ -63,7 +63,7 @@ class RecommendMood:
                 raise Exception()
 
     @staticmethod
-    def post(text: str, number_of_results: int = 1) -> Item:
+    def create(text: str, number_of_results: int = 1) -> Item:
         payload = {
             "text": text,
             "number_of_results": number_of_results
@@ -97,7 +97,7 @@ class RecommendTone:
                 raise Exception()
 
     @staticmethod
-    def post(text: str, number_of_results: int = 1) -> Item:
+    def create(text: str, number_of_results: int = 1) -> Item:
         payload = {
             "text": text,
             "number_of_results": number_of_results
