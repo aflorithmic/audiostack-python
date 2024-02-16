@@ -13,8 +13,7 @@ class RecommendTag:
         def __init__(self, response) -> None:
             super().__init__(response)
 
-            self.category = self.data["category"]
-            self.tag = self.data["tag"]
+            self.tags = self.data["tags"]
 
     @staticmethod
     def create(text: str, category: str, tags: List, number_of_results: int = 1) -> Item:
@@ -39,8 +38,7 @@ class RecommendMood:
         def __init__(self, response) -> None:
             super().__init__(response)
 
-            self.category = self.data["category"]
-            self.tag = self.data["tag"]
+            self.tag = self.data["tags"]
 
     class List(APIResponseList):
         def __init__(self, response, list_type) -> None:
@@ -73,8 +71,7 @@ class RecommendTone:
         def __init__(self, response) -> None:
             super().__init__(response)
 
-            self.category = self.data["category"]
-            self.tag = self.data["tag"]
+            self.tag = self.data["tags"]
 
     class List(APIResponseList):
         def __init__(self, response, list_type) -> None:
