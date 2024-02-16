@@ -61,6 +61,25 @@ class File:
         return File.get(fileId)
 
     @staticmethod
+    def transfer(url: str, uploadPath: str, category: str="", tags: list=[], metadata: dict={}) -> Item:
+        
+        data = {
+            "filePath": uploadPath, 
+            "url" : url,
+            "category" : category,
+            "tags" : tags,
+            "metadata" : metadata
+        }
+        
+        r = File.interface.send_request(
+            rtype=RequestTypes.PUT,
+            route="file/transfer-file",
+            json=data,
+        )
+        response = APIResponseItem(r)
+        return File.get(response.data["fileId"])
+    
+    @staticmethod
     def modify(fileId: str, filePath: str="", category: str="", tags: list=[], metadata: dict={}) -> Item:
         
         data = {
