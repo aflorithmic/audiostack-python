@@ -3,7 +3,6 @@ from typing import List
 from audiostack.helpers.request_interface import RequestInterface
 from audiostack.helpers.request_types import RequestTypes
 from audiostack.helpers.api_item import APIResponseItem
-from audiostack.helpers.api_list import APIResponseList
 
 class RecommendTag:
     FAMILY = "content"
@@ -40,16 +39,6 @@ class RecommendMood:
 
             self.tag = self.data["tags"]
 
-    class List(APIResponseList):
-        def __init__(self, response, list_type) -> None:
-            super().__init__(response, list_type)
-
-        def resolve_item(self, list_type, item):
-            if list_type == "RecommendMoods":
-                return RecommendMood.Item({"data": item})
-            else:
-                raise Exception()
-
     @staticmethod
     def create(text: str, number_of_results: int = 1) -> Item:
         payload = {
@@ -72,16 +61,6 @@ class RecommendTone:
             super().__init__(response)
 
             self.tag = self.data["tags"]
-
-    class List(APIResponseList):
-        def __init__(self, response, list_type) -> None:
-            super().__init__(response, list_type)
-
-        def resolve_item(self, list_type, item):
-            if list_type == "RecommendTones":
-                return RecommendTone.Item({"data": item})
-            else:
-                raise Exception()
 
     @staticmethod
     def create(text: str, number_of_results: int = 1) -> Item:
