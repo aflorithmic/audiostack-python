@@ -34,11 +34,14 @@ class RequestInterface:
         self.family = family
 
     def make_header(self):
-        return {
+        header = {
             "x-api-key": audiostack.api_key,
             "x-python-sdk-version": audiostack.sdk_version
-            # "x-assume-org": audiostack.assume_org_id,
         }
+        if audiostack.assume_org_id:
+            header["x-assume-org"] = audiostack.assume_org_id
+        return header
+
 
     def resolve_response(self, r):
         if r.status_code >= 500:
