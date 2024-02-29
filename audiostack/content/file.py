@@ -3,8 +3,7 @@ from audiostack.helpers.request_types import RequestTypes
 from audiostack.helpers.api_item import APIResponseItem
 from audiostack.helpers.api_list import APIResponseList
 import os
-import requests
-from copy import deepcopy
+
 
 class File:
     FAMILY = "content"
@@ -14,7 +13,6 @@ class File:
         def __init__(self, response) -> None:
             super().__init__(response)
             self.fileId = self.data["fileId"]
-            
 
         def delete(self):
             return File.delete(self.fileId)
@@ -30,22 +28,32 @@ class File:
                 raise Exception()
 
     @staticmethod
-    def create(localPath: str, uploadPath: str, fileType: str, category: str="", tags: list=[], metadata: dict={}, filePath: str = None) -> Item:
+    def create(
+        localPath: str,
+        uploadPath: str,
+        fileType: str,
+        category: str = "",
+        tags: list = [],
+        metadata: dict = {},
+        filePath: str = None,
+    ) -> Item:
         if not os.path.isfile(localPath):
             raise Exception("Supplied file does not eixst")
 
         if not uploadPath or not localPath:
-            raise Exception("Please supply a localPath (path to your local file) and an uploadPath (path to where youd like this to be saved)")
+            raise Exception(
+                "Please supply a localPath (path to your local file) and an uploadPath (path to where youd like this to be saved)"
+            )
 
         data = {
-            "filePath": uploadPath, 
-            "fileType" : fileType,
-            "source" : "pythonSDK",
-            "category" : category,
-            "tags" : tags,
-            "metadata" : metadata
+            "filePath": uploadPath,
+            "fileType": fileType,
+            "source": "pythonSDK",
+            "category": category,
+            "tags": tags,
+            "metadata": metadata,
         }
-        
+
         r = File.interface.send_request(
             rtype=RequestTypes.POST,
             route="file/create-upload-url",
@@ -61,16 +69,22 @@ class File:
         return File.get(fileId)
 
     @staticmethod
-    def transfer(url: str, uploadPath: str, category: str="", tags: list=[], metadata: dict={}) -> Item:
-        
+    def transfer(
+        url: str,
+        uploadPath: str,
+        category: str = "",
+        tags: list = [],
+        metadata: dict = {},
+    ) -> Item:
+
         data = {
-            "filePath": uploadPath, 
-            "url" : url,
-            "category" : category,
-            "tags" : tags,
-            "metadata" : metadata
+            "filePath": uploadPath,
+            "url": url,
+            "category": category,
+            "tags": tags,
+            "metadata": metadata,
         }
-        
+
         r = File.interface.send_request(
             rtype=RequestTypes.PUT,
             route="file/transfer-file",
@@ -78,17 +92,23 @@ class File:
         )
         response = APIResponseItem(r)
         return File.get(response.data["fileId"])
-    
+
     @staticmethod
-    def modify(fileId: str, filePath: str="", category: str="", tags: list=[], metadata: dict={}) -> Item:
-        
+    def modify(
+        fileId: str,
+        filePath: str = "",
+        category: str = "",
+        tags: list = [],
+        metadata: dict = {},
+    ) -> Item:
+
         data = {
-            "filePath" : filePath,
-            "category" : category,
-            "tags" : tags,
-            "metadata" : metadata
+            "filePath": filePath,
+            "category": category,
+            "tags": tags,
+            "metadata": metadata,
         }
-        
+
         r = File.interface.send_request(
             rtype=RequestTypes.PATCH,
             route=f"file/id/{fileId}",
@@ -111,18 +131,29 @@ class File:
         return APIResponseItem(r)
 
     @staticmethod
-    def search(path: str="", source: str="", tags: list=[], name: str="", fileType: str="", category: str="", sortBy: str="") -> List:
+    def search(
+        path: str = "",
+        source: str = "",
+        tags: list = [],
+        name: str = "",
+        fileType: str = "",
+        category: str = "",
+        sortBy: str = "",
+    ) -> List:
         queries = {
-            "path" : path,
-            "source" : source,
-            "tags" : tags,
-            "name" : name,
-            "fileType" : fileType,
-            "category" : category,
-            "soryBy" : sortBy
+            "path": path,
+            "source": source,
+            "tags": tags,
+            "name": name,
+            "fileType": fileType,
+            "category": category,
+            "soryBy": sortBy,
         }
-        r = File.interface.send_request(rtype=RequestTypes.GET, route="file/search", query_parameters=queries)
+        r = File.interface.send_request(
+            rtype=RequestTypes.GET, route="file/search", query_parameters=queries
+        )
         return File.List(r, list_type="items")
+
 
 class Folder:
     FAMILY = "content"
@@ -146,11 +177,11 @@ class Folder:
 
     @staticmethod
     def create(name) -> Item:
-            
+
         r = File.interface.send_request(
             rtype=RequestTypes.POST,
             route="folder",
-            json={"folder" : name},
+            json={"folder": name},
         )
         return APIResponseItem(r)
 
@@ -164,6 +195,8 @@ class Folder:
     @staticmethod
     def delete(folder: str, delete_files=False) -> str:
         r = File.interface.send_request(
-            rtype=RequestTypes.DELETE, route="folder", query_parameters={"folder": folder, "forceDelete" : delete_files}
+            rtype=RequestTypes.DELETE,
+            route="folder",
+            query_parameters={"folder": folder, "forceDelete": delete_files},
         )
         return APIResponseItem(r)
