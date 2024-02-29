@@ -27,22 +27,11 @@ You don't need this source code unless you want to modify it. If you want to use
 
 ```sh
 pip install audiostack -U
-#or
-pip3 install audiostack -U
 ```
-
 
 ### Prerequisites <a name = "requirements"></a>
 
 Python 3.6+
-
-## 🚀 Hello World <a name = "hello_world"></a>
-
-Create a file `hello.py`
-
-```python
-touch hello.py
-```
 
 ### Authentication
 
@@ -60,11 +49,9 @@ audiostack.assume_org_id = "your-org-id"
 
 ```
 
-### Create Text to audio in 4 steps
+### Create your first audio asset
 
-Let's create our first audio asset.
-
-✍️ First, create a Script.
+#### ✍️ First, create a Script.
 
 Audiostack Scripts are the first step in creating audio assets. Not only do they contain the text to be spoken, but also determine the final structure of our audio asset using the [Script Syntax](https://docs.audiostack.ai/docs/script-syntax).
 
@@ -84,7 +71,7 @@ We are excited to see what you'll create with our product!
 """)
 ```
 
-🎤 Now, let's read it out load. 
+#### 🎤 Now, let's read it out load. 
 
 We integrate all the major TTS voices in the market. You can browse them in our [voice library](https://library.audiostack.ai/).
 
@@ -101,27 +88,29 @@ When you listen to these files, you'll notice each of them has a certain silence
 tts = audiostack.Speech.TTS.remove_padding(speechId=tts.speechId)
 ```
 
-🎛️ Now let's mix the speech we just created with a [sound template](https://library.audiostack.ai/sound).
-
-Various sound templates consist of various segments. In our example, we're using three segments: intro, main and outro. 
-
-You can list all the sound templates to see what segments are available or even [create your own](https://docs.audiostack.ai/docs/custom-sound-design-templates)!
+#### 🎛️ Now let's mix the speech we just created with a [sound template](https://library.audiostack.ai/sound).
 
 ```python
 mix = audiostack.Production.Mix.create(speechItem=tts, soundTemplate="chill_vibes")
 ```
 
+Various sound templates consist of various segments. In our example, we're using three segments: intro, main and outro. 
+
+You can list all the sound templates to see what segments are available or even [create your own](https://docs.audiostack.ai/docs/custom-sound-design-templates)!
+
 Mixing comes with a lot of options to tune your audio to sound just right. 
 [More on this here.](https://docs.audiostack.ai/docs/advance-timing-parameters)
 
-🎧 At this point, we can download the mix as a wave file, or convert it to another format.
+#### 🎧 At this point, we can download the mix as a wave file, or convert it to another format.
 
 ```python
 enc = audiostack.Delivery.Encoder.encode_mix(productionItem=mix, preset="mp3_high")
 enc.download(fileName="example")
 ```
 
-Easy right? 🔮 This is the final audio:
+Easy right? 🔮 This is the final result:
+
+https://github.com/aflorithmic/audiostack-python/assets/64603095/6948cddb-4132-40a7-b84d-457f3fc0803d
 
 ## :speedboat: More quickstarts <a name = "quickstarts"></a>
 
