@@ -10,15 +10,24 @@ tags = ["happy", "sad", "valuable"]
 number_of_results = 2
 
 print("Recommend Tag endpoint")
-item = audiostack.Content.RecommendTag.create(text=text, category=category, tags=tags, number_of_results=number_of_results)
+item = audiostack.Content.RecommendTag.create(
+    text=text, category=category, tags=tags, number_of_results=number_of_results
+)
 print(item.response)
+print(item.tags)
 
 print("Recommend Tone endpoint")
-item = audiostack.Content.RecommendTone.create(text=text, number_of_results=number_of_results)
+item = audiostack.Content.RecommendTone.create(
+    text=text, number_of_results=number_of_results
+)
 print(item.response)
+print(item.tones)
 
 print("Recommend Mood endpoint")
-item = audiostack.Content.RecommendMood.create(text=text, number_of_results=number_of_results)
+item = audiostack.Content.RecommendMood.create(
+    text=text, number_of_results=number_of_results
+)
 print(item.response)
+print(item.moods)
 
 print("Cost for this session: ", audiostack.credits_used_in_this_session())
