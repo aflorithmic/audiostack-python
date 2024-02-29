@@ -11,15 +11,6 @@
     <br>
 </p>
 
-## Maintainers <a name = "maintainers"> </a>
-
-- https://github.com/Sjhunt93
-
-## License <a name = "license"> </a>
-
-This project is licensed under the terms of the MIT license.
-
-
 ## 🧐 About <a name = "about"></a>
 
 This repository is actively maintained by [Audiostack](https://audiostack.ai/). For examples, recipes and api reference see the [api.audio docs](https://docs.audiostack.ai/reference/quick-start). Feel free to get in touch with any questions or feedback!
@@ -27,10 +18,6 @@ This repository is actively maintained by [Audiostack](https://audiostack.ai/). 
 ## :book:  Changelog
 
 You can view [here](https://docs.audiostack.ai/changelog) our updated Changelog.
-
-## :speedboat:  Quickstarts <a name = "quickstarts"></a>
-
-Get started with our [quickstart recipes](https://docs.audiostack.ai/docs/introduction).
 
 ## 🏁 Getting Started <a name = "getting_started"></a>
 
@@ -135,4 +122,16 @@ enc.download(fileName="example")
 ```
 
 Easy right? 🔮 This is the final audio:
+
+## :speedboat: More quickstarts <a name = "quickstarts"></a>
+
+Get started with our [quickstart recipes](https://docs.audiostack.ai/docs/introduction).
+
+## Maintainers <a name = "maintainers"> </a>
+
+- https://github.com/Sjhunt93
+
+## License <a name = "license"> </a>
+
+This project is licensed under the terms of the MIT license.
 
