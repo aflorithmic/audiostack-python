@@ -7,7 +7,7 @@
 
 ---
 
-<p align="center"> This is the official <a href="https://audiostack.ai/" rel="noopener">audiostack</a> Python 3 SDK. This SDK provides easy access to the api.audio API for applications written in Python.
+<p align="center"> This is the official <a href="https://audiostack.ai/" rel="noopener">audiostack</a> Python 3 SDK. This SDK provides easy access to the Audiostack API for applications written in Python.
     <br>
 </p>
 
