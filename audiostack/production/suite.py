@@ -47,3 +47,18 @@ class Suite:
             r = Suite.interface.send_request(rtype=RequestTypes.POST, route="suite/evaluate", json=body)
             
         return Suite.Item(r)
+    
+    class SourceSeparation:
+        interface = RequestInterface(family="production")
+
+        class Item(APIResponseItem):
+            def __init__(self, response) -> None:
+                super().__init__(response)
+            
+        @staticmethod
+        def separate(fileId: str) -> Item:
+            payload = { "fileId": fileId,}
+            r = Suite.SourceSeparation.interface.send_request(
+                rtype=RequestTypes.POST, route="suite/separate", json=payload,
+            )
+            return Suite.SourceSeparation.Item(r)
