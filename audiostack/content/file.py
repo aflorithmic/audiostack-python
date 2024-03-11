@@ -14,10 +14,16 @@ class File:
         def __init__(self, response) -> None:
             super().__init__(response)
             self.fileId = self.data["fileId"]
-            
-
+            self.filePath = self.data["filePath"]
+            self.url = self.data["url"]
+            print(vars(self))
         def delete(self):
             return File.delete(self.fileId)
+    
+        def download(self, fileName="", path="./") -> None:
+            if not fileName:
+                fileName = self.filePath.split("/")[-1]
+            RequestInterface.download_url(self.url, destination=path, name=fileName)
 
     class List(APIResponseList):
         def __init__(self, response, list_type) -> None:

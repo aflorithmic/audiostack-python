@@ -14,7 +14,7 @@ class Script:
 
             self.scriptId = self.data["scriptId"]
             self.projectName = self.data["projectName"]
-            self.moduletName = self.data["moduleName"]
+            self.moduleName = self.data["moduleName"]
             self.scriptName = self.data["scriptName"]
             self.scriptText = self.data["scriptText"]
 

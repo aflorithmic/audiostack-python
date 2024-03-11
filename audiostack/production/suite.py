@@ -6,9 +6,21 @@ from audiostack.helpers.api_item import APIResponseItem
 class Suite:
     interface = RequestInterface(family="production")
 
-    class Item(APIResponseItem):
+    class EvaluationItem(APIResponseItem):
         def __init__(self, response) -> None:
             super().__init__(response)
+
+    class PipelineInProgressItem(APIResponseItem):
+        def __init__(self, response) -> None:
+            super().__init__(response)
+            self.pipelineId = response.data["pipelineId"]
+
+    class PipelineFinishedItem(PipelineInProgressItem):
+        def __init__(self, response) -> None:
+            super().__init__(response)
+            self.newFileIds = response.data["results"]["newFileIds"]
+            self.inputFileIds = response.data["results"]["inputFileIds"]
+            self.replacedFileIds = response.data["results"]["replacedFileIds"]
     
 
     @staticmethod
@@ -19,7 +31,7 @@ class Suite:
         text: str = "",
         scriptId: str = "",
         language: str = "en-US",
-    ) -> Item:
+    ) -> EvaluationItem:
         if not (fileId):
             raise Exception("fileId should be supplied")
         if text and scriptId:
@@ -46,4 +58,41 @@ class Suite:
             print("Response in progress please wait...")
             r = Suite.interface.send_request(rtype=RequestTypes.POST, route="suite/evaluate", json=body)
             
+        return Suite.EvaluationItem(r)
+    
+    @staticmethod
+    def separate(fileId: str, wait=True):
+
+        body = {
+            "fileId": fileId,
+        }
+        r = Suite.interface.send_request(rtype=RequestTypes.POST, route="suite/separate", json=body)
+        item = Suite.PipelineInProgressItem(r)
+        return Suite._poll(r, item.pipelineId) if wait else item
+    
+    @staticmethod
+    def denoise(fileId: str, level: int, wait=True):
+
+        body = {
+            "fileId": fileId,
+            "level": level
+        }
+        r = Suite.interface.send_request(rtype=RequestTypes.POST, route="suite/denoise", json=body)
+        item = Suite.PipelineInProgressItem(r)
+        return Suite._poll(r, item.pipelineId) if wait else item
+        
+
+    @staticmethod
+    def _poll(r, pipelineId: str):
+        while r["statusCode"] == 202:
+            r = Suite.interface.send_request(
+                rtype=RequestTypes.GET, route="suite/pipeline", path_parameters=pipelineId
+            )
+        return Suite.PipelineFinishedItem(r)
+
+
+    @staticmethod
+    def get(pipelineId: str):
+        
+        r = Suite.interface.send_request(rtype=RequestTypes.GET, route="suite/pipeline", path_parameters=pipelineId)
         return Suite.Item(r)
