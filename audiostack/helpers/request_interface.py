@@ -16,7 +16,7 @@ def remove_empty(data):
 
     final_dict = {}
     for key, val in data.items():
-        if val or isinstance(val, int): # val = int(0) shoud not be removed 
+        if val or isinstance(val, int):  # val = int(0) shoud not be removed
             if isinstance(val, dict):
                 final_dict[key] = remove_empty(val)
             elif isinstance(val, list):
@@ -45,11 +45,11 @@ class RequestInterface:
 
     def resolve_response(self, r):
         if r.status_code >= 500:
-            print(r)
             raise Exception("Internal server error - aborting")
-        
+
         if r.status_code == 403:
-            raise Exception("Not authorised - check API key is valid")
+            exc = r.json().get("message", "Not authorised - check API key is valid")
+            raise Exception(exc)
 
         if r.status_code >= 400:
             msg = (
@@ -66,7 +66,7 @@ class RequestInterface:
         #         "bytes" : r.content,
         #         "statusCode" : r.status_code
         #     }
-            
+
         # else:
         if self.DEBUG_PRINT:
             print(json.dumps(r.json(), indent=4))

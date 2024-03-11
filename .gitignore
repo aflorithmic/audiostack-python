@@ -129,7 +129,6 @@ dmypy.json
 .pyre/
 
 *.wav
-*.mp3
 *.ogg
 *.flac
 *.DS_Store
