@@ -1,7 +1,7 @@
 from audiostack.helpers.request_interface import RequestInterface
 from audiostack.helpers.request_types import RequestTypes
 from audiostack.helpers.api_item import APIResponseItem
-
+from audiostack.content.file import File
 
 class Suite:
     interface = RequestInterface(family="production")
@@ -13,16 +13,22 @@ class Suite:
     class PipelineInProgressItem(APIResponseItem):
         def __init__(self, response) -> None:
             super().__init__(response)
-            self.pipelineId = response.data["pipelineId"]
+            
+            self.pipelineId = self.data["pipelineId"]
 
     class PipelineFinishedItem(PipelineInProgressItem):
         def __init__(self, response) -> None:
             super().__init__(response)
-            self.newFileIds = response.data["results"]["newFileIds"]
-            self.inputFileIds = response.data["results"]["inputFileIds"]
-            self.replacedFileIds = response.data["results"]["replacedFileIds"]
-    
-
+            self.newFileIds = self.data["results"]["newFileIds"]
+            self.inputFileIds = self.data["results"]["inputFileIds"]
+            self.replacedFileIds = self.data["results"]["replacedFileIds"]
+        
+        def convert_new_files_to_items(self) -> list["File.Item"]:
+            return [File.get(f["fileId"]) for f in self.newFileIds]
+        
+        def convert_replaced_files_to_items(self) -> list["File.Item"]:
+            return [File.get(f["fileId"]) for f in self.replacedFileIds]
+        
     @staticmethod
     def evaluate(
         fileId: str,
@@ -93,6 +99,5 @@ class Suite:
 
     @staticmethod
     def get(pipelineId: str):
-        
         r = Suite.interface.send_request(rtype=RequestTypes.GET, route="suite/pipeline", path_parameters=pipelineId)
-        return Suite.Item(r)
+        return Suite._poll(r, pipelineId)
