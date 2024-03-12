@@ -44,6 +44,8 @@ class RequestInterface:
 
 
     def resolve_response(self, r):
+        if self.DEBUG_PRINT:
+            print(json.dumps(r.json(), indent=4))
         if r.status_code >= 500:
             raise Exception("Internal server error - aborting")
 
@@ -68,8 +70,6 @@ class RequestInterface:
         #     }
 
         # else:
-        if self.DEBUG_PRINT:
-            print(json.dumps(r.json(), indent=4))
         if "meta" in r.json():
             if "creditsUsed" in r.json()["meta"]:
                 audiostack.billing_session += r.json()["meta"]["creditsUsed"]

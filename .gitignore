@@ -137,3 +137,5 @@ other/test_create_template_simple.py
 other/test_create_template.py
 
 scratchpad/*
+sam_notes/*
+z*.py
