@@ -14,7 +14,7 @@ class File:
             super().__init__(response)
             self.fileId = self.data["fileId"]
             self.filePath = self.data["filePath"]
-            self.url = self.data["url"]
+            self.url = self.data.get("url", None)
 
         def delete(self):
             return File.delete(self.fileId)
