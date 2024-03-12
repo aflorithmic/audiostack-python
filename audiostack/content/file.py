@@ -15,7 +15,7 @@ class File:
             self.fileId = self.data["fileId"]
             self.filePath = self.data["filePath"]
             self.url = self.data["url"]
-            print(vars(self))
+
         def delete(self):
             return File.delete(self.fileId)
     

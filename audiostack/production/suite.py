@@ -2,7 +2,7 @@ from audiostack.helpers.request_interface import RequestInterface
 from audiostack.helpers.request_types import RequestTypes
 from audiostack.helpers.api_item import APIResponseItem
 from audiostack.content.file import File
-
+from typing import List
 class Suite:
     interface = RequestInterface(family="production")
 
@@ -23,10 +23,10 @@ class Suite:
             self.inputFileIds = self.data["results"]["inputFileIds"]
             self.replacedFileIds = self.data["results"]["replacedFileIds"]
         
-        def convert_new_files_to_items(self) -> list["File.Item"]:
+        def convert_new_files_to_items(self) -> List["File.Item"]:
             return [File.get(f["fileId"]) for f in self.newFileIds]
         
-        def convert_replaced_files_to_items(self) -> list["File.Item"]:
+        def convert_replaced_files_to_items(self) -> List["File.Item"]:
             return [File.get(f["fileId"]) for f in self.replacedFileIds]
         
     @staticmethod
