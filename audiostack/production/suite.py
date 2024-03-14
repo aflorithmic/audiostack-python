@@ -77,11 +77,10 @@ class Suite:
         return Suite._poll(r, item.pipelineId) if wait else item
     
     @staticmethod
-    def denoise(fileId: str, level: int, wait=True):
+    def denoise(fileId: str, wait=True):
 
         body = {
-            "fileId": fileId,
-            "level": level
+            "fileId": fileId
         }
         r = Suite.interface.send_request(rtype=RequestTypes.POST, route="suite/denoise", json=body)
         item = Suite.PipelineInProgressItem(r)
