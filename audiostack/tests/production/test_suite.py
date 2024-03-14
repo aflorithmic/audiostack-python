@@ -21,6 +21,12 @@ def test_denoise():
     test_constants["pipelineId"] = r.pipelineId
 
 
+def test_denoise_with_level():
+    r = Suite.denoise(test_constants["fileId"], level=2, wait=False)
+    assert isinstance(r, Suite.PipelineInProgressItem)
+    test_constants["pipelineId"] = r.pipelineId
+
+
 def test_get():
     r = Suite.get(test_constants["pipelineId"])
     assert isinstance(r, Suite.PipelineFinishedItem)
