@@ -1,11 +1,6 @@
 import audiostack
 import os
 
-# audiostack.api_key = "2ca962ca-6b56-478d-b726-23aec98cae65"
-# audiostack.api_base = "https://v2.api.audio"
-
-audiostack.api_base = "https://staging-v2.api.audio"
-audiostack.api_key = "0b1173a6420c4c028690b7beff39hdik" # fill up
 
 
 # Create a script
