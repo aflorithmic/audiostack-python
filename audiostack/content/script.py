@@ -41,6 +41,7 @@ class Script:
         moduleName: str = "",
         scriptName: str = "",
         metadata: dict = {},
+        **kwargs
     ) -> Item:
         body = {
             "scriptText": scriptText,

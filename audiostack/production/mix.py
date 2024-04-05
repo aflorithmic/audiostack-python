@@ -57,7 +57,8 @@ class Mix:
         exportSettings: dict = {},
         strictValidation: bool = True,
         validate: bool = False,
-        soundLayer: str = "default"
+        soundLayer: str = "default",
+        **kwargs
     ) -> Item:
         if speechId and speechItem:
             raise Exception("speechId or scriptItem should be supplied not both")

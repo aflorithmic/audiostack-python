@@ -39,6 +39,7 @@ class Encoder:
         format: str = "",
         bitDepth: int = None,
         channels: int = None,
+        **kwargs
     ) -> Item:
         
         if productionId and productionItem:

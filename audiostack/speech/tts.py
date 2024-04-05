@@ -65,6 +65,7 @@ class TTS:
             voiceIntelligence: bool = False,
             public: bool = False,
             sync: bool = True,
+            **kwargs
         ):
             # (start) no modify
             route = "tts/section"
@@ -139,6 +140,7 @@ class TTS:
         voiceIntelligence: bool = False,
         public: bool = False,
         sync: bool = True,
+        **kwargs
     ) -> Item:
         # (start) no modify
         route = "tts"
@@ -191,6 +193,7 @@ class TTS:
         public: bool = False,
         sync: bool = True,
         sectionToProduce: str = "",
+        **kwargs
     ):
         if scriptId and scriptItem:
             raise Exception("scriptId or scriptItem should be supplied not both")
