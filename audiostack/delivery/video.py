@@ -16,7 +16,7 @@ class Video:
             RequestInterface.download_url(self.url, destination=path, name=full_name)
 
     @staticmethod
-    def create_video(
+    def create(
         productionId: str = "",
         productionItem: object = None,
         public: bool = False,
@@ -49,11 +49,3 @@ class Video:
             rtype=RequestTypes.POST, route="video", json=body
         )
         return Video.Item(r)
-
-
-
-
-
-if __name__ == "__main__":
-
-    Video.create_video(productionId="", public=True)
