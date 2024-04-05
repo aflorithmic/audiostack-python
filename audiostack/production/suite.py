@@ -2,7 +2,8 @@ from audiostack.helpers.request_interface import RequestInterface
 from audiostack.helpers.request_types import RequestTypes
 from audiostack.helpers.api_item import APIResponseItem
 from audiostack.content.file import File
-from typing import List
+from typing import List, Optional
+
 class Suite:
     interface = RequestInterface(family="production")
 
@@ -77,7 +78,7 @@ class Suite:
         return Suite._poll(r, item.pipelineId) if wait else item
     
     @staticmethod
-    def denoise(fileId: str, level: int, wait=True):
+    def denoise(fileId: str, level: Optional[int] = None, wait=True):
 
         body = {
             "fileId": fileId,
