@@ -22,7 +22,7 @@ tts = audiostack.Speech.TTS.create(
   )
 
 
-mix = audiostack.Production.Mix.create(speechItem=tts, masteringPreset="radio", soundTemplate="lofi")
+mix = audiostack.Production.Mix.create(speechItem=tts, masteringPreset="radio", soundTemplate="hotwheels")
 
 #delivery
 
