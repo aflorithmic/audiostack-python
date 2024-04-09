@@ -26,7 +26,7 @@ mix = audiostack.Production.Mix.create(speechItem=tts, masteringPreset="radio", 
 
 #delivery
 
-video = audiostack.Delivery.Video.create_video(
+video = audiostack.Delivery.Video.create(
   productionItem=mix,
   public=True,
 )
