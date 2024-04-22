@@ -48,4 +48,10 @@ class Video:
         r = Video.interface.send_request(
             rtype=RequestTypes.POST, route="video", json=body
         )
+        
+        while r["statusCode"] == 202:
+            videoId = r["data"]["videoId"]
+            r = Video.interface.send_request(
+                rtype=RequestTypes.GET, route="video", path_parameters=videoId
+            )
         return Video.Item(r)
