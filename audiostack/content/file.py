@@ -45,7 +45,7 @@ class File:
         filePath: str = None,
     ) -> Item:
         if not os.path.isfile(localPath):
-            raise Exception("Supplied file does not eixst")
+            raise Exception("Supplied file does not exist")
 
         if not uploadPath or not localPath:
             raise Exception(
