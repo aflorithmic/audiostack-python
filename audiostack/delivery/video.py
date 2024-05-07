@@ -1,9 +1,8 @@
 from audiostack.helpers.request_interface import RequestInterface
 from audiostack.helpers.request_types import RequestTypes
 from audiostack.helpers.api_item import APIResponseItem
-from audiostack.helpers.api_list import APIResponseList
 
-class Encoder:
+class Video:
     interface = RequestInterface(family="delivery")
 
     class Item(APIResponseItem):
@@ -16,29 +15,11 @@ class Encoder:
             full_name = f"{fileName}.{self.format}"
             RequestInterface.download_url(self.url, destination=path, name=full_name)
 
-    class List(APIResponseList):
-        def __init__(self, response, list_type) -> None:
-            super().__init__(response, list_type)
-
-        def resolve_item(self, list_type, item):
-            if list_type == "encodedItems":
-                return Encoder.Item({"data": item})            
-            else:
-                raise Exception()
-
     @staticmethod
-    def encode_mix(
-        preset: str ,
+    def create(
         productionId: str = "",
         productionItem: object = None,
-        loudnessPreset: str = "",
         public: bool = False,
-        bitRateType: str = "",
-        bitRate: int = None,          
-        sampleRate: int = None,
-        format: str = "",
-        bitDepth: int = None,
-        channels: int = None,
     ) -> Item:
         
         if productionId and productionItem:
@@ -59,37 +40,18 @@ class Encoder:
             if not isinstance(productionId, str):
                 raise Exception("supplied productionId should be a uuid string.")
         
-        if not preset:
-            raise Exception(
-                "Either a an encoding preset (preset) or a loudness preset (loudnessPreset) should be supplied"
-                )
 
         body = {
             "productionId": productionId,
-            "preset": preset,
             "public": public,
-            "bitRateType": bitRateType,
-            "bitRate": bitRate,
-            "sampleRate": sampleRate,
-            "format": format,
-            "bitDepth": bitDepth,
-            "channels": channels,
-            "loudnessPreset": loudnessPreset
         }
-        r = Encoder.interface.send_request(
-            rtype=RequestTypes.POST, route="encoder", json=body
+        r = Video.interface.send_request(
+            rtype=RequestTypes.POST, route="video", json=body
         )
         
         while r["statusCode"] == 202:
-            encoderId = r["data"]["encoderId"]
-            r = Encoder.interface.send_request(
-                rtype=RequestTypes.GET, route="video", path_parameters=encoderId
+            videoId = r["data"]["videoId"]
+            r = Video.interface.send_request(
+                rtype=RequestTypes.GET, route="video", path_parameters=videoId
             )
-        return Encoder.Item(r)
-
-    @staticmethod
-    def list_presets() -> Item:
-        r = Encoder.interface.send_request(
-            rtype=RequestTypes.GET, route="encoder/presets", path_parameters=""
-        )
-        return Encoder.List(response=r, list_type="presets")
+        return Video.Item(r)
