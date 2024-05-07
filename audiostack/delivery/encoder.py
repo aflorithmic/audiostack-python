@@ -83,7 +83,7 @@ class Encoder:
         while r["statusCode"] == 202:
             encoderId = r["data"]["encoderId"]
             r = Encoder.interface.send_request(
-                rtype=RequestTypes.GET, route="video", path_parameters=encoderId
+                rtype=RequestTypes.GET, route="encoder", path_parameters=encoderId
             )
         return Encoder.Item(r)
 
