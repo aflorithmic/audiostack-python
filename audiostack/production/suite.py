@@ -5,6 +5,10 @@ from audiostack.content.file import File
 from typing import List, Optional
 
 class Suite:
+    DENOISE_ENDPOINT = "suite/denoise"
+    class FailedPipeline(Exception):
+        pass
+    
     interface = RequestInterface(family="production")
 
     class EvaluationItem(APIResponseItem):
@@ -84,7 +88,8 @@ class Suite:
             "fileId": fileId,
             "level": level
         }
-        r = Suite.interface.send_request(rtype=RequestTypes.POST, route="suite/denoise", json=body)
+        print(Suite.DENOISE_ENDPOINT)
+        r = Suite.interface.send_request(rtype=RequestTypes.POST, route=Suite.DENOISE_ENDPOINT, json=body)
         item = Suite.PipelineInProgressItem(r)
         return Suite._poll(r, item.pipelineId) if wait else item
         
@@ -95,10 +100,18 @@ class Suite:
             r = Suite.interface.send_request(
                 rtype=RequestTypes.GET, route="suite/pipeline", path_parameters=pipelineId
             )
+        
+        status = r.get("data", {}).get("status", 200)
+        if status > 400:
+            msg = r.get("data", {}).get("message")
+            errors = r.get("data", {}).get("errors")
+            raise Suite.FailedPipeline("pipeline failed: ", msg, "errors are as follows: ", ','.join(errors))
+        
         return Suite.PipelineFinishedItem(r)
 
 
     @staticmethod
     def get(pipelineId: str):
         r = Suite.interface.send_request(rtype=RequestTypes.GET, route="suite/pipeline", path_parameters=pipelineId)
+        
         return Suite._poll(r, pipelineId)
