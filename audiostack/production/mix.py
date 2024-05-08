@@ -45,7 +45,8 @@ class Mix:
 
     @staticmethod
     def create(
-        speechId="",
+        speechId: str="",
+        scriptId: str="",
         speechItem=None,
         soundTemplate: str = "",
         mediaFiles: dict = {},
@@ -59,10 +60,10 @@ class Mix:
         validate: bool = False,
         soundLayer: str = "default"
     ) -> Item:
-        if speechId and speechItem:
-            raise Exception("speechId or scriptItem should be supplied not both")
-        if not (speechId or speechItem):
-            raise Exception("speechId or scriptItem should be supplied")
+        counts = sum([1 for i in [speechId, scriptId, speechItem] if i])
+        if counts != 1:
+            raise Exception("only 1 of the following is required; speechId, speechItem, or scriptId")
+        
         if speechItem:
             speechId = speechItem.speechId
 
@@ -73,7 +74,6 @@ class Mix:
         
 
         body = {
-            "speechId": speechId,
             "soundTemplate": soundTemplate,
             "mediaFiles": mediaFiles,
             "fxFiles": fxFiles,
@@ -85,6 +85,11 @@ class Mix:
             "exportSettings" : exportSettings,
             "strictValidation" : strictValidation
         }
+        if speechId:
+            body["speechId"] = speechId
+        elif scriptId:
+            body["scriptId"] = scriptId
+
         if validate:
             r = Mix.interface.send_request(rtype=RequestTypes.POST, route="validate", json=body)
         else:

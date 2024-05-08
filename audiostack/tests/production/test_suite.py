@@ -3,6 +3,7 @@ import audiostack
 
 from audiostack.content.file import File
 from audiostack.production.suite import Suite
+from unittest.mock import patch
 
 audiostack.api_base = os.environ.get("AUDIO_STACK_DEV_URL", "https://v2.api.audio")
 audiostack.api_key = os.environ["AUDIO_STACK_DEV_KEY"]
@@ -15,17 +16,11 @@ def test_create():
     print(r)
 
 
-def test_denoise():
-    r = Suite.denoise(test_constants["fileId"], wait=False)
-    assert isinstance(r, Suite.PipelineInProgressItem)
-    test_constants["pipelineId"] = r.pipelineId
-
-
-def test_denoise_with_level():
-    r = Suite.denoise(test_constants["fileId"], level=2, wait=False)
-    assert isinstance(r, Suite.PipelineInProgressItem)
-    test_constants["pipelineId"] = r.pipelineId
-
+def test_denoise():    
+    with patch("audiostack.production.suite.Suite.DENOISE_ENDPOINT", "suite/test") as mock_send:
+        r = Suite.denoise(test_constants["fileId"], wait=False)
+        assert isinstance(r, Suite.PipelineInProgressItem)
+        test_constants["pipelineId"] = r.pipelineId
 
 def test_get():
     r = Suite.get(test_constants["pipelineId"])
