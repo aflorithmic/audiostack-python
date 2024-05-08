@@ -62,7 +62,7 @@ class Mix:
     ) -> Item:
         counts = sum([1 for i in [speechId, scriptId, speechItem] if i])
         if counts != 1:
-            raise Exception("only 1 of the following is required; speechId, speechItem, or scriptId should be supplied")
+            raise Exception("only 1 of the following is required; speechId, speechItem, or scriptId")
         
         if speechItem:
             speechId = speechItem.speechId

@@ -88,7 +88,6 @@ class Suite:
             "fileId": fileId,
             "level": level
         }
-        print(Suite.DENOISE_ENDPOINT)
         r = Suite.interface.send_request(rtype=RequestTypes.POST, route=Suite.DENOISE_ENDPOINT, json=body)
         item = Suite.PipelineInProgressItem(r)
         return Suite._poll(r, item.pipelineId) if wait else item
