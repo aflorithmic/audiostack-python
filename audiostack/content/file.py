@@ -128,6 +128,11 @@ class File:
         r = File.interface.send_request(
             rtype=RequestTypes.GET, route="file/id", path_parameters=fileId
         )
+        while r["statusCode"] == 202:
+            print("File is still processing... retrying")
+            r = File.interface.send_request(
+                rtype=RequestTypes.GET, route="file/id", path_parameters=fileId
+        )
         return File.Item(r)
 
     @staticmethod
