@@ -96,6 +96,7 @@ class Suite:
     @staticmethod
     def _poll(r, pipelineId: str):
         while r["statusCode"] == 202:
+            print("Response in progress please wait...")
             r = Suite.interface.send_request(
                 rtype=RequestTypes.GET, route="suite/pipeline", path_parameters=pipelineId
             )

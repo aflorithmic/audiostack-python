@@ -129,7 +129,7 @@ class File:
             rtype=RequestTypes.GET, route="file/id", path_parameters=fileId
         )
         while r["statusCode"] == 202:
-            print("File is still processing... retrying")
+            print("Response in progress please wait...")
             r = File.interface.send_request(
                 rtype=RequestTypes.GET, route="file/id", path_parameters=fileId
         )
