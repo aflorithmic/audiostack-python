@@ -1,0 +1,66 @@
+[tool.poetry]
+name = "audiostack"
+version = "2.0.0.alpha"
+description = "Python SDK for Audiostack API"
+authors = ["Aflorithmic <support@audiostack.ai>"]
+repository = "https://github.com/aflorithmic/audiostack-python"
+readme = "README.md"
+classifiers = [
+   "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[tool.poetry.dependencies]
+python = "^3.8.1"
+requests = "^2.31.0"
+
+[tool.poetry.group.dev.dependencies]
+black = "^24.4.2"
+pytest = "^8.2.0"
+coverage = "^7.5.1"
+pytest-coverage = "^0.0"
+taskipy = "^1.12.2"
+python-dotenv = {extras = ["cli"], version = "^1.0.1"}
+flake8 = "^7.0.0"
+isort = "^5.13.2"
+yamllint = "^1.35.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.isort]
+profile = "black"
+
+[tool.pytest.ini_options]
+
+addopts = [
+    "--maxfail=1",
+    "-vvv",
+    "--log-cli-level=WARN",
+    "--cov-fail-under=0",
+    "--ignore=recipes/"
+]
+
+[tool.mypy]
+disallow_untyped_defs = true
+ignore_missing_imports = true
+exclude = [".venv/"]
+
+[tool.vulture]
+exclude = [".venv/", ".git", "__pycach__", "build", "dist", "node_modules"]
+min_confidence = 100
+
+[tool.taskipy.tasks]
+lint-apply = "task black-apply && task isort-apply"
+lint-check = "task black-check && task isort-check && task yaml-check && task sql-check && task flake8-check && task mypy-check && task vulture-check"
+black-check = "black --check ."
+black-apply = "black ."
+flake8-check = "flake8 --extend-exclude .venv/,node_modules/ --max-line-length=200"
+isort-check = "isort -c ."
+isort-apply = "isort ."
+mypy-check = "mypy ."
+yaml-check = "yamllint . -d ./yaml_lint_config.yml"
+test = "dotenv run coverage run -m pytest -vvv -s -x &&  coverage xml"
+vulture-check = "vulture ."
