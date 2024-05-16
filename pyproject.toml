@@ -62,6 +62,6 @@ flake8-check = "flake8 --extend-exclude .venv/,node_modules/ --max-line-length=2
 isort-check = "isort -c ."
 isort-apply = "isort ."
 mypy-check = "mypy ."
-yaml-check = "yamllint . -d ./yaml_lint_config.yml"
+yaml-check = "yamllint ."
 test = "dotenv run coverage run -m pytest -vvv -s -x &&  coverage xml"
 vulture-check = "vulture ."

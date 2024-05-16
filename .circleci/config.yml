@@ -1,3 +1,4 @@
+---
 config_blocks:
   only_tags: &only_tags
     filters:
