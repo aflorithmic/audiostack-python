@@ -8,9 +8,10 @@ from audiostack.helpers.request_types import RequestTypes
 
 class Suite:
     DENOISE_ENDPOINT = "suite/denoise"
+
     class FailedPipeline(Exception):
         pass
-    
+
     interface = RequestInterface(family="production")
 
     class EvaluationItem(APIResponseItem):
@@ -20,7 +21,7 @@ class Suite:
     class PipelineInProgressItem(APIResponseItem):
         def __init__(self, response) -> None:
             super().__init__(response)
-            
+
             self.pipelineId = self.data["pipelineId"]
 
     class PipelineFinishedItem(PipelineInProgressItem):
@@ -29,13 +30,13 @@ class Suite:
             self.newFileIds = self.data["results"]["newFileIds"]
             self.inputFileIds = self.data["results"]["inputFileIds"]
             self.replacedFileIds = self.data["results"]["replacedFileIds"]
-        
+
         def convert_new_files_to_items(self) -> List["File.Item"]:
             return [File.get(f["fileId"]) for f in self.newFileIds]
-        
+
         def convert_replaced_files_to_items(self) -> List["File.Item"]:
             return [File.get(f["fileId"]) for f in self.replacedFileIds]
-        
+
     @staticmethod
     def evaluate(
         fileId: str,
@@ -48,7 +49,9 @@ class Suite:
         if not (fileId):
             raise Exception("fileId should be supplied")
         if text and scriptId:
-            raise Exception("either text or scriptId or none should be supplied not both")
+            raise Exception(
+                "either text or scriptId or none should be supplied not both"
+            )
         if not isinstance(processes, list):
             raise Exception("processes should be a list")
         if not isinstance(preset, str):
@@ -58,61 +61,70 @@ class Suite:
             "fileId": fileId,
             "preset": preset,
             "processes": processes,
-            "language": language
+            "language": language,
         }
         if text:
             body["text"] = text
         elif scriptId:
             body["scriptId"] = scriptId
-        
-        r = Suite.interface.send_request(rtype=RequestTypes.POST, route="suite/evaluate", json=body)
 
-        while r["statusCode"] != 200 and r["statusCode"] !=404:   # TODO REVISE
+        r = Suite.interface.send_request(
+            rtype=RequestTypes.POST, route="suite/evaluate", json=body
+        )
+
+        while r["statusCode"] != 200 and r["statusCode"] != 404:  # TODO REVISE
             print("Response in progress please wait...")
-            r = Suite.interface.send_request(rtype=RequestTypes.POST, route="suite/evaluate", json=body)
-            
+            r = Suite.interface.send_request(
+                rtype=RequestTypes.POST, route="suite/evaluate", json=body
+            )
+
         return Suite.EvaluationItem(r)
-    
+
     @staticmethod
     def separate(fileId: str, wait=True):
 
         body = {
             "fileId": fileId,
         }
-        r = Suite.interface.send_request(rtype=RequestTypes.POST, route="suite/separate", json=body)
+        r = Suite.interface.send_request(
+            rtype=RequestTypes.POST, route="suite/separate", json=body
+        )
         item = Suite.PipelineInProgressItem(r)
         return Suite._poll(r, item.pipelineId) if wait else item
-    
+
     @staticmethod
     def denoise(fileId: str, level: Optional[int] = None, wait=True):
 
-        body = {
-            "fileId": fileId,
-            "level": level
-        }
-        r = Suite.interface.send_request(rtype=RequestTypes.POST, route=Suite.DENOISE_ENDPOINT, json=body)
+        body = {"fileId": fileId, "level": level}
+        r = Suite.interface.send_request(
+            rtype=RequestTypes.POST, route=Suite.DENOISE_ENDPOINT, json=body
+        )
         item = Suite.PipelineInProgressItem(r)
         return Suite._poll(r, item.pipelineId) if wait else item
-        
 
     @staticmethod
     def _poll(r, pipelineId: str):
         while r["statusCode"] == 202:
             r = Suite.interface.send_request(
-                rtype=RequestTypes.GET, route="suite/pipeline", path_parameters=pipelineId
+                rtype=RequestTypes.GET,
+                route="suite/pipeline",
+                path_parameters=pipelineId,
             )
-        
+
         status = r.get("data", {}).get("status", 200)
         if status > 400:
             msg = r.get("data", {}).get("message")
             errors = r.get("data", {}).get("errors")
-            raise Suite.FailedPipeline("pipeline failed: ", msg, "errors are as follows: ", ','.join(errors))
-        
-        return Suite.PipelineFinishedItem(r)
+            raise Suite.FailedPipeline(
+                "pipeline failed: ", msg, "errors are as follows: ", ",".join(errors)
+            )
 
+        return Suite.PipelineFinishedItem(r)
 
     @staticmethod
     def get(pipelineId: str):
-        r = Suite.interface.send_request(rtype=RequestTypes.GET, route="suite/pipeline", path_parameters=pipelineId)
-        
+        r = Suite.interface.send_request(
+            rtype=RequestTypes.GET, route="suite/pipeline", path_parameters=pipelineId
+        )
+
         return Suite._poll(r, pipelineId)

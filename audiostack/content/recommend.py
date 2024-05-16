@@ -26,7 +26,9 @@ class RecommendTag:
             "number_of_results": number_of_results,
         }
         r = RecommendTag.interface.send_request(
-            rtype=RequestTypes.POST, route="recommend/tag", json=payload,
+            rtype=RequestTypes.POST,
+            route="recommend/tag",
+            json=payload,
         )
         return RecommendTag.Item(r)
 
@@ -45,7 +47,9 @@ class RecommendMood:
     def create(text: str, number_of_results: int = 1) -> Item:
         payload = {"text": text, "number_of_results": number_of_results}
         r = RecommendMood.interface.send_request(
-            rtype=RequestTypes.POST, route="recommend/mood", json=payload,
+            rtype=RequestTypes.POST,
+            route="recommend/mood",
+            json=payload,
         )
         return RecommendMood.Item(r)
 
@@ -64,6 +68,8 @@ class RecommendTone:
     def create(text: str, number_of_results: int = 1) -> Item:
         payload = {"text": text, "number_of_results": number_of_results}
         r = RecommendTone.interface.send_request(
-            rtype=RequestTypes.POST, route="recommend/tone", json=payload,
+            rtype=RequestTypes.POST,
+            route="recommend/tone",
+            json=payload,
         )
         return RecommendTone.Item(r)

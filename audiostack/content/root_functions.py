@@ -17,11 +17,11 @@ class Root:
             query_parameters={"projectName": projectName},
         )
         return APIResponseItem(r)
-    
+
     def generate(prompt: str, max_length: int = 100) -> list:
         r = Root.interface.send_request(
             rtype=RequestTypes.POST,
             route="generate",
-            json={"prompt": prompt, "max_length" : max_length},
+            json={"prompt": prompt, "max_length": max_length},
         )
         return APIResponseItem(r)

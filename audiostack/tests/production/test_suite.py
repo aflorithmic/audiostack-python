@@ -10,17 +10,21 @@ audiostack.api_key = os.environ["AUDIO_STACK_DEV_KEY"]
 
 test_constants = {}
 
+
 def test_create():
     r = File.create(localPath="example.mp3", uploadPath="example.mp3", fileType="audio")
     test_constants["fileId"] = r.fileId
     print(r)
 
 
-def test_denoise():    
-    with patch("audiostack.production.suite.Suite.DENOISE_ENDPOINT", "suite/test") as mock_send:
+def test_denoise():
+    with patch(
+        "audiostack.production.suite.Suite.DENOISE_ENDPOINT", "suite/test"
+    ) as mock_send:
         r = Suite.denoise(test_constants["fileId"], wait=False)
         assert isinstance(r, Suite.PipelineInProgressItem)
         test_constants["pipelineId"] = r.pipelineId
+
 
 def test_get():
     r = Suite.get(test_constants["pipelineId"])

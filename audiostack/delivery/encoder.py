@@ -23,25 +23,25 @@ class Encoder:
 
         def resolve_item(self, list_type, item):
             if list_type == "encodedItems":
-                return Encoder.Item({"data": item})            
+                return Encoder.Item({"data": item})
             else:
                 raise Exception()
 
     @staticmethod
     def encode_mix(
-        preset: str ,
+        preset: str,
         productionId: str = "",
         productionItem: object = None,
         loudnessPreset: str = "",
         public: bool = False,
         bitRateType: str = "",
-        bitRate: int = None,          
+        bitRate: int = None,
         sampleRate: int = None,
         format: str = "",
         bitDepth: int = None,
         channels: int = None,
     ) -> Item:
-        
+
         if productionId and productionItem:
             raise Exception(
                 "productionId or productionItem should be supplied not both"
@@ -59,11 +59,11 @@ class Encoder:
         elif productionId:
             if not isinstance(productionId, str):
                 raise Exception("supplied productionId should be a uuid string.")
-        
+
         if not preset:
             raise Exception(
                 "Either a an encoding preset (preset) or a loudness preset (loudnessPreset) should be supplied"
-                )
+            )
 
         body = {
             "productionId": productionId,
@@ -75,12 +75,12 @@ class Encoder:
             "format": format,
             "bitDepth": bitDepth,
             "channels": channels,
-            "loudnessPreset": loudnessPreset
+            "loudnessPreset": loudnessPreset,
         }
         r = Encoder.interface.send_request(
             rtype=RequestTypes.POST, route="encoder", json=body
         )
-        
+
         while r["statusCode"] == 202:
             encoderId = r["data"]["encoderId"]
             r = Encoder.interface.send_request(

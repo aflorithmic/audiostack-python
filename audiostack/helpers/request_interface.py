@@ -35,12 +35,11 @@ class RequestInterface:
     def make_header(self):
         header = {
             "x-api-key": audiostack.api_key,
-            "x-python-sdk-version": audiostack.sdk_version
+            "x-python-sdk-version": audiostack.sdk_version,
         }
         if audiostack.assume_org_id:
             header["x-assume-org"] = audiostack.assume_org_id
         return header
-
 
     def resolve_response(self, r):
         if self.DEBUG_PRINT:

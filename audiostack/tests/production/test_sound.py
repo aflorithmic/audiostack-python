@@ -7,9 +7,7 @@ audiostack.api_base = os.environ.get("AUDIO_STACK_DEV_URL", "https://v2.api.audi
 audiostack.api_key = os.environ["AUDIO_STACK_DEV_KEY"]
 
 
-
 def test_list():
     sounds = Sound.Template.list()
     for s in sounds:
         assert isinstance(s, Sound.Template.Item)
-        

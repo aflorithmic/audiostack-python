@@ -16,7 +16,7 @@ def test_video():
 
     mix = audiostack.Production.Mix.create(speechItem=speech)
     print(mix)
-        
+
     video = audiostack.Delivery.Video.create(
         productionItem=mix,
         public=True,

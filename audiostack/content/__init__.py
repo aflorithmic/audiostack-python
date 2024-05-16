@@ -15,6 +15,7 @@ def list_modules():
 
     return Root.list_modules()
 
+
 def generate(prompt: str, max_length: int = 100):
     from audiostack.content.root_functions import Root
 

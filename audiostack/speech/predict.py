@@ -26,15 +26,11 @@ class Predict:
     @staticmethod
     def list() -> list:
         r = Predict.interface.send_request(rtype=RequestTypes.GET, route="voices")
-    #    return #Predict.List(r, list_type="voices")
+        #    return #Predict.List(r, list_type="voices")
         return Predict.List(response=r, list_type="voices")
-    
 
     @staticmethod
     def predict(text: str, voice: str) -> list:
-        body = {
-            "text" : text,
-            "voice" : voice
-        }
+        body = {"text": text, "voice": voice}
         r = Predict.interface.send_request(rtype=RequestTypes.POST, route="", json=body)
         return Predict.Item(r)

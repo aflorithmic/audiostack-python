@@ -19,7 +19,7 @@ class File:
 
         def delete(self):
             return File.delete(self.fileId)
-    
+
         def download(self, fileName="", path="./") -> None:
             if not fileName:
                 fileName = self.filePath.split("/")[-1]

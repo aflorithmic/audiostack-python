@@ -12,11 +12,13 @@ lars's fascination with the arcane and forbidden had led him to a remote corner 
 Intrigued and intoxicated by the allure of forbidden knowledge, lars agreed to join their ranks. Little did he know that he had just crossed a line from which there was no return.
 """
 
+
 def test_list():
     voices = Predict.list()
     print(voices)
     for v in voices:
         assert isinstance(v, str)
+
 
 def test_predict():
     item = Predict.predict(text=long_text, voice="sara")

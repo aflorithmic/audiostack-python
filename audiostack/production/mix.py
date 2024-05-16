@@ -45,8 +45,8 @@ class Mix:
 
     @staticmethod
     def create(
-        speechId: str="",
-        scriptId: str="",
+        speechId: str = "",
+        scriptId: str = "",
         speechItem=None,
         soundTemplate: str = "",
         mediaFiles: dict = {},
@@ -58,12 +58,14 @@ class Mix:
         exportSettings: dict = {},
         strictValidation: bool = True,
         validate: bool = False,
-        soundLayer: str = "default"
+        soundLayer: str = "default",
     ) -> Item:
         counts = sum([1 for i in [speechId, scriptId, speechItem] if i])
         if counts != 1:
-            raise Exception("only 1 of the following is required; speechId, speechItem, or scriptId")
-        
+            raise Exception(
+                "only 1 of the following is required; speechId, speechItem, or scriptId"
+            )
+
         if speechItem:
             speechId = speechItem.speechId
 
@@ -71,7 +73,6 @@ class Mix:
             raise Exception("soundTemplate argument should be a string")
         if not isinstance(masteringPreset, str):
             raise Exception("masteringPreset should be a string")
-        
 
         body = {
             "soundTemplate": soundTemplate,
@@ -82,8 +83,8 @@ class Mix:
             "soundLayer": soundLayer,
             "masteringPreset": masteringPreset,
             "public": public,
-            "exportSettings" : exportSettings,
-            "strictValidation" : strictValidation
+            "exportSettings": exportSettings,
+            "strictValidation": strictValidation,
         }
         if speechId:
             body["speechId"] = speechId
@@ -91,16 +92,22 @@ class Mix:
             body["scriptId"] = scriptId
 
         if validate:
-            r = Mix.interface.send_request(rtype=RequestTypes.POST, route="validate", json=body)
+            r = Mix.interface.send_request(
+                rtype=RequestTypes.POST, route="validate", json=body
+            )
         else:
-            r = Mix.interface.send_request(rtype=RequestTypes.POST, route="mix", json=body)
-            
+            r = Mix.interface.send_request(
+                rtype=RequestTypes.POST, route="mix", json=body
+            )
+
         while r["statusCode"] == 202:
             print("Response in progress please wait...")
             r = Mix.interface.send_request(
-                rtype=RequestTypes.GET, route="mix", path_parameters=r["data"]["productionId"]
+                rtype=RequestTypes.GET,
+                route="mix",
+                path_parameters=r["data"]["productionId"],
             )
-        
+
         return Mix.Item(r)
 
     @staticmethod

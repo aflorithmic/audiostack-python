@@ -14,6 +14,7 @@ def test_dict_list():
         assert d
         print(d.lang, d.content, d.words[0:10])
 
+
 def test_dict_custom_list():
     # list words in custom dicts
     dicts = Diction.Custom.list()
@@ -22,7 +23,9 @@ def test_dict_custom_list():
 
 
 def test_create():
-    create = Diction.Custom.create_word(word="AFLR", replacement="aflorithmic", lang="global")
+    create = Diction.Custom.create_word(
+        word="AFLR", replacement="aflorithmic", lang="global"
+    )
     assert create
 
 

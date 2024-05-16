@@ -113,19 +113,24 @@ class TTS:
         return TTS.Item(r)
 
     @staticmethod
-    def annotate(speechId: str, scriptReference: str = "", languageCode: str ="", continuousRecognition: bool = False):
+    def annotate(
+        speechId: str,
+        scriptReference: str = "",
+        languageCode: str = "",
+        continuousRecognition: bool = False,
+    ):
 
         body = {
             "speechId": speechId,
             "scriptReference": scriptReference,
             "language_code": languageCode,
-            "continuous_recognition": continuousRecognition        
+            "continuous_recognition": continuousRecognition,
         }
         r = TTS.interface.send_request(
             rtype=RequestTypes.POST, route="tts/annotate", json=body
         )
         print(r)
-        return (r)
+        return r
 
     @staticmethod
     def create(

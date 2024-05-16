@@ -22,7 +22,7 @@ class Video:
         productionItem: object = None,
         public: bool = False,
     ) -> Item:
-        
+
         if productionId and productionItem:
             raise Exception(
                 "productionId or productionItem should be supplied not both"
@@ -40,7 +40,6 @@ class Video:
         elif productionId:
             if not isinstance(productionId, str):
                 raise Exception("supplied productionId should be a uuid string.")
-        
 
         body = {
             "productionId": productionId,
@@ -49,7 +48,7 @@ class Video:
         r = Video.interface.send_request(
             rtype=RequestTypes.POST, route="video", json=body
         )
-        
+
         while r["statusCode"] == 202:
             videoId = r["data"]["videoId"]
             r = Video.interface.send_request(
