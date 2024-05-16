@@ -1,8 +1,10 @@
+from typing import List, Optional
+
+from audiostack.content.file import File
+from audiostack.helpers.api_item import APIResponseItem
 from audiostack.helpers.request_interface import RequestInterface
 from audiostack.helpers.request_types import RequestTypes
-from audiostack.helpers.api_item import APIResponseItem
-from audiostack.content.file import File
-from typing import List, Optional
+
 
 class Suite:
     DENOISE_ENDPOINT = "suite/denoise"

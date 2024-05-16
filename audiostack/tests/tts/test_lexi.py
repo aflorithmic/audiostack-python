@@ -1,6 +1,6 @@
 import os
-import audiostack
 
+import audiostack
 from audiostack.speech.diction import Diction
 
 audiostack.api_base = os.environ.get("AUDIO_STACK_DEV_URL", "https://v2.api.audio")

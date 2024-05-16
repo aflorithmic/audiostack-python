@@ -1,6 +1,7 @@
 import os
+from unittest.mock import Mock, patch
+
 import pytest
-from unittest.mock import patch, Mock
 
 import audiostack
 from audiostack.helpers.request_types import RequestTypes

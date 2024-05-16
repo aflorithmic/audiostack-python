@@ -8,9 +8,9 @@ app_info = None
 from warnings import warn
 
 from audiostack import content as Content
-from audiostack import speech as Speech
-from audiostack import production as Production
 from audiostack import delivery as Delivery
+from audiostack import production as Production
+from audiostack import speech as Speech
 from audiostack.docs.docs import Documentation
 
 warn(

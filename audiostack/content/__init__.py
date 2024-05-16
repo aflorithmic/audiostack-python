@@ -1,7 +1,7 @@
-from audiostack.content.script import Script
-from audiostack.content.media import Media
 from audiostack.content.file import File, Folder
-from audiostack.content.recommend import RecommendTag, RecommendMood, RecommendTone
+from audiostack.content.media import Media
+from audiostack.content.recommend import RecommendMood, RecommendTag, RecommendTone
+from audiostack.content.script import Script
 
 
 def list_projects():

@@ -1,6 +1,7 @@
 import os
 import re
-from setuptools import setup, find_packages
+
+from setuptools import find_packages, setup
 
 ROOT = os.path.dirname(__file__)
 VERSION_RE = re.compile(r"""sdk_version = ['"]([0-9.]+)['"]""")

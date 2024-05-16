@@ -1,9 +1,9 @@
 import os
-import audiostack
+from unittest.mock import patch
 
+import audiostack
 from audiostack.content.file import File
 from audiostack.production.suite import Suite
-from unittest.mock import patch
 
 audiostack.api_base = os.environ.get("AUDIO_STACK_DEV_URL", "https://v2.api.audio")
 audiostack.api_key = os.environ["AUDIO_STACK_DEV_KEY"]

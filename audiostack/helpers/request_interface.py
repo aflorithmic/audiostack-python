@@ -3,11 +3,10 @@ import shutil
 
 import requests
 
-from audiostack.helpers.util import bcolors
-from audiostack.helpers.response import Response
-from audiostack.helpers.request_types import RequestTypes
-
 import audiostack
+from audiostack.helpers.request_types import RequestTypes
+from audiostack.helpers.response import Response
+from audiostack.helpers.util import bcolors
 
 
 def remove_empty(data):

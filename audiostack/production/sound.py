@@ -1,9 +1,9 @@
-from audiostack.helpers.request_interface import RequestInterface
-from audiostack.helpers.request_types import RequestTypes
+from typing import Union
+
 from audiostack.helpers.api_item import APIResponseItem
 from audiostack.helpers.api_list import APIResponseList
-
-from typing import Union
+from audiostack.helpers.request_interface import RequestInterface
+from audiostack.helpers.request_types import RequestTypes
 
 
 class Sound:

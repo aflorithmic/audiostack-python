@@ -672,6 +672,20 @@ socks = ["pysocks (>=1.5.6,!=1.5.7,<2.0)"]
 zstd = ["zstandard (>=0.18.0)"]
 
 [[package]]
+name = "vulture"
+version = "2.11"
+description = "Find dead code"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "vulture-2.11-py2.py3-none-any.whl", hash = "sha256:12d745f7710ffbf6aeb8279ba9068a24d4e52e8ed333b8b044035c9d6b823aba"},
+    {file = "vulture-2.11.tar.gz", hash = "sha256:f0fbb60bce6511aad87ee0736c502456737490a82d919a44e6d92262cb35f1c2"},
+]
+
+[package.dependencies]
+tomli = {version = ">=1.1.0", markers = "python_version < \"3.11\""}
+
+[[package]]
 name = "yamllint"
 version = "1.35.1"
 description = "A linter for YAML files."
@@ -692,4 +706,8 @@ dev = ["doc8", "flake8", "flake8-import-order", "rstcheck[sphinx]", "sphinx"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8.1"
+<<<<<<< HEAD
 content-hash = "9edea9b1073eacd91d7e17a2e44abaf94197b12192cb786c5123dbfe6b7bf4c5"
+=======
+content-hash = "e30d08743e1ab67a627bfd78ef57932ddba9699f73f4d83ed44b6c3d5a28f0a8"
+>>>>>>> b0adae7 (style: Ran isort to fix import ordering)

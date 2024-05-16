@@ -25,6 +25,7 @@ python-dotenv = {extras = ["cli"], version = "^1.0.1"}
 flake8 = "^7.0.0"
 isort = "^5.13.2"
 yamllint = "^1.35.1"
+vulture = "^2.11"
 
 [build-system]
 requires = ["poetry-core"]

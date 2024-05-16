@@ -1,9 +1,11 @@
-from audiostack.helpers.request_interface import RequestInterface
-from audiostack.helpers.request_types import RequestTypes
+import os
+
+import requests
+
 from audiostack.helpers.api_item import APIResponseItem
 from audiostack.helpers.api_list import APIResponseList
-import os
-import requests
+from audiostack.helpers.request_interface import RequestInterface
+from audiostack.helpers.request_types import RequestTypes
 
 
 class Media:
