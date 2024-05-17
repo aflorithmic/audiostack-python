@@ -18,9 +18,7 @@ def test_create():
 
 
 def test_denoise():
-    with patch(
-        "audiostack.production.suite.Suite.DENOISE_ENDPOINT", "suite/test"
-    ) as mock_send:
+    with patch("audiostack.production.suite.Suite.DENOISE_ENDPOINT", "suite/test"):
         r = Suite.denoise(test_constants["fileId"], wait=False)
         assert isinstance(r, Suite.PipelineInProgressItem)
         test_constants["pipelineId"] = r.pipelineId

@@ -1,7 +1,5 @@
 import os
 
-import requests
-
 from audiostack.helpers.api_item import APIResponseItem
 from audiostack.helpers.api_list import APIResponseList
 from audiostack.helpers.request_interface import RequestInterface
@@ -49,9 +47,7 @@ class Media:
         url = response.data["fileUploadUrl"]
         mediaId = response.data["mediaId"]
 
-        status = Media.interface.send_upload_request(
-            local_path=filePath, upload_url=url
-        )
+        Media.interface.send_upload_request(local_path=filePath, upload_url=url)
         return Media.get(mediaId)
 
     @staticmethod

@@ -71,9 +71,7 @@ class File:
         url = response.data["fileUploadUrl"]
         fileId = response.data["fileId"]
 
-        status = File.interface.send_upload_request(
-            local_path=localPath, upload_url=url
-        )
+        File.interface.send_upload_request(local_path=localPath, upload_url=url)
         return File.get(fileId)
 
     @staticmethod
@@ -117,7 +115,7 @@ class File:
             "metadata": metadata,
         }
 
-        r = File.interface.send_request(
+        File.interface.send_request(
             rtype=RequestTypes.PATCH,
             route=f"file/id/{fileId}",
             json=data,

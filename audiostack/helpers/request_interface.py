@@ -5,8 +5,6 @@ import requests
 
 import audiostack
 from audiostack.helpers.request_types import RequestTypes
-from audiostack.helpers.response import Response
-from audiostack.helpers.util import bcolors
 
 
 def remove_empty(data):

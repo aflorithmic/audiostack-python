@@ -1,7 +1,11 @@
-from audiostack.content.file import File, Folder
-from audiostack.content.media import Media
-from audiostack.content.recommend import RecommendMood, RecommendTag, RecommendTone
-from audiostack.content.script import Script
+from audiostack.content.file import File, Folder  # noqa: F401
+from audiostack.content.media import Media  # noqa: F401
+from audiostack.content.recommend import (  # noqa: F401
+    RecommendMood,
+    RecommendTag,
+    RecommendTone,
+)
+from audiostack.content.script import Script  # noqa: F401
 
 
 def list_projects():

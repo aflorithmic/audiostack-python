@@ -55,10 +55,10 @@ min_confidence = 100
 
 [tool.taskipy.tasks]
 lint-apply = "task black-apply && task isort-apply"
-lint-check = "task black-check && task isort-check && task yaml-check && task sql-check && task flake8-check && task mypy-check && task vulture-check"
+lint-check = "task black-check && task isort-check && task yaml-check && task flake8-check && task mypy-check && task vulture-check"
 black-check = "black --check ."
 black-apply = "black ."
-flake8-check = "flake8 --extend-exclude .venv/,node_modules/ --max-line-length=200"
+flake8-check = "flake8  --extend-ignore=E203,E402,E501 --extend-exclude .venv/"
 isort-check = "isort -c ."
 isort-apply = "isort ."
 mypy-check = "mypy ."

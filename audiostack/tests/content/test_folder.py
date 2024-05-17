@@ -26,4 +26,4 @@ def test_create():
 
 
 def test_delete():
-    r = Folder.delete(folder="__PYTHON_TEST", delete_files=True)
+    Folder.delete(folder="__PYTHON_TEST", delete_files=True)

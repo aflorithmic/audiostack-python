@@ -5,19 +5,11 @@ assume_org_id = None
 app_info = None
 
 
-from warnings import warn
-
-from audiostack import content as Content
-from audiostack import delivery as Delivery
-from audiostack import production as Production
-from audiostack import speech as Speech
-from audiostack.docs.docs import Documentation
-
-warn(
-    "Future releases (`^2.0.0`) of the AudioStack SDK will only support python `^3.8.1`",
-    DeprecationWarning,
-    stacklevel=2,
-)
+from audiostack import content as Content  # noqa: F401
+from audiostack import delivery as Delivery  # noqa: F401
+from audiostack import production as Production  # noqa: F401
+from audiostack import speech as Speech  # noqa: F401
+from audiostack.docs.docs import Documentation  # noqa: F401
 
 
 billing_session = 0
