@@ -706,8 +706,4 @@ dev = ["doc8", "flake8", "flake8-import-order", "rstcheck[sphinx]", "sphinx"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8.1"
-<<<<<<< HEAD
-content-hash = "9edea9b1073eacd91d7e17a2e44abaf94197b12192cb786c5123dbfe6b7bf4c5"
-=======
-content-hash = "e30d08743e1ab67a627bfd78ef57932ddba9699f73f4d83ed44b6c3d5a28f0a8"
->>>>>>> b0adae7 (style: Ran isort to fix import ordering)
+content-hash = "2fa713c65a31151ca136131a3df4110ea88966f27e6889d2959cb3dd98f49fb0"
