@@ -39,7 +39,10 @@ jobs:
           command: |
             python3 increment_version.py
             cat audiostack/__init__.py
-            sh publish_ci.sh
+            poetry build
+            poetry publish -u __token__ -p $PIP_AUDIOSTACK_TOKEN
+          # You can find the token to publish to pypi here
+          # https://eu-west-1.console.aws.amazon.com/systems-manager/parameters/pypi-m2m-token/description?region=eu-west-1&tab=Table#list_parameter_filters=Name:Contains:py
 
 workflows:
   main-workflow:
