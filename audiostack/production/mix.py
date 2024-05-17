@@ -1,3 +1,5 @@
+from typing import Any, Optional, Union
+
 from audiostack.helpers.api_item import APIResponseItem
 from audiostack.helpers.api_list import APIResponseList
 from audiostack.helpers.request_interface import RequestInterface
@@ -8,11 +10,11 @@ class Mix:
     interface = RequestInterface(family="production")
 
     class Item(APIResponseItem):
-        def __init__(self, response) -> None:
+        def __init__(self, response: dict) -> None:
             super().__init__(response)
             self.productionId = self.data["productionId"]
 
-        def download(self, fileName="", path="./") -> None:
+        def download(self, fileName: str = "", path: str = "./") -> None:
             sections = self.data["files"]
             for i, s in enumerate(sections):
                 format = s["format"]
@@ -27,19 +29,18 @@ class Mix:
                     s["url"], destination=path, name=full_name
                 )
 
-        def delete(self):
+        def delete(self) -> APIResponseItem:
             return Mix.delete(self.productionId)
 
     class List(APIResponseList):
-        def __init__(self, response, list_type) -> None:
+        def __init__(self, response: dict, list_type: str) -> None:
             super().__init__(response, list_type)
 
-        def resolve_item(self, list_type, item):
+        def resolve_item(self, list_type: str, item: Any) -> Union["Mix.Item", None]:
             if list_type == "productionIds":
                 return Mix.Item({"data": item})
             elif list_type == "presets":
-                return
-
+                return None
             else:
                 raise Exception()
 
@@ -47,7 +48,7 @@ class Mix:
     def create(
         speechId: str = "",
         scriptId: str = "",
-        speechItem=None,
+        speechItem: Optional[Any] = None,
         soundTemplate: str = "",
         mediaFiles: dict = {},
         fxFiles: dict = {},
@@ -118,7 +119,7 @@ class Mix:
         return Mix.Item(r)
 
     @staticmethod
-    def delete(productionId: str) -> str:
+    def delete(productionId: str) -> APIResponseItem:
         r = Mix.interface.send_request(
             rtype=RequestTypes.DELETE, route="mix", path_parameters=productionId
         )
@@ -126,8 +127,11 @@ class Mix:
 
     @staticmethod
     def list(
-        projectName="", moduleName: str = "", scriptName: str = "", scriptId: str = ""
-    ) -> list:
+        projectName: str = "",
+        moduleName: str = "",
+        scriptName: str = "",
+        scriptId: str = "",
+    ) -> "Mix.List":
         query_params = {
             "projectName": projectName,
             "moduleName": moduleName,
@@ -141,7 +145,7 @@ class Mix:
         return Mix.List(r, list_type="productionIds")
 
     @staticmethod
-    def list_presets() -> Item:
+    def list_presets() -> "Mix.List":
         r = Mix.interface.send_request(
             rtype=RequestTypes.GET, route="mix/presets", path_parameters=""
         )

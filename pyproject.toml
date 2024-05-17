@@ -26,6 +26,8 @@ flake8 = "^7.0.0"
 isort = "^5.13.2"
 yamllint = "^1.35.1"
 vulture = "^2.11"
+mypy = "^1.10.0"
+types-requests = "^2.31.0.20240406"
 
 [build-system]
 requires = ["poetry-core"]
@@ -47,7 +49,7 @@ addopts = [
 [tool.mypy]
 disallow_untyped_defs = true
 ignore_missing_imports = true
-exclude = [".venv/"]
+exclude = [".venv/", "example.py", "recipes"]
 
 [tool.vulture]
 exclude = [".venv/", ".git", "__pycach__", "build", "dist", "node_modules"]

@@ -4,12 +4,12 @@ import audiostack
 from audiostack.content.script import Script
 
 audiostack.api_base = os.environ.get("AUDIO_STACK_DEV_URL", "https://v2.api.audio")
-audiostack.api_key = os.environ["AUDIO_STACK_DEV_KEY"]
+audiostack.api_key = os.environ["AUDIO_STACK_DEV_KEY"]  # type: ignore
 
 SCRIPT_ID = ""
 
 
-def test_create():
+def test_create() -> None:
     script_item = Script.create(
         scriptText="hello sam",
         projectName="sdk_test",
@@ -20,25 +20,25 @@ def test_create():
     SCRIPT_ID = script_item.scriptId
 
 
-def test_get():
+def test_get() -> None:
     script_item = Script.get(scriptId=SCRIPT_ID)
     assert script_item
 
 
-def test_update():
+def test_update() -> None:
     Script.update(scriptId=SCRIPT_ID, scriptText="blah blah")
 
 
-def test_preview():
+def test_preview() -> None:
     script_item = Script.get(scriptId=SCRIPT_ID, previewWithVoice="sara")
     assert script_item
 
 
-def test_delete():
+def test_delete() -> None:
     Script.delete(scriptId=SCRIPT_ID)
 
 
-def test_inbuilts():
+def test_inbuilts() -> None:
     script_item = Script.create(
         scriptText="hello sam",
         projectName="sdk_test",
@@ -49,7 +49,7 @@ def test_inbuilts():
     script_item.delete()
 
 
-def test_list():
+def test_list() -> None:
     items = Script.list()
     for i in items:
         assert isinstance(i, Script.Item)

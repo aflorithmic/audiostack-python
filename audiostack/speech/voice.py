@@ -1,3 +1,5 @@
+from typing import Any
+
 from audiostack.helpers.api_item import APIResponseItem
 from audiostack.helpers.api_list import APIResponseList
 from audiostack.helpers.request_interface import RequestInterface
@@ -8,16 +10,16 @@ class Voice:
     interface = RequestInterface(family="speech/voice")
 
     class Item(APIResponseItem):
-        def __init__(self, response) -> None:
+        def __init__(self, response: dict) -> None:
             super().__init__(response)
             self.provider = self.data["provider"]
             self.alias = self.data["alias"]
 
     class List(APIResponseList):
-        def __init__(self, response, list_type) -> None:
+        def __init__(self, response: dict, list_type: str) -> None:
             super().__init__(response, list_type)
 
-        def resolve_item(self, list_type, item):
+        def resolve_item(self, list_type: str, item: Any) -> "Voice.Item":
             if list_type == "voices":
                 return Voice.Item({"data": item})
             else:
@@ -25,8 +27,8 @@ class Voice:
 
     @staticmethod
     def select_for_script(
-        scriptId: str = "", scriptItem="", tone: str = "", targetLength: int = 20
-    ):
+        scriptId: str = "", scriptItem: Any = "", tone: str = "", targetLength: int = 20
+    ) -> APIResponseItem:
         if scriptId and scriptItem:
             raise Exception("scriptId or scriptItem should be supplied not both")
         if not (scriptId or scriptItem):
@@ -43,7 +45,7 @@ class Voice:
         return APIResponseItem(r)
 
     @staticmethod
-    def select_for_content(content, tone: str = ""):
+    def select_for_content(content: str, tone: str = "") -> APIResponseItem:
         body = {"content": content}
         if tone:
             body["tone"] = tone
@@ -54,12 +56,12 @@ class Voice:
         return APIResponseItem(r)
 
     @staticmethod
-    def list() -> list:
+    def list() -> "Voice.List":
         r = Voice.interface.send_request(rtype=RequestTypes.GET, route="")
         return Voice.List(r, list_type="voices")
 
     class Parameter:
         @staticmethod
-        def get() -> dict:
+        def get() -> APIResponseItem:
             r = Voice.interface.send_request(rtype=RequestTypes.GET, route="parameter")
             return APIResponseItem(r)

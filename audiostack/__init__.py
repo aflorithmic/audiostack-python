@@ -15,5 +15,5 @@ from audiostack.docs.docs import Documentation  # noqa: F401
 billing_session = 0
 
 
-def credits_used_in_this_session():
+def credits_used_in_this_session() -> float:
     return float("{:.2f}".format(billing_session))

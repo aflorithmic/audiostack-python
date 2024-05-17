@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Any, List, Optional, Union
 
 from audiostack.content.file import File
 from audiostack.helpers.api_item import APIResponseItem
@@ -15,17 +15,17 @@ class Suite:
     interface = RequestInterface(family="production")
 
     class EvaluationItem(APIResponseItem):
-        def __init__(self, response) -> None:
+        def __init__(self, response: dict) -> None:
             super().__init__(response)
 
     class PipelineInProgressItem(APIResponseItem):
-        def __init__(self, response) -> None:
+        def __init__(self, response: dict) -> None:
             super().__init__(response)
 
             self.pipelineId = self.data["pipelineId"]
 
     class PipelineFinishedItem(PipelineInProgressItem):
-        def __init__(self, response) -> None:
+        def __init__(self, response: dict) -> None:
             super().__init__(response)
             self.newFileIds = self.data["results"]["newFileIds"]
             self.inputFileIds = self.data["results"]["inputFileIds"]
@@ -81,7 +81,9 @@ class Suite:
         return Suite.EvaluationItem(r)
 
     @staticmethod
-    def separate(fileId: str, wait=True):
+    def separate(
+        fileId: str, wait: bool = True
+    ) -> Union["Suite.PipelineInProgressItem", "Suite.PipelineFinishedItem"]:
 
         body = {
             "fileId": fileId,
@@ -93,7 +95,9 @@ class Suite:
         return Suite._poll(r, item.pipelineId) if wait else item
 
     @staticmethod
-    def denoise(fileId: str, level: Optional[int] = None, wait=True):
+    def denoise(
+        fileId: str, level: Optional[int] = None, wait: bool = True
+    ) -> Union["Suite.PipelineInProgressItem", "Suite.PipelineFinishedItem"]:
 
         body = {"fileId": fileId, "level": level}
         r = Suite.interface.send_request(
@@ -103,7 +107,7 @@ class Suite:
         return Suite._poll(r, item.pipelineId) if wait else item
 
     @staticmethod
-    def _poll(r, pipelineId: str):
+    def _poll(r: Any, pipelineId: str) -> "Suite.PipelineFinishedItem":
         while r["statusCode"] == 202:
             r = Suite.interface.send_request(
                 rtype=RequestTypes.GET,
@@ -122,7 +126,7 @@ class Suite:
         return Suite.PipelineFinishedItem(r)
 
     @staticmethod
-    def get(pipelineId: str):
+    def get(pipelineId: str) -> "Suite.PipelineFinishedItem":
         r = Suite.interface.send_request(
             rtype=RequestTypes.GET, route="suite/pipeline", path_parameters=pipelineId
         )

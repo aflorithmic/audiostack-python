@@ -1,3 +1,5 @@
+from typing import Any, Optional
+
 from audiostack.helpers.api_item import APIResponseItem
 from audiostack.helpers.api_list import APIResponseList
 from audiostack.helpers.request_interface import RequestInterface
@@ -8,20 +10,20 @@ class Encoder:
     interface = RequestInterface(family="delivery")
 
     class Item(APIResponseItem):
-        def __init__(self, response) -> None:
+        def __init__(self, response: dict) -> None:
             super().__init__(response)
             self.url = self.data["url"]
             self.format = self.data["format"]
 
-        def download(self, fileName="default", path="./") -> None:
+        def download(self, fileName: str = "default", path: str = "./") -> None:
             full_name = f"{fileName}.{self.format}"
             RequestInterface.download_url(self.url, destination=path, name=full_name)
 
     class List(APIResponseList):
-        def __init__(self, response, list_type) -> None:
+        def __init__(self, response: dict, list_type: str) -> None:
             super().__init__(response, list_type)
 
-        def resolve_item(self, list_type, item):
+        def resolve_item(self, list_type: str, item: Any) -> "Encoder.Item":
             if list_type == "encodedItems":
                 return Encoder.Item({"data": item})
             else:
@@ -31,15 +33,15 @@ class Encoder:
     def encode_mix(
         preset: str,
         productionId: str = "",
-        productionItem: object = None,
+        productionItem: Optional[Any] = None,
         loudnessPreset: str = "",
         public: bool = False,
         bitRateType: str = "",
-        bitRate: int = None,
-        sampleRate: int = None,
+        bitRate: Optional[int] = None,
+        sampleRate: Optional[int] = None,
         format: str = "",
-        bitDepth: int = None,
-        channels: int = None,
+        bitDepth: Optional[int] = None,
+        channels: Optional[int] = None,
     ) -> Item:
 
         if productionId and productionItem:
@@ -89,7 +91,7 @@ class Encoder:
         return Encoder.Item(r)
 
     @staticmethod
-    def list_presets() -> Item:
+    def list_presets() -> "Encoder.List":
         r = Encoder.interface.send_request(
             rtype=RequestTypes.GET, route="encoder/presets", path_parameters=""
         )

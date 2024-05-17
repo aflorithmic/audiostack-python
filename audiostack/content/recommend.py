@@ -10,7 +10,7 @@ class RecommendTag:
     interface = RequestInterface(family=FAMILY)
 
     class Item(APIResponseItem):
-        def __init__(self, response) -> None:
+        def __init__(self, response: dict) -> None:
             super().__init__(response)
 
             self.tags = self.data["tags"]
@@ -38,7 +38,7 @@ class RecommendMood:
     interface = RequestInterface(family=FAMILY)
 
     class Item(APIResponseItem):
-        def __init__(self, response) -> None:
+        def __init__(self, response: dict) -> None:
             super().__init__(response)
 
             self.moods = self.data["tags"]
@@ -59,7 +59,7 @@ class RecommendTone:
     interface = RequestInterface(family=FAMILY)
 
     class Item(APIResponseItem):
-        def __init__(self, response) -> None:
+        def __init__(self, response: dict) -> None:
             super().__init__(response)
 
             self.tones = self.data["tags"]

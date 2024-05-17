@@ -1,4 +1,5 @@
 import os
+from typing import Any
 
 from audiostack.helpers.api_item import APIResponseItem
 from audiostack.helpers.api_list import APIResponseList
@@ -11,25 +12,25 @@ class File:
     interface = RequestInterface(family=FAMILY)
 
     class Item(APIResponseItem):
-        def __init__(self, response) -> None:
+        def __init__(self, response: dict) -> None:
             super().__init__(response)
             self.fileId = self.data["fileId"]
             self.filePath = self.data["filePath"]
             self.url = self.data.get("url", None)
 
-        def delete(self):
+        def delete(self) -> APIResponseItem:
             return File.delete(self.fileId)
 
-        def download(self, fileName="", path="./") -> None:
+        def download(self, fileName: str = "", path: str = "./") -> None:
             if not fileName:
                 fileName = self.filePath.split("/")[-1]
             RequestInterface.download_url(self.url, destination=path, name=fileName)
 
     class List(APIResponseList):
-        def __init__(self, response, list_type) -> None:
+        def __init__(self, response: dict, list_type: str) -> None:
             super().__init__(response, list_type)
 
-        def resolve_item(self, list_type, item):
+        def resolve_item(self, list_type: str, item: Any) -> "File.Item":
             if list_type == "items" or list_type == "files":
                 return File.Item({"data": item})
             else:
@@ -43,7 +44,6 @@ class File:
         category: str = "",
         tags: list = [],
         metadata: dict = {},
-        filePath: str = None,
     ) -> Item:
         if not os.path.isfile(localPath):
             raise Exception("Supplied file does not eixst")
@@ -130,7 +130,7 @@ class File:
         return File.Item(r)
 
     @staticmethod
-    def delete(fileId: str) -> str:
+    def delete(fileId: str) -> APIResponseItem:
         r = File.interface.send_request(
             rtype=RequestTypes.DELETE, route="file/id", path_parameters=fileId
         )
@@ -166,23 +166,23 @@ class Folder:
     interface = RequestInterface(family=FAMILY)
 
     class Item(APIResponseItem):
-        def __init__(self, response) -> None:
+        def __init__(self, response: dict) -> None:
             super().__init__(response)
             self.folders = Folder.List(response, list_type="folders")
             self.files = File.List(response, list_type="files")
 
     class List(APIResponseList):
-        def __init__(self, response, list_type) -> None:
+        def __init__(self, response: dict, list_type: str) -> None:
             super().__init__(response, list_type)
 
-        def resolve_item(self, list_type, item):
+        def resolve_item(self, list_type: str, item: Any) -> dict:
             if list_type == "folders":
                 return {"data": item}
             else:
                 raise Exception()
 
     @staticmethod
-    def create(name) -> Item:
+    def create(name: Any) -> APIResponseItem:
 
         r = File.interface.send_request(
             rtype=RequestTypes.POST,
@@ -192,14 +192,14 @@ class Folder:
         return APIResponseItem(r)
 
     @staticmethod
-    def list(folder: str) -> Item:
+    def list(folder: str) -> "Folder.Item":
         r = File.interface.send_request(
             rtype=RequestTypes.GET, route="folder", query_parameters={"folder": folder}
         )
         return Folder.Item(r)
 
     @staticmethod
-    def delete(folder: str, delete_files=False) -> str:
+    def delete(folder: str, delete_files: bool = False) -> APIResponseItem:
         r = File.interface.send_request(
             rtype=RequestTypes.DELETE,
             route="folder",

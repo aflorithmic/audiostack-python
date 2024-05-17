@@ -4,12 +4,12 @@ import audiostack
 from audiostack.content.file import File
 
 audiostack.api_base = os.environ.get("AUDIO_STACK_DEV_URL", "https://v2.api.audio")
-audiostack.api_key = os.environ["AUDIO_STACK_DEV_KEY"]
+audiostack.api_key = os.environ["AUDIO_STACK_DEV_KEY"]  # type: ignore
 
-test_constants = {}
+test_constants = {}  # type: dict
 
 
-def test_transfer():
+def test_transfer() -> None:
     script = audiostack.Content.Script.create(scriptText="hello sam")
 
     speech = audiostack.Speech.TTS.create(scriptItem=script, voice="sara")
