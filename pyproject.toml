@@ -42,7 +42,7 @@ addopts = [
     "--maxfail=1",
     "-vvv",
     "--log-cli-level=WARN",
-    "--cov-fail-under=0",
+    "--cov-fail-under=75",
     "--ignore=recipes/"
 ]
 
@@ -65,5 +65,5 @@ isort-check = "isort -c ."
 isort-apply = "isort ."
 mypy-check = "mypy ."
 yaml-check = "yamllint ."
-test = "coverage run -m pytest -vvv -s -x &&  coverage xml"
+test = "coverage run -m pytest -vvv -s -x &&  coverage xml  &&  coverage html"
 vulture-check = "vulture ."
