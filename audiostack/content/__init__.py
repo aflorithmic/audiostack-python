@@ -15,10 +15,10 @@ def list_projects() -> APIResponseItem:
     return Root.list_projects()
 
 
-def list_modules() -> APIResponseItem:
+def list_modules(projectName: str) -> APIResponseItem:
     from audiostack.content.root_functions import Root
 
-    return Root.list_modules()
+    return Root.list_modules(projectName=projectName)
 
 
 def generate(prompt: str, max_length: int = 100) -> APIResponseItem:

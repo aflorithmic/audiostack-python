@@ -6,13 +6,13 @@ from audiostack.helpers.request_types import RequestTypes
 class Root:
     interface = RequestInterface(family="content")
 
-    @classmethod
-    def list_projects(cls) -> APIResponseItem:
+    @staticmethod
+    def list_projects() -> APIResponseItem:
         r = Root.interface.send_request(rtype=RequestTypes.GET, route="list_projects")
         return APIResponseItem(r)
 
-    @classmethod
-    def list_modules(cls, projectName: str) -> APIResponseItem:
+    @staticmethod
+    def list_modules(projectName: str) -> APIResponseItem:
         r = Root.interface.send_request(
             rtype=RequestTypes.GET,
             route="list_projects",
@@ -20,8 +20,8 @@ class Root:
         )
         return APIResponseItem(r)
 
-    @classmethod
-    def generate(cls, prompt: str, max_length: int = 100) -> APIResponseItem:
+    @staticmethod
+    def generate(prompt: str, max_length: int = 100) -> APIResponseItem:
         r = Root.interface.send_request(
             rtype=RequestTypes.POST,
             route="generate",
