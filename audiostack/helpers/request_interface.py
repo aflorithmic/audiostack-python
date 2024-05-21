@@ -31,7 +31,8 @@ class RequestInterface:
     def __init__(self, family: str) -> None:
         self.family = family
 
-    def make_header(self) -> dict:
+    @staticmethod
+    def make_header() -> dict:
         header = {
             "x-api-key": audiostack.api_key,
             "x-python-sdk-version": audiostack.sdk_version,
@@ -58,15 +59,6 @@ class RequestInterface:
             )
             raise Exception(msg)
 
-        # if isinstance(r.content, bytes):
-        #     if self.DEBUG_PRINT:
-        #         print("Is bytes")
-        #     return {
-        #         "bytes" : r.content,
-        #         "statusCode" : r.status_code
-        #     }
-
-        # else:
         if "meta" in r.json():
             if "creditsUsed" in r.json()["meta"]:
                 audiostack.billing_session += r.json()["meta"]["creditsUsed"]
@@ -140,11 +132,9 @@ class RequestInterface:
                 )
             )
 
-    @staticmethod
-    def download_url(url: str, name: str, destination: str) -> None:
-        r = requests.get(
-            url=url, stream=True, headers={"x-api-key": audiostack.api_key}
-        )
+    @classmethod
+    def download_url(cls, url: str, name: str, destination: str) -> None:
+        r = requests.get(url=url, stream=True, headers=cls.make_header())
 
         if r.status_code >= 400:
             raise Exception("Failed to download file")
