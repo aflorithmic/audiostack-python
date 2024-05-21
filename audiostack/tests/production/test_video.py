@@ -20,7 +20,7 @@ def test_create_from_production_and_image():
         public=True,
     )
     print(video)
-    assert video.status == 200, "Video from production and image Failed"
+    assert video.status_code == 200, "Video from production and image Failed"
 
 
 def test_create_from_production_and_video():
@@ -39,7 +39,7 @@ def test_create_from_production_and_video():
         mode=mode,
     )
     print(video)
-    assert video.status == 200, "Video from production and video Failed"
+    assert video.status_code == 200, "Video from production and video Failed"
 
 
 def test_create_from_file_and_video():
