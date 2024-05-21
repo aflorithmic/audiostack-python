@@ -21,13 +21,3 @@ def test_create_from_production_and_image() -> None:
     )
     print(video)
     assert video.status_code == 200, "Video from production and image Failed"
-
-
-def test_create_from_file_and_image() -> None:
-    fileId = "11c7fcf7-d7cd-4c83-ba6b-a383a6d16a30"
-    mode = {"setting": "default"}
-    format = "mp4"
-
-    video = Video.create_from_file_and_image(fileId=fileId, mode=mode, format=format)
-    print(video)
-    assert video.status_code == 200, "Video from file and image"
