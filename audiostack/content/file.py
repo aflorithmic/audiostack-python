@@ -82,7 +82,6 @@ class File:
         tags: list = [],
         metadata: dict = {},
     ) -> Item:
-
         data = {
             "filePath": uploadPath,
             "url": url,
@@ -107,7 +106,6 @@ class File:
         tags: list = [],
         metadata: dict = {},
     ) -> Item:
-
         data = {
             "filePath": filePath,
             "category": category,
@@ -127,6 +125,11 @@ class File:
         r = File.interface.send_request(
             rtype=RequestTypes.GET, route="file/id", path_parameters=fileId
         )
+        while r["statusCode"] == 202:
+            print("Response in progress please wait...")
+            r = File.interface.send_request(
+                rtype=RequestTypes.GET, route="file/id", path_parameters=fileId
+            )
         return File.Item(r)
 
     @staticmethod
@@ -183,7 +186,6 @@ class Folder:
 
     @staticmethod
     def create(name: Any) -> APIResponseItem:
-
         r = File.interface.send_request(
             rtype=RequestTypes.POST,
             route="folder",

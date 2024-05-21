@@ -124,7 +124,6 @@ class TTS:
         languageCode: str = "",
         continuousRecognition: bool = False,
     ) -> dict:
-
         body = {
             "speechId": speechId,
             "scriptReference": scriptReference,

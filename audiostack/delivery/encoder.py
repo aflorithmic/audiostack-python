@@ -43,7 +43,6 @@ class Encoder:
         bitDepth: Optional[int] = None,
         channels: Optional[int] = None,
     ) -> Item:
-
         if productionId and productionItem:
             raise Exception(
                 "productionId or productionItem should be supplied not both"
@@ -84,6 +83,7 @@ class Encoder:
         )
 
         while r["statusCode"] == 202:
+            print("Response in progress please wait...")
             encoderId = r["data"]["encoderId"]
             r = Encoder.interface.send_request(
                 rtype=RequestTypes.GET, route="encoder", path_parameters=encoderId

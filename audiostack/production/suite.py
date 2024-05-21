@@ -84,7 +84,6 @@ class Suite:
     def separate(
         fileId: str, wait: bool = True
     ) -> Union["Suite.PipelineInProgressItem", "Suite.PipelineFinishedItem"]:
-
         body = {
             "fileId": fileId,
         }
@@ -98,7 +97,6 @@ class Suite:
     def denoise(
         fileId: str, level: Optional[int] = None, wait: bool = True
     ) -> Union["Suite.PipelineInProgressItem", "Suite.PipelineFinishedItem"]:
-
         body = {"fileId": fileId, "level": level}
         r = Suite.interface.send_request(
             rtype=RequestTypes.POST, route=Suite.DENOISE_ENDPOINT, json=body
@@ -109,6 +107,7 @@ class Suite:
     @staticmethod
     def _poll(r: Any, pipelineId: str) -> "Suite.PipelineFinishedItem":
         while r["statusCode"] == 202:
+            print("Response in progress please wait...")
             r = Suite.interface.send_request(
                 rtype=RequestTypes.GET,
                 route="suite/pipeline",

@@ -19,7 +19,6 @@ def test_list() -> None:
 
 
 def test_create() -> None:
-
     r = Folder.delete(folder="__PYTHON_TEST", delete_files=True)
     r = Folder.create(name="__PYTHON_TEST")  # type: ignore
     print(r)
