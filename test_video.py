@@ -10,6 +10,8 @@ test_constants = {}  # type: dict
 
 
 def test_create_from_production_and_image():
+    audiostack.api_base = "https://staging-v2.api.audio"
+    audiostack.api_key = "0b1173a6420c4c028690b7beff39hdik"
     script = audiostack.Content.Script.create(scriptText="hello sam")
     speech = audiostack.Speech.TTS.create(scriptItem=script, voice="sara")
     mix = audiostack.Production.Mix.create(speechItem=speech)
@@ -24,6 +26,8 @@ def test_create_from_production_and_image():
 
 
 def test_create_from_production_and_video():
+    audiostack.api_base = "https://staging-v2.api.audio"
+    audiostack.api_key = "0b1173a6420c4c028690b7beff39hdik"
     script = audiostack.Content.Script.create(scriptText="hello lars")
     speech = audiostack.Speech.TTS.create(scriptItem=script, voice="sara")
     mix = audiostack.Production.Mix.create(speechItem=speech)
@@ -43,6 +47,8 @@ def test_create_from_production_and_video():
 
 
 def test_create_from_file_and_video():
+    audiostack.api_base = "https://staging-v2.api.audio"
+    audiostack.api_key = "0b1173a6420c4c028690b7beff39hdik"
     fileId = "11c7fcf7-d7cd-4c83-ba6b-a383a6d16a30"
     videoFileId = "e655867d-c12f-42ad-a57e-466598ab84aa"
     mode = {"setting": "low"}
@@ -56,6 +62,8 @@ def test_create_from_file_and_video():
 
 
 def test_create_from_file_and_image():
+    audiostack.api_base = "https://staging-v2.api.audio"
+    audiostack.api_key = "0b1173a6420c4c028690b7beff39hdik"
     fileId = "11c7fcf7-d7cd-4c83-ba6b-a383a6d16a30"
     mode = {"setting": "default"}
     format = "mp4"
@@ -63,3 +71,11 @@ def test_create_from_file_and_image():
     video = Video.create_from_file_and_image(fileId=fileId, mode=mode, format=format)
     print(video)
     assert video["statusCode"] == 200, "Video from file and image"
+
+if __name__ == "__main__":
+    test_create_from_production_and_image()
+    test_create_from_production_and_video()
+    test_create_from_file_and_video()
+    test_create_from_file_and_image()
+
+

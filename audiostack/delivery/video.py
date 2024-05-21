@@ -64,7 +64,8 @@ class Video:
     def create_from_production_and_video(
         productionId: str = "",
         productionItem: object = None,
-        videoFileId="",
+        videoFileId: str ="",
+        format: str= "",
         mode: dict = {},
         public: bool = False,
     ) -> Item:
@@ -90,6 +91,7 @@ class Video:
             "public": public,
             "videoFileId": videoFileId,
             "mode": mode,
+            "format": format,
         }
         r = Video.interface.send_request(
             rtype=RequestTypes.POST, route="video", json=body
@@ -133,7 +135,7 @@ class Video:
         )
 
         item = Suite.PipelineInProgressItem(r)
-        return _poll_video(r, item.pipelineId)
+        return Video.Item(_poll_video(r, item.pipelineId))
 
     @staticmethod
     def create_from_file_and_image(
@@ -153,7 +155,7 @@ class Video:
         )
 
         item = Suite.PipelineInProgressItem(r)
-        return _poll_video(r, item.pipelineId)
+        return Video.Item(_poll_video(r, item.pipelineId))
 
 
 def _poll_video(r, pipelineId: str):
