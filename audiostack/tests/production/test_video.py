@@ -52,7 +52,7 @@ def test_create_from_file_and_video():
         fileId=fileId, videoFileId=videoFileId, mode=mode, format=format, public=False
     )
     print(video)
-    assert video["statusCode"] == 200, "Video from file and video Failed"
+    assert video.status_code == 200, "Video from file and video Failed"
 
 
 def test_create_from_file_and_image():
@@ -62,4 +62,4 @@ def test_create_from_file_and_image():
 
     video = Video.create_from_file_and_image(fileId=fileId, mode=mode, format=format)
     print(video)
-    assert video["statusCode"] == 200, "Video from file and image"
+    assert video.status_code == 200, "Video from file and image"

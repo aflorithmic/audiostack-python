@@ -13,7 +13,7 @@ class Video:
         def __init__(self, response: dict) -> None:
             super().__init__(response)
             self.url = self.data["url"]
-            self.format = self.data["format"]
+            self.format = self.data.get("format", "mp4")
 
         def download(self, fileName: str = "default", path: str = "./") -> None:
             full_name = f"{fileName}.{self.format}"
@@ -64,8 +64,8 @@ class Video:
     def create_from_production_and_video(
         productionId: str = "",
         productionItem: object = None,
-        videoFileId: str ="",
-        format: str= "",
+        videoFileId: str = "",
+        format: str = "",
         mode: dict = {},
         public: bool = False,
     ) -> Item:
