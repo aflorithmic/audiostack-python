@@ -4,7 +4,8 @@ import audiostack
 from audiostack.delivery.video import Video
 
 audiostack.api_base = os.environ.get("AUDIO_STACK_DEV_URL", "https://staging-v2.api.audio")
-audiostack.api_key = "0b1173a6420c4c028690b7beff39hdik"
+audiostack.api_key = os.environ["AUDIO_STACK_DEV_KEY"]
+
 
 test_constants = {}
 
@@ -43,9 +44,7 @@ def test_create_from_production_and_video():
     print(video)
 
 def test_create_from_file_and_video():
-    audiostack.api_base = os.environ.get("AUDIO_STACK_DEV_URL", "https://staging-v2.api.audio")
-    audiostack.api_key = "0b1173a6420c4c028690b7beff39hdik"
-
+    
     fileId = "11c7fcf7-d7cd-4c83-ba6b-a383a6d16a30"
     videoFileId = "e655867d-c12f-42ad-a57e-466598ab84aa"
     mode = {"setting": "low"}
@@ -62,12 +61,6 @@ def test_create_from_file_and_video():
 
 
 def test_create_from_file_and_image():
-    audiostack.api_base = os.environ.get("AUDIO_STACK_DEV_URL", "https://staging-v2.api.audio")
-    audiostack.api_key = "0b1173a6420c4c028690b7beff39hdik"
-
-    # r = audiostack.Content.File.create(localPath=music_path, uploadPath="teudo.wav", fileType="audio")
-    # r = audiostack.Content.File.create(localPath=video_path, uploadPath="heslo.mp4", fileType="video")
-
     fileId = "11c7fcf7-d7cd-4c83-ba6b-a383a6d16a30"
     mode = {"setting": "default"}
     format = "mp4"
@@ -78,10 +71,3 @@ def test_create_from_file_and_image():
         format=format
     )
     print(video)
-
-
-if __name__ == "__main__":
-    test_create_from_production_and_video()
-    test_create_from_production_and_image()
-    test_create_from_file_and_video()
-    test_create_from_file_and_image()
