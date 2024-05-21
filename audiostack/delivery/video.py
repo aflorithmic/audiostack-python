@@ -6,6 +6,7 @@ from audiostack.helpers.request_types import RequestTypes
 from audiostack.helpers.api_item import APIResponseItem
 from audiostack.production.suite import Suite
 
+
 class Video:
     interface = RequestInterface(family="delivery")
 
@@ -25,7 +26,6 @@ class Video:
         productionItem: Optional[Any] = None,
         public: bool = False,
     ) -> Item:
-                
         if productionId and productionItem:
             raise Exception(
                 "productionId or productionItem should be supplied not both"
@@ -42,7 +42,7 @@ class Video:
                 )
         elif productionId:
             if not isinstance(productionId, str):
-                raise Exception("supplied productionId should be a uuid string.")        
+                raise Exception("supplied productionId should be a uuid string.")
         body = {
             "productionId": productionId,
             "public": public,
@@ -58,18 +58,17 @@ class Video:
             r = Video.interface.send_request(
                 rtype=RequestTypes.GET, route="video", path_parameters=videoId
             )
-            retries +=1
+            retries += 1
         return Video.Item(r)
-    
+
     @staticmethod
     def create_from_production_and_video(
         productionId: str = "",
         productionItem: object = None,
-        videoFileId = "",
+        videoFileId="",
         mode: dict = {},
         public: bool = False,
     ) -> Item:
-                
         if productionId and productionItem:
             raise Exception(
                 "productionId or productionItem should be supplied not both"
@@ -86,7 +85,7 @@ class Video:
                 )
         elif productionId:
             if not isinstance(productionId, str):
-                raise Exception("supplied productionId should be a uuid string.")        
+                raise Exception("supplied productionId should be a uuid string.")
         body = {
             "productionId": productionId,
             "public": public,
@@ -104,60 +103,58 @@ class Video:
             r = Video.interface.send_request(
                 rtype=RequestTypes.GET, route="video", path_parameters=videoId
             )
-            retries +=1
+            retries += 1
         return Video.Item(r)
 
-    @staticmethod    
+    @staticmethod
     def create_from_file_and_video(
         fileId: str = "",
         videoFileId: str = "",
         mode: dict = {},
         public: bool = False,
-        format: str = ""
+        format: str = "",
     ) -> Item:
-        
         interface = RequestInterface(family="production")
 
         if fileId and not videoFileId:
             raise Exception(
                 "if videoFileId is supplied, fileId should be supplied as well"
             )
-                
-        body = {
-                "fileId": fileId,
-                "videoFileId": videoFileId,
-                "public": public,
-                "outputFormat": format,
-                "mode": mode
-            }
 
-        r = interface.send_request(rtype=RequestTypes.POST, route="suite/file_to_video", json=body)
+        body = {
+            "fileId": fileId,
+            "videoFileId": videoFileId,
+            "public": public,
+            "outputFormat": format,
+            "mode": mode,
+        }
+
+        r = interface.send_request(
+            rtype=RequestTypes.POST, route="suite/file_to_video", json=body
+        )
 
         item = Suite.PipelineInProgressItem(r)
         return _poll_video(r, item.pipelineId)
 
-    @staticmethod    
+    @staticmethod
     def create_from_file_and_image(
-        fileId: str = "",
-        mode: dict = {},
-        public: bool = False,
-        format: str = ""
+        fileId: str = "", mode: dict = {}, public: bool = False, format: str = ""
     ) -> Item:
-        
         interface = RequestInterface(family="production")
-                
-        body = {
-                "fileId": fileId,
-                "public": public,
-                "outputFormat": format,
-                "mode": mode
-            }
 
-        r = interface.send_request(rtype=RequestTypes.POST, route="suite/file_to_video", json=body)
+        body = {
+            "fileId": fileId,
+            "public": public,
+            "outputFormat": format,
+            "mode": mode,
+        }
+
+        r = interface.send_request(
+            rtype=RequestTypes.POST, route="suite/file_to_video", json=body
+        )
 
         item = Suite.PipelineInProgressItem(r)
         return _poll_video(r, item.pipelineId)
-
 
 
 def _poll_video(r, pipelineId: str):
@@ -165,12 +162,16 @@ def _poll_video(r, pipelineId: str):
         interface = RequestInterface(family="production")
         print("Response in progress please wait...")
         r = interface.send_request(
-                rtype=RequestTypes.GET, route="suite/videopipeline", path_parameters=pipelineId
-        )    
+            rtype=RequestTypes.GET,
+            route="suite/videopipeline",
+            path_parameters=pipelineId,
+        )
     status = r.get("data", {}).get("status", 200)
     if status > 400:
         msg = r.get("data", {}).get("message")
         errors = r.get("data", {}).get("errors")
-        raise Suite.FailedPipeline("pipeline failed: ", msg, "errors are as follows: ", ','.join(errors))
-    
+        raise Suite.FailedPipeline(
+            "pipeline failed: ", msg, "errors are as follows: ", ",".join(errors)
+        )
+
     return r
