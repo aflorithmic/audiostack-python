@@ -12,9 +12,11 @@ class Response:
     message: str
     warnings: list
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         if self.statusCode >= 200:
             return json.dumps({"data": self.data})
+        else:
+            return ""
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "member of Test"

@@ -31,7 +31,7 @@ pip install audiostack -U
 
 ### Prerequisites <a name = "requirements"></a>
 
-Python 3.6+
+Python `^3.8.1`
 
 ### Authentication
 

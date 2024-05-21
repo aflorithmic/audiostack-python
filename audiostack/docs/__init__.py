@@ -1,1 +1,1 @@
-from audiostack.docs.docs import Documentation
+from audiostack.docs.docs import Documentation  # noqa: F401
