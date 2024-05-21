@@ -9,7 +9,7 @@ audiostack.api_key = os.environ["AUDIO_STACK_DEV_KEY"]  # type: ignore
 test_constants = {}  # type: dict
 
 
-def test_create_from_production_and_image():
+def test_create_from_production_and_image() -> None:
     script = audiostack.Content.Script.create(scriptText="hello sam")
     speech = audiostack.Speech.TTS.create(scriptItem=script, voice="sara")
     mix = audiostack.Production.Mix.create(speechItem=speech)
@@ -23,7 +23,7 @@ def test_create_from_production_and_image():
     assert video.status_code == 200, "Video from production and image Failed"
 
 
-def test_create_from_production_and_video():
+def test_create_from_production_and_video() -> None:
     script = audiostack.Content.Script.create(scriptText="hello lars")
     speech = audiostack.Speech.TTS.create(scriptItem=script, voice="sara")
     mix = audiostack.Production.Mix.create(speechItem=speech)
@@ -42,7 +42,7 @@ def test_create_from_production_and_video():
     assert video.status_code == 200, "Video from production and video Failed"
 
 
-def test_create_from_file_and_video():
+def test_create_from_file_and_video() -> None:
     fileId = "11c7fcf7-d7cd-4c83-ba6b-a383a6d16a30"
     videoFileId = "e655867d-c12f-42ad-a57e-466598ab84aa"
     mode = {"setting": "low"}
@@ -55,7 +55,7 @@ def test_create_from_file_and_video():
     assert video.status_code == 200, "Video from file and video Failed"
 
 
-def test_create_from_file_and_image():
+def test_create_from_file_and_image() -> None:
     fileId = "11c7fcf7-d7cd-4c83-ba6b-a383a6d16a30"
     mode = {"setting": "default"}
     format = "mp4"

@@ -63,7 +63,7 @@ class Video:
     @staticmethod
     def create_from_production_and_video(
         productionId: str = "",
-        productionItem: object = None,
+        productionItem: Optional[Any] = None,
         videoFileId: str = "",
         format: str = "",
         mode: dict = {},
@@ -158,7 +158,7 @@ class Video:
         return Video.Item(_poll_video(r, item.pipelineId))
 
 
-def _poll_video(r, pipelineId: str):
+def _poll_video(r: dict, pipelineId: str) -> dict:
     while r["statusCode"] == 202:
         interface = RequestInterface(family="production")
         print("Response in progress please wait...")
