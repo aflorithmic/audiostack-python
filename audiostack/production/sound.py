@@ -1,9 +1,9 @@
-from audiostack.helpers.request_interface import RequestInterface
-from audiostack.helpers.request_types import RequestTypes
+from typing import Any, Union
+
 from audiostack.helpers.api_item import APIResponseItem
 from audiostack.helpers.api_list import APIResponseList
-
-from typing import Union
+from audiostack.helpers.request_interface import RequestInterface
+from audiostack.helpers.request_types import RequestTypes
 
 
 class Sound:
@@ -12,17 +12,17 @@ class Sound:
     # ----------------------------------------- TEMPLATE -----------------------------------------
     class Template:
         class Item(APIResponseItem):
-            def __init__(self, response) -> None:
+            def __init__(self, response: dict) -> None:
                 super().__init__(response)
 
                 if "template" in self.data:  #
                     self.data = self.data["template"]
 
         class List(APIResponseList):
-            def __init__(self, response, list_type) -> None:
+            def __init__(self, response: dict, list_type: str) -> None:
                 super().__init__(response, list_type)
 
-            def resolve_item(self, list_type, item):
+            def resolve_item(self, list_type: str, item: Any) -> "Sound.Template.Item":
                 if list_type == "templates":
                     return Sound.Template.Item(
                         {"data": item, "statusCode": self.response["statusCode"]}
@@ -32,7 +32,7 @@ class Sound:
 
         @staticmethod
         def select_for_script(
-            scriptId="", scriptItem="", mood: str = ""
+            scriptId: str = "", scriptItem: Any = "", mood: str = ""
         ) -> APIResponseItem:
             if scriptId and scriptItem:
                 raise Exception("scriptId or scriptItem should be supplied not both")
@@ -66,7 +66,7 @@ class Sound:
             genres: Union[str, list] = "",
             instruments: Union[str, list] = "",
             moods: str = "",
-        ) -> list:
+        ) -> "Sound.Template.List":
             query_params = {
                 "moods": moods,
                 "collections": collections,
@@ -78,14 +78,16 @@ class Sound:
             )
             return Sound.Template.List(r, list_type="templates")
 
-        def create(templateName: str, description: str = ""):
+        @staticmethod
+        def create(templateName: str, description: str = "") -> "Sound.Template.Item":
             body = {"templateName": templateName, "description": description}
             r = Sound.interface.send_request(
                 rtype=RequestTypes.POST, route="template", json=body
             )
             return Sound.Template.Item(r)
 
-        def delete(templateName: str):
+        @staticmethod
+        def delete(templateName: str) -> APIResponseItem:
             r = Sound.interface.send_request(
                 rtype=RequestTypes.DELETE,
                 route="template",
@@ -95,7 +97,10 @@ class Sound:
 
     # ----------------------------------------- TEMPLATE SEGMENT -----------------------------------------
     class Segment:
-        def create(mediaId: str, templateName: str, soundSegmentName: str):
+        @staticmethod
+        def create(
+            mediaId: str, templateName: str, soundSegmentName: str
+        ) -> "Sound.Template.Item":
             segment = {
                 "templateName": templateName,
                 "segmentName": soundSegmentName,
@@ -109,6 +114,6 @@ class Sound:
     # ----------------------------------------- TEMPLATE PARAMETERS -----------------------------------------
     class Parameter:
         @staticmethod
-        def get() -> dict:
+        def get() -> APIResponseItem:
             r = Sound.interface.send_request(rtype=RequestTypes.GET, route="parameter")
             return APIResponseItem(r)

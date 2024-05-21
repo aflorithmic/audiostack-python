@@ -1,21 +1,19 @@
 import json
 import shutil
+from typing import Any, Callable, Dict, Optional, Union
 
 import requests
 
-from audiostack.helpers.util import bcolors
-from audiostack.helpers.response import Response
+import audiostack
 from audiostack.helpers.request_types import RequestTypes
 
-import audiostack
 
-
-def remove_empty(data):
+def remove_empty(data: Any) -> Any:
     if not (isinstance(data, dict) or isinstance(data, list)):
         return data
 
     final_dict = {}
-    for key, val in data.items():
+    for key, val in data.items():  # type: ignore
         if val or isinstance(val, int):  # val = int(0) shoud not be removed
             if isinstance(val, dict):
                 final_dict[key] = remove_empty(val)
@@ -33,17 +31,16 @@ class RequestInterface:
     def __init__(self, family: str) -> None:
         self.family = family
 
-    def make_header(self):
+    def make_header(self) -> dict:
         header = {
             "x-api-key": audiostack.api_key,
-            "x-python-sdk-version": audiostack.sdk_version
+            "x-python-sdk-version": audiostack.sdk_version,
         }
         if audiostack.assume_org_id:
             header["x-assume-org"] = audiostack.assume_org_id
         return header
 
-
-    def resolve_response(self, r):
+    def resolve_response(self, r: Any) -> dict:
         if self.DEBUG_PRINT:
             print(json.dumps(r.json(), indent=4))
         if r.status_code >= 500:
@@ -76,7 +73,7 @@ class RequestInterface:
 
         return {**r.json(), **{"statusCode": r.status_code}}
 
-    def send_upload_request(self, local_path, upload_url):
+    def send_upload_request(self, local_path: str, upload_url: str) -> int:
         with open(local_path, "rb") as data:
             r = requests.put(url=upload_url, data=data)
 
@@ -87,13 +84,13 @@ class RequestInterface:
 
     def send_request(
         self,
-        rtype,
-        route,
-        json=None,
-        path_parameters=None,
-        query_parameters=None,
-        overwrite_base_url=None,
-    ):
+        rtype: str,
+        route: str,
+        json: Optional[dict] = None,
+        path_parameters: Optional[Union[dict, str]] = None,
+        query_parameters: Optional[Union[dict, str]] = None,
+        overwrite_base_url: Optional[str] = None,
+    ) -> Any:
         if overwrite_base_url:
             url = overwrite_base_url
         else:
@@ -115,7 +112,7 @@ class RequestInterface:
 
         # these requests are all the same input parameters.
         if rtype in [RequestTypes.POST, RequestTypes.PUT, RequestTypes.PATCH]:
-            FUNC_MAP = {
+            FUNC_MAP: Dict[str, Callable] = {
                 RequestTypes.POST: requests.post,
                 RequestTypes.PUT: requests.put,
                 RequestTypes.PATCH: requests.patch,
@@ -144,7 +141,7 @@ class RequestInterface:
             )
 
     @staticmethod
-    def download_url(url, name, destination):
+    def download_url(url: str, name: str, destination: str) -> None:
         r = requests.get(
             url=url, stream=True, headers={"x-api-key": audiostack.api_key}
         )

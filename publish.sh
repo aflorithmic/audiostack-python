@@ -3,13 +3,14 @@
 # run `PIP_AUDIOSTACK_TOKEN=<<token>>` before executing this script
 
 function deploy {
-    rm -rf audiostack.egg-info build dist
+    rm -rf dist
+    poetry build
     pip3 install twine wheel
     python3 setup.py sdist bdist_wheel
     echo '============'
     echo 'In order to obtain the username/pass; contact Core team devs'
     echo '%%%%%%%%%%%%'
-    python3 -m twine upload dist/*
+    poetry publish
 }
 
 while true; do

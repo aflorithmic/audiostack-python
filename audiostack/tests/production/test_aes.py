@@ -1,13 +1,13 @@
 import os
-import audiostack
 
+import audiostack
 from audiostack.content.file import File
 
 audiostack.api_base = os.environ.get("AUDIO_STACK_DEV_URL", "https://v2.api.audio")
-audiostack.api_key = os.environ["AUDIO_STACK_DEV_KEY"]
+audiostack.api_key = os.environ["AUDIO_STACK_DEV_KEY"]  # type: ignore
 
 
-def test_create():
+def test_create() -> None:
     r = File.create(localPath="example.mp3", uploadPath="example.mp3", fileType="audio")
     print("fileId: ", r.fileId)
     aesItem = audiostack.Production.Suite.evaluate(fileId=r.fileId)
