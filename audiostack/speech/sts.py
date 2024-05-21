@@ -1,9 +1,10 @@
 import json
 from time import sleep
-from audiostack.helpers.request_interface import RequestInterface
-from audiostack.helpers.request_types import RequestTypes
+
 from audiostack.helpers.api_item import APIResponseItem
 from audiostack.helpers.api_list import APIResponseList
+from audiostack.helpers.request_interface import RequestInterface
+from audiostack.helpers.request_types import RequestTypes
 
 
 class STS:
@@ -71,13 +72,14 @@ class STS:
     @staticmethod
     def _poll(r: dict, pipelineId: str) -> PipelineFinishedItem:
         pipeline_status_code = r["data"]["statusCode"]
+        # breakpoint()
         while pipeline_status_code == 202:
+            print("Waiting for pipeline to complete (0.5 seconds)...")
+            sleep(0.5)
             r = STS.interface.send_request(
                 rtype=RequestTypes.GET, route="", path_parameters=pipelineId
             )
             pipeline_status_code = r["data"]["statusCode"]
-            print("Waiting for pipeline to complete (1 second)...")
-            sleep(1)
 
         status = r.get("data", {}).get("status", 200)
         if status > 400:
