@@ -43,7 +43,6 @@ class Encoder:
         bitDepth: Optional[int] = None,
         channels: Optional[int] = None,
     ) -> Item:
-
         if productionId and productionItem:
             raise Exception(
                 "productionId or productionItem should be supplied not both"
