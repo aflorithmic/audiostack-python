@@ -18,7 +18,7 @@ jobs:
       - image: cimg/python:3.8
     environment:
       CC_TEST_REPORTER_ID:
-        1f0fec0e42295d08897b73be679a9c3310176424c5e5f6087d120167eaed2fbb
+        71180b302f2a9ac17cbadc4430c26ef4081672918f2158896af78b37b95b7c00
     steps:
       - checkout
       - python/install-packages:
