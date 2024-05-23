@@ -141,7 +141,7 @@ class Video:
         body = {
             "fileId": fileId,
             "public": False,
-            "outputFormat": format,
+            "outputFormat": "mp4",
             "mode": {"setting": "default"},
         }
 
