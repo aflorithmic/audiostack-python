@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "audiostack"
-version = "2.0.1"
+version = "2.0.2"
 description = "Python SDK for Audiostack API"
 authors = ["Aflorithmic <support@audiostack.ai>"]
 repository = "https://github.com/aflorithmic/audiostack-python"
