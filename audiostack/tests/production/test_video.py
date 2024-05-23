@@ -66,8 +66,6 @@ def test_create_from_file_and_video() -> None:
 
 def test_create_from_file_and_image() -> None:
     fileId = FILE_IDS["audio"]
-    mode = {"setting": "default"}
-    format = "mp4"
 
     video = Video.create_from_file_and_image(fileId=fileId)
     print(video)

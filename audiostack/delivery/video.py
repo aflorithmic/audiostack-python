@@ -141,8 +141,8 @@ class Video:
         body = {
             "fileId": fileId,
             "public": False,
-            "outputFormat": "",
-            "mode": {},
+            "outputFormat": format,
+            "mode": {"setting": "default"},
         }
 
         r = interface.send_request(
