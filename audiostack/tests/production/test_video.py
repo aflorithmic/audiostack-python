@@ -41,13 +41,11 @@ def test_create_from_production_and_video() -> None:
 
     videoFileId = FILE_IDS["video"]
     mode = {"setting": "low"}
-    format = "mp4"
 
     video = Video.create_from_production_and_video(
         productionItem=mix,
         videoFileId=videoFileId,
         public=True,
-        format=format,
         mode=mode,
     )
     print(video)
@@ -58,10 +56,9 @@ def test_create_from_file_and_video() -> None:
     fileId = FILE_IDS["audio"]
     videoFileId = FILE_IDS["video"]
     mode = {"setting": "low"}
-    format = "mp4"
 
     video = Video.create_from_file_and_video(
-        fileId=fileId, videoFileId=videoFileId, mode=mode, format=format, public=False
+        fileId=fileId, videoFileId=videoFileId, mode=mode
     )
     print(video)
     assert video.status_code == 200, "Video from file and video Failed"
@@ -69,9 +66,7 @@ def test_create_from_file_and_video() -> None:
 
 def test_create_from_file_and_image() -> None:
     fileId = FILE_IDS["audio"]
-    mode = {"setting": "default"}
-    format = "mp4"
 
-    video = Video.create_from_file_and_image(fileId=fileId, mode=mode, format=format)
+    video = Video.create_from_file_and_image(fileId=fileId)
     print(video)
     assert video.status_code == 200, "Video from file and image"

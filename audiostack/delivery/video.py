@@ -50,7 +50,7 @@ class Video:
             rtype=RequestTypes.POST, route="video", json=body
         )
         retries = 0
-        max_retries = 10
+        max_retries = 30
         while r["statusCode"] == 202 and retries < max_retries:
             print("Response in progress please wait...")
             videoId = r["data"]["videoId"]
@@ -65,7 +65,6 @@ class Video:
         productionId: str = "",
         productionItem: Optional[Any] = None,
         videoFileId: str = "",
-        format: str = "",
         mode: dict = {},
         public: bool = False,
     ) -> Item:
@@ -91,13 +90,13 @@ class Video:
             "public": public,
             "videoFileId": videoFileId,
             "mode": mode,
-            "format": format,
+            "format": "",
         }
         r = Video.interface.send_request(
             rtype=RequestTypes.POST, route="video", json=body
         )
         retries = 0
-        max_retries = 10
+        max_retries = 30
         while r["statusCode"] == 202 and retries < max_retries:
             print("Response in progress please wait...")
             videoId = r["data"]["videoId"]
@@ -112,8 +111,6 @@ class Video:
         fileId: str = "",
         videoFileId: str = "",
         mode: dict = {},
-        public: bool = False,
-        format: str = "",
     ) -> Item:
         interface = RequestInterface(family="production")
 
@@ -125,8 +122,8 @@ class Video:
         body = {
             "fileId": fileId,
             "videoFileId": videoFileId,
-            "public": public,
-            "outputFormat": format,
+            "public": False,
+            "outputFormat": "",
             "mode": mode,
         }
 
@@ -138,16 +135,14 @@ class Video:
         return Video.Item(_poll_video(r, item.pipelineId))
 
     @staticmethod
-    def create_from_file_and_image(
-        fileId: str = "", mode: dict = {}, public: bool = False, format: str = ""
-    ) -> Item:
+    def create_from_file_and_image(fileId: str = "") -> Item:
         interface = RequestInterface(family="production")
 
         body = {
             "fileId": fileId,
-            "public": public,
-            "outputFormat": format,
-            "mode": mode,
+            "public": False,
+            "outputFormat": "mp4",
+            "mode": {"setting": "default"},
         }
 
         r = interface.send_request(
