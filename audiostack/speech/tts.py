@@ -1,18 +1,22 @@
-from audiostack.helpers.request_interface import RequestInterface
-from audiostack.helpers.request_types import RequestTypes
+from typing import Any, Optional
+
 from audiostack.helpers.api_item import APIResponseItem
 from audiostack.helpers.api_list import APIResponseList
+from audiostack.helpers.request_interface import RequestInterface
+from audiostack.helpers.request_types import RequestTypes
 
 
 class TTS:
     interface = RequestInterface(family="speech")
 
     class Item(APIResponseItem):
-        def __init__(self, response) -> None:
+        def __init__(self, response: dict) -> None:
             super().__init__(response)
             self.speechId = self.data["speechId"]
 
-        def download(self, autoName=False, fileName="", path="./") -> None:
+        def download(
+            self, autoName: bool = False, fileName: str = "", path: str = "./"
+        ) -> None:
             sections = self.data["sections"]
             for i, s in enumerate(sections):
                 if autoName:
@@ -30,11 +34,11 @@ class TTS:
                     s["url"], destination=path, name=full_name
                 )
 
-        def delete(self):
+        def delete(self) -> APIResponseItem:
             return TTS.delete(self.speechId)
 
     class BytesItem(APIResponseItem):
-        def __init__(self, response) -> None:
+        def __init__(self, response: dict) -> None:
             super().__init__(response)
             self.bytes = response["bytes"]
 
@@ -42,10 +46,10 @@ class TTS:
         #     with open("")
 
     class List(APIResponseList):
-        def __init__(self, response, list_type) -> None:
+        def __init__(self, response: dict, list_type: Any) -> None:
             super().__init__(response, list_type)
 
-        def resolve_item(self, list_type, item):
+        def resolve_item(self, list_type: str, item: Any) -> "TTS.Item":
             if list_type == "speechIds":
                 return TTS.Item({"data": item})
             else:
@@ -54,9 +58,9 @@ class TTS:
     class Section:
         @staticmethod
         def create(
-            sectionToProduce,
-            scriptId="",
-            scriptItem=None,
+            sectionToProduce: Any,
+            scriptId: str = "",
+            scriptItem: Optional[Any] = None,
             voice: str = "",
             speed: float = 1.0,
             silencePadding: str = "",
@@ -66,14 +70,14 @@ class TTS:
             public: bool = False,
             sync: bool = True,
             **kwargs
-        ):
+        ) -> "TTS.Item":
             # (start) no modify
             route = "tts/section"
             return TTS._create(**locals())
             # (end) modify
 
     @staticmethod
-    def preview(text: str, voice: str):
+    def preview(text: str, voice: str) -> "TTS.BytesItem":
         body = {"text": text, "voice": voice}
         r = TTS.interface.send_request(
             rtype=RequestTypes.POST, route="tts/preview", json=body
@@ -81,7 +85,7 @@ class TTS:
         return TTS.BytesItem(r)
 
     @staticmethod
-    def reduce(speechId: str, targetLength: str, sectionId: str = ""):
+    def reduce(speechId: str, targetLength: str, sectionId: str = "") -> "TTS.Item":
         body = {
             "speechId": speechId,
             "targetLength": targetLength,
@@ -93,13 +97,14 @@ class TTS:
         print(r)
         return TTS.Item(r)
 
+    @staticmethod
     def remove_padding(
         speechId: str,
         minSilenceDuration: float = 1.5,
         silenceThreshold: float = 0.001,
         position: str = "end",
         sectionId: str = "",
-    ):
+    ) -> "TTS.Item":
         body = {
             "speechId": speechId,
             "minSilenceDuration": minSilenceDuration,
@@ -114,24 +119,28 @@ class TTS:
         return TTS.Item(r)
 
     @staticmethod
-    def annotate(speechId: str, scriptReference: str = "", languageCode: str ="", continuousRecognition: bool = False):
-
+    def annotate(
+        speechId: str,
+        scriptReference: str = "",
+        languageCode: str = "",
+        continuousRecognition: bool = False,
+    ) -> dict:
         body = {
             "speechId": speechId,
             "scriptReference": scriptReference,
             "language_code": languageCode,
-            "continuous_recognition": continuousRecognition        
+            "continuous_recognition": continuousRecognition,
         }
         r = TTS.interface.send_request(
             rtype=RequestTypes.POST, route="tts/annotate", json=body
         )
         print(r)
-        return (r)
+        return r
 
     @staticmethod
     def create(
-        scriptId="",
-        scriptItem=None,
+        scriptId: str = "",
+        scriptItem: Optional[Any] = None,
         voice: str = "",
         speed: float = 1.0,
         silencePadding: str = "",
@@ -141,14 +150,14 @@ class TTS:
         public: bool = False,
         sync: bool = True,
         **kwargs
-    ) -> Item:
+    ) -> "TTS.Item":
         # (start) no modify
         route = "tts"
         return TTS._create(**locals())
         # (end) modify
 
     @staticmethod
-    def get(speechId: str, public: bool = False) -> Item:
+    def get(speechId: str, public: bool = False) -> "TTS.Item":
         r = TTS.interface.send_request(
             rtype=RequestTypes.GET,
             route="tts",
@@ -158,7 +167,7 @@ class TTS:
         return TTS.Item(r)
 
     @staticmethod
-    def delete(speechId: str) -> str:
+    def delete(speechId: str) -> APIResponseItem:
         r = TTS.interface.send_request(
             rtype=RequestTypes.DELETE, route="tts", path_parameters=speechId
         )
@@ -166,8 +175,11 @@ class TTS:
 
     @staticmethod
     def list(
-        projectName="", moduleName: str = "", scriptName: str = "", scriptId: str = ""
-    ) -> list:
+        projectName: str = "",
+        moduleName: str = "",
+        scriptName: str = "",
+        scriptId: str = "",
+    ) -> "TTS.List":
         query_params = {
             "projectName": projectName,
             "moduleName": moduleName,
@@ -182,8 +194,8 @@ class TTS:
     @staticmethod
     def _create(
         route: str,
-        scriptId="",
-        scriptItem=None,
+        scriptId: str = "",
+        scriptItem: Optional[Any] = None,
         voice: str = "",
         speed: float = 1.0,
         silencePadding: str = "",
@@ -194,7 +206,8 @@ class TTS:
         sync: bool = True,
         sectionToProduce: str = "",
         **kwargs
-    ):
+    ) -> "TTS.Item":
+        
         if scriptId and scriptItem:
             raise Exception("scriptId or scriptItem should be supplied not both")
         if not (scriptId or scriptItem):

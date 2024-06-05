@@ -1,9 +1,10 @@
-from audiostack.helpers.request_interface import RequestInterface
-from audiostack.helpers.request_types import RequestTypes
+import os
+from typing import Any
+
 from audiostack.helpers.api_item import APIResponseItem
 from audiostack.helpers.api_list import APIResponseList
-import os
-import requests
+from audiostack.helpers.request_interface import RequestInterface
+from audiostack.helpers.request_types import RequestTypes
 
 
 class Media:
@@ -11,21 +12,21 @@ class Media:
     interface = RequestInterface(family=FAMILY)
 
     class Item(APIResponseItem):
-        def __init__(self, response) -> None:
+        def __init__(self, response: dict) -> None:
             super().__init__(response)
 
             self.mediaId = self.data["mediaId"]
             self.tags = self.data["tags"]
             self.filename = self.data["filename"]
 
-        def delete(self):
+        def delete(self) -> APIResponseItem:
             return Media.delete(self.mediaId)
 
     class List(APIResponseList):
-        def __init__(self, response, list_type) -> None:
+        def __init__(self, response: dict, list_type: str) -> None:
             super().__init__(response, list_type)
 
-        def resolve_item(self, list_type, item):
+        def resolve_item(self, list_type: str, item: Any) -> "Media.Item":
             if list_type == "mediaFiles":
                 return Media.Item({"data": item})
             else:
@@ -47,9 +48,7 @@ class Media:
         url = response.data["fileUploadUrl"]
         mediaId = response.data["mediaId"]
 
-        status = Media.interface.send_upload_request(
-            local_path=filePath, upload_url=url
-        )
+        Media.interface.send_upload_request(local_path=filePath, upload_url=url)
         return Media.get(mediaId)
 
     @staticmethod
@@ -60,7 +59,7 @@ class Media:
         return Media.Item(r)
 
     @staticmethod
-    def delete(mediaId: str) -> str:
+    def delete(mediaId: str) -> APIResponseItem:
         r = Media.interface.send_request(
             rtype=RequestTypes.DELETE, route="media", path_parameters=mediaId
         )

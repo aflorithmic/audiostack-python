@@ -1,3 +1,4 @@
+---
 config_blocks:
   only_tags: &only_tags
     filters:
@@ -15,51 +16,74 @@ jobs:
   unit-tests:
     docker:
       - image: cimg/python:3.8
-
+    environment:
+      CC_TEST_REPORTER_ID:
+        71180b302f2a9ac17cbadc4430c26ef4081672918f2158896af78b37b95b7c00
     steps:
       - checkout
       - python/install-packages:
-          pip-dependency-file: requirements.txt
-          pkg-manager: pip
-      - python/install-packages:
-          pip-dependency-file: audiostack/tests/requirements.txt
-          pkg-manager: pip
+          pkg-manager: poetry
+          args: --no-interaction --no-ansi
       - run:
-          name: "units"
+          name: Setup Code Climate test-reporter
           command: |
-            export AUDIO_STACK_DEV_KEY=$AFLR_API_KEY_PROD_2
-
-            python3 -m pytest audiostack/tests/ -v
-
+            # download test reporter as a static binary
+            curl -L \
+            https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64\
+             > ./cc-test-reporter
+            chmod +x ./cc-test-reporter
+      - run:
+          name: "unit-tests"
+          command: |
+            ./cc-test-reporter before-build
+            export AUDIO_STACK_DEV_KEY=$AFLR_API_KEY_PROD_TEST
+            poetry run task test
+            ./cc-test-reporter after-build \
+            --coverage-input-type coverage.py --exit-code $?
+  lint:
+    docker:
+      - image: cimg/python:3.8
+    steps:
+      - checkout
+      - python/install-packages:
+          pkg-manager: poetry
+          args: --no-interaction --no-ansi
+      - run:
+          name: "unit-tests"
+          command: |
+            poetry run task lint-check
   publish:
     docker:
       - image: cimg/python:3.8
-
     steps:
       - checkout
       - python/install-packages:
-          pip-dependency-file: requirements.txt
-          pkg-manager: pip
+          pkg-manager: poetry
+          args: --no-interaction --no-ansi --only main
       - run:
-          name: "units"
+          name: "publish"
           command: |
             python3 increment_version.py
             cat audiostack/__init__.py
-            sh publish_ci.sh
+            poetry build
+            poetry publish -u __token__ -p $PIP_AUDIOSTACK_TOKEN
+          # You can find the token to publish to pypi here
+          # https://eu-west-1.console.aws.amazon.com/systems-manager/parameters/pypi-m2m-token/description?region=eu-west-1&tab=Table#list_parameter_filters=Name:Contains:py
 
 workflows:
   main-workflow:
     jobs:
       - unit-tests:
-          # filters:
-          #   branches:
-          #     only:
-          #       - main
+          context: aws
+      - lint:
           context: aws
 
   publish:
     jobs:
       - unit-tests:
+          <<: *only_tags
+          context: aws
+      - lint:
           <<: *only_tags
           context: aws
       - publish:

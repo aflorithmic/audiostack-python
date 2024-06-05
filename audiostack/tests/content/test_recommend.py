@@ -1,30 +1,32 @@
 import os
+from typing import List
+from unittest.mock import Mock, patch
+
 import pytest
-from unittest.mock import patch, Mock
 
 import audiostack
 from audiostack.helpers.request_types import RequestTypes
 
-audiostack.api_key = os.environ["AUDIO_STACK_DEV_KEY"]
+audiostack.api_key = os.environ["AUDIO_STACK_DEV_KEY"]  # type: ignore
 
 
 @pytest.fixture
-def text():
+def text() -> str:
     return "AudioStack’s technology seamlessly integrates into your product or workflow and cuts your audio production cycles to seconds while making your budgets go further."
 
 
 @pytest.fixture
-def category():
+def category() -> str:
     return "my_custom_tags"
 
 
 @pytest.fixture
-def tags():
+def tags() -> List[str]:
     return ["happy", "sad", "valuable"]
 
 
 @pytest.fixture
-def number_of_results():
+def number_of_results() -> int:
     return 2
 
 
@@ -37,7 +39,7 @@ def test_RecommendTag_create(
     category: str,
     tags: list,
     number_of_results: int,
-):
+) -> None:
     response = audiostack.Content.RecommendTag.create(
         text=text, category=category, tags=tags, number_of_results=number_of_results
     )
@@ -76,7 +78,7 @@ def test_RecommendTone_create(
     category: str,
     tags: list,
     number_of_results: int,
-):
+) -> None:
     response = audiostack.Content.RecommendTone.create(
         text=text, number_of_results=number_of_results
     )
@@ -108,7 +110,7 @@ def test_RecommendMood_create(
     category: str,
     tags: list,
     number_of_results: int,
-):
+) -> None:
     response = audiostack.Content.RecommendMood.create(
         text=text, number_of_results=number_of_results
     )

@@ -1,7 +1,9 @@
-from audiostack.helpers.request_interface import RequestInterface
-from audiostack.helpers.request_types import RequestTypes
+from typing import Any
+
 from audiostack.helpers.api_item import APIResponseItem
 from audiostack.helpers.api_list import APIResponseList
+from audiostack.helpers.request_interface import RequestInterface
+from audiostack.helpers.request_types import RequestTypes
 
 
 class Script:
@@ -9,7 +11,7 @@ class Script:
     interface = RequestInterface(family=FAMILY)
 
     class Item(APIResponseItem):
-        def __init__(self, response) -> None:
+        def __init__(self, response: dict) -> None:
             super().__init__(response)
 
             self.scriptId = self.data["scriptId"]
@@ -18,17 +20,17 @@ class Script:
             self.scriptName = self.data["scriptName"]
             self.scriptText = self.data["scriptText"]
 
-        def update(self, scriptText):
+        def update(self, scriptText: str) -> "Script.Item":
             return Script.update(scriptId=self.scriptId, scriptText=scriptText)
 
-        def delete(self):
+        def delete(self) -> APIResponseItem:
             return Script.delete(self.scriptId)
 
     class List(APIResponseList):
-        def __init__(self, response, list_type) -> None:
+        def __init__(self, response: dict, list_type: str) -> None:
             super().__init__(response, list_type)
 
-        def resolve_item(self, list_type, item):
+        def resolve_item(self, list_type: str, item: Any) -> "Script.Item":
             if list_type == "scripts":
                 return Script.Item({"data": item})
             else:
@@ -64,7 +66,7 @@ class Script:
         tone: str = "",
         thirdPerson: bool = True,
         adLength: int = 30,
-    ):
+    ) -> APIResponseItem:
         body = {
             "productName": product_name,
             "productDescription": product_description,
@@ -99,7 +101,7 @@ class Script:
         return Script.Item(r)
 
     @staticmethod
-    def delete(scriptId: str, version: str = "") -> str:
+    def delete(scriptId: str, version: str = "") -> APIResponseItem:
         path_params = f"{scriptId}/{version}" if version else scriptId
         r = Script.interface.send_request(
             rtype=RequestTypes.DELETE, route="script", path_parameters=path_params
@@ -107,7 +109,7 @@ class Script:
         return APIResponseItem(r)
 
     @staticmethod
-    def update(scriptId: str, scriptText, version: str = "") -> Item:
+    def update(scriptId: str, scriptText: str, version: str = "") -> Item:
         body = {"scriptId": scriptId, "scriptText": scriptText, "version": version}
         r = Script.interface.send_request(
             rtype=RequestTypes.PUT, json=body, route="script"
@@ -116,7 +118,10 @@ class Script:
 
     @staticmethod
     def list(
-        projectName="", moduleName: str = "", scriptName: str = "", scriptId: str = ""
+        projectName: str = "",
+        moduleName: str = "",
+        scriptName: str = "",
+        scriptId: str = "",
     ) -> List:
         query_params = {
             "projectName": projectName,
