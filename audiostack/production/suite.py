@@ -8,7 +8,9 @@ from audiostack.helpers.request_types import RequestTypes
 
 class Suite:
     DENOISE_ENDPOINT = "suite/denoise"
-
+    SEPARATE_ENDPOINT = "suite/separate"
+    TRANSCRIBE_ENDPOINT = "suite/transcribe"
+    
     class FailedPipeline(Exception):
         pass
 
@@ -88,7 +90,7 @@ class Suite:
             "fileId": fileId,
         }
         r = Suite.interface.send_request(
-            rtype=RequestTypes.POST, route="suite/separate", json=body
+            rtype=RequestTypes.POST, route=Suite.SEPARATE_ENDPOINT, json=body
         )
         item = Suite.PipelineInProgressItem(r)
         return Suite._poll(r, item.pipelineId) if wait else item
@@ -100,6 +102,17 @@ class Suite:
         body = {"fileId": fileId, "level": level}
         r = Suite.interface.send_request(
             rtype=RequestTypes.POST, route=Suite.DENOISE_ENDPOINT, json=body
+        )
+        item = Suite.PipelineInProgressItem(r)
+        return Suite._poll(r, item.pipelineId) if wait else item
+
+    @staticmethod
+    def transcribe(
+        fileId: str, language: str = None, wait: bool = True
+    ) -> Union["Suite.PipelineInProgressItem", "Suite.PipelineFinishedItem"]:
+        body = {"fileId": fileId, "language": language}
+        r = Suite.interface.send_request(
+            rtype=RequestTypes.POST, route=Suite.TRANSCRIBE_ENDPOINT, json=body
         )
         item = Suite.PipelineInProgressItem(r)
         return Suite._poll(r, item.pipelineId) if wait else item
@@ -121,6 +134,7 @@ class Suite:
             raise Suite.FailedPipeline(
                 "pipeline failed: ", msg, "errors are as follows: ", ",".join(errors)
             )
+        print(r)
 
         return Suite.PipelineFinishedItem(r)
 
