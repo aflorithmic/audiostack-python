@@ -8,6 +8,8 @@ from audiostack.helpers.request_types import RequestTypes
 
 class Voice:
     interface = RequestInterface(family="speech/voice")
+    recommend_interface = RequestInterface(family="speech/recommend")
+
 
     class Item(APIResponseItem):
         def __init__(self, response: dict) -> None:
@@ -52,6 +54,18 @@ class Voice:
 
         r = Voice.interface.send_request(
             rtype=RequestTypes.POST, route="select", json=body
+        )
+        return APIResponseItem(r)
+
+    @staticmethod
+    def recommend_similar_voice(fileId: str, numberOfResults: int=3, gender: str="", language: str="") -> APIResponseItem:
+        body = {"fileId": fileId, "number_of_results": numberOfResults, "filters" : {}}
+        if gender:
+            body["filters"]["gender"] = [gender]
+        if language:
+            body["filters"]["language"] = [language]
+        r = Voice.recommend_interface.send_request(
+            rtype=RequestTypes.POST, route="similar_voice", json=body
         )
         return APIResponseItem(r)
 
