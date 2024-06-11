@@ -26,7 +26,7 @@ def remove_empty(data: Any) -> Any:
 
 class RequestInterface:
     # disable debug print
-    DEBUG_PRINT = True
+    DEBUG_PRINT = False
 
     def __init__(self, family: str) -> None:
         self.family = family
