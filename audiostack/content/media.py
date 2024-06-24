@@ -35,7 +35,7 @@ class Media:
     @staticmethod
     def create(filePath: str) -> Item:
         if not os.path.isfile(filePath):
-            raise Exception("Supplied file does not eixst")
+            raise Exception("Supplied file does not exist")
 
         name = filePath.rpartition("/")[2]
 
