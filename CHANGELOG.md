@@ -4,6 +4,12 @@ All notable changes to `audiostack` will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.0.3] - 2024-06-24
+
+### Fixes
+
+Improved error messaging for Media files
+
 ## [2.0.0] - 2024-05-20
 
 ### Breaking change 
