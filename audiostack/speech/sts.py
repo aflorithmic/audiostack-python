@@ -72,7 +72,6 @@ class STS:
     @staticmethod
     def _poll(r: dict, pipelineId: str) -> PipelineFinishedItem:
         pipeline_status_code = r["data"]["statusCode"]
-        # breakpoint()
         while pipeline_status_code == 202:
             print("Waiting for pipeline to complete (0.5 seconds)...")
             sleep(0.5)
@@ -82,7 +81,7 @@ class STS:
             pipeline_status_code = r["data"]["statusCode"]
 
         status = r.get("data", {}).get("status", 200)
-        if status > 400:
+        if status >= 400:
             msg = r.get("data", {}).get("message")
             errors = r.get("data", {}).get("errors")
             raise STS.FailedPipeline(

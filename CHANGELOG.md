@@ -4,6 +4,13 @@ All notable changes to `audiostack` will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.1.0] - 2024-07-08
+
+### Added
+
+- Speech-To-Speech integration.
+
+
 ## [2.0.6] - 2024-07-08
 
 ### Fixes
@@ -30,6 +37,7 @@ Add sections to production mix for atmosphere per section input through param.
 ### Fixes
 
 Improved error messaging for Media files
+
 
 ## [2.0.0] - 2024-05-20
 
