@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Optional
 
 from audiostack.helpers.api_item import APIResponseItem
 from audiostack.helpers.api_list import APIResponseList
@@ -8,8 +8,6 @@ from audiostack.helpers.request_types import RequestTypes
 
 class Voice:
     interface = RequestInterface(family="speech/voice")
-    recommend_interface = RequestInterface(family="speech/voice_tmp")
-
 
     class Item(APIResponseItem):
         def __init__(self, response: dict) -> None:
@@ -58,19 +56,29 @@ class Voice:
         return APIResponseItem(r)
 
     @staticmethod
-    def recommend_similar_voice(fileId: str, numberOfResults: int=3, gender: str="", language: str="", providers: list=None) -> APIResponseItem:
+    def recommend_similar_voice(
+        fileId: str,
+        numberOfResults: int = 3,
+        gender: str = "",
+        language: str = "",
+        providers: Optional[list] = None,
+    ) -> APIResponseItem:
         """
         In future make this plural
         """
-        body = {"fileId": fileId, "numberOfResults": numberOfResults, "filters" : {}}
+        body = {
+            "fileId": fileId,
+            "numberOfResults": numberOfResults,
+            "filters": {},
+        }
         if gender:
-            body["filters"]["gender"] = [gender]
+            body["filters"]["gender"] = [gender]  # type: ignore
         if language:
-            body["filters"]["language"] = [language, "multilingual"]
+            body["filters"]["language"] = [language, "multilingual"]  # type: ignore
         if providers:
-            body["filters"]["provider"] = providers
-            
-        r = Voice.recommend_interface.send_request(
+            body["filters"]["provider"] = providers  # type: ignore
+
+        r = Voice.interface.send_request(
             rtype=RequestTypes.POST, route="recommendations", json=body
         )
         return APIResponseItem(r)

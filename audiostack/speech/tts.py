@@ -69,7 +69,7 @@ class TTS:
             voiceIntelligence: bool = False,
             public: bool = False,
             sync: bool = True,
-            **kwargs
+            **kwargs: Any,  # noqa: F841
         ) -> "TTS.Item":
             # (start) no modify
             route = "tts/section"
@@ -149,7 +149,7 @@ class TTS:
         voiceIntelligence: bool = False,
         public: bool = False,
         sync: bool = True,
-        **kwargs
+        **kwargs: Any,  # noqa: F841
     ) -> "TTS.Item":
         # (start) no modify
         route = "tts"
@@ -205,9 +205,9 @@ class TTS:
         public: bool = False,
         sync: bool = True,
         sectionToProduce: str = "",
-        **kwargs
+        **kwargs: Any,  # noqa: F841
     ) -> "TTS.Item":
-        
+
         if scriptId and scriptItem:
             raise Exception("scriptId or scriptItem should be supplied not both")
         if not (scriptId or scriptItem):

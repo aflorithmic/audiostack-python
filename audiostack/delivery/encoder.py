@@ -42,7 +42,7 @@ class Encoder:
         format: str = "",
         bitDepth: Optional[int] = None,
         channels: Optional[int] = None,
-        **kwargs
+        **kwargs: Any,  # noqa: F841
     ) -> Item:
         if productionId and productionItem:
             raise Exception(

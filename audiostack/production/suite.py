@@ -10,7 +10,7 @@ class Suite:
     DENOISE_ENDPOINT = "suite/denoise"
     SEPARATE_ENDPOINT = "suite/separate"
     TRANSCRIBE_ENDPOINT = "suite/transcribe"
-    
+
     class FailedPipeline(Exception):
         pass
 
@@ -108,7 +108,7 @@ class Suite:
 
     @staticmethod
     def transcribe(
-        fileId: str, language: str = None, wait: bool = True
+        fileId: str, language: Optional[str] = None, wait: bool = True
     ) -> Union["Suite.PipelineInProgressItem", "Suite.PipelineFinishedItem"]:
         body = {"fileId": fileId, "language": language}
         r = Suite.interface.send_request(
