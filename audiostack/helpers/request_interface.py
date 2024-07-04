@@ -41,7 +41,7 @@ class RequestInterface:
             header["x-api-key"] = audiostack.api_key
         elif audiostack.Authorization:
             header["Authorization"] = audiostack.Authorization
-            
+
         if audiostack.assume_org_id:
             header["x-assume-org"] = audiostack.assume_org_id
         return header
