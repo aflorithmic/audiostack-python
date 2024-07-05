@@ -1,5 +1,6 @@
 import json
 from time import sleep
+from typing import Optional
 
 from audiostack.helpers.api_item import APIResponseItem
 from audiostack.helpers.api_list import APIResponseList
@@ -51,8 +52,12 @@ class STS:
         return STS.StsVoiceList(r, list_type="voices")
 
     @staticmethod
-    def create(alias: str, fileId: str) -> PipelineInProgressItem:
+    def create(
+        alias: str, fileId: str, newFilePath: Optional[str] = None
+    ) -> PipelineInProgressItem:
         body = {"alias": alias, "fileId": fileId}
+        if newFilePath:
+            body["newFilePath"] = newFilePath
         r = STS.interface.send_request(rtype=RequestTypes.POST, route="", json=body)
         item = STS.PipelineInProgressItem(r)
         return item

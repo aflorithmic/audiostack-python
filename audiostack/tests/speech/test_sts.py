@@ -97,6 +97,21 @@ def test_STS_create(mock_send_request: Mock) -> None:
     assert r.pipelineId == "pipelineId"
 
 
+def test_STS_create_newFilePath(mock_send_request: Mock) -> None:
+    alias = "alias"
+    fileId = "fileId"
+    newFilePath = "newFilePath"
+    mock_send_request.return_value = {"data": {"pipelineId": "pipelineId"}}
+    r = STS.create(alias=alias, fileId=fileId, newFilePath=newFilePath)
+    mock_send_request.assert_called_once_with(
+        rtype="POST",
+        route="",
+        json={"alias": "alias", "fileId": "fileId", "newFilePath": "newFilePath"},
+    )
+    assert isinstance(r, STS.PipelineInProgressItem)
+    assert r.pipelineId == "pipelineId"
+
+
 @pytest.mark.parametrize("status_code", [200, 202])
 def test_STS_get(
     mock_send_request: Mock,
