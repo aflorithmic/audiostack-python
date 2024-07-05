@@ -1,4 +1,3 @@
-import json
 from typing import Any
 from unittest.mock import Mock, call, patch
 
@@ -19,7 +18,7 @@ def voice_data() -> dict:
 
 
 @fixture
-def pipelineFinishedItem_body() -> dict:
+def pipelineFinishedItem_data() -> dict:
     return {
         "pipelineId": "pipelineId",
         "results": {
@@ -63,8 +62,8 @@ def test_PipelineInProgressItem() -> None:
     assert item.response == response
 
 
-def test_PipelineFinishedItem(pipelineFinishedItem_body: dict) -> None:
-    response = {"data": {"body": json.dumps(pipelineFinishedItem_body)}}
+def test_PipelineFinishedItem(pipelineFinishedItem_data: dict) -> None:
+    response = {"data": pipelineFinishedItem_data}
     item = STS.PipelineFinishedItem(response=response)
     assert item.pipelineId == "pipelineId"
     assert item.inputFileIds == "inputFileIds"
@@ -116,16 +115,13 @@ def test_STS_create_newFilePath(mock_send_request: Mock) -> None:
 def test_STS_get(
     mock_send_request: Mock,
     mock__poll: Mock,
-    pipelineFinishedItem_body: dict,
+    pipelineFinishedItem_data: dict,
     status_code: int,
 ) -> None:
     pipelineId = "pipelineId"
-    mock_send_request.return_value = {
-        "data": {"statusCode": status_code, "additional data": "additional data"}
-    }
-    mock__poll.return_value = STS.PipelineFinishedItem(
-        {"data": {"body": json.dumps(pipelineFinishedItem_body)}}
-    )
+    mock_data = {**{"status": status_code}, **pipelineFinishedItem_data}
+    mock_send_request.return_value = {"data": mock_data}
+    mock__poll.return_value = STS.PipelineFinishedItem({"data": mock_data})
     r = STS.get(pipelineId=pipelineId)
     mock_send_request.assert_called_once_with(
         rtype="GET", route="", path_parameters=pipelineId
@@ -135,9 +131,7 @@ def test_STS_get(
 
 def test_STS_get_raises_FailedStatusFetch(mock_send_request: Mock) -> None:
     pipelineId = "pipelineId"
-    mock_send_request.return_value = {
-        "data": {"statusCode": 404, "body": "error message"}
-    }
+    mock_send_request.return_value = {"data": {"status": 404, "body": "error message"}}
 
     with pytest.raises(STS.FailedStatusFetch) as exc:
         STS.get(pipelineId=pipelineId)
@@ -145,16 +139,12 @@ def test_STS_get_raises_FailedStatusFetch(mock_send_request: Mock) -> None:
     assert str(exc.value) == "Failed to fetch pipeline with error: error message"
 
 
-def test_STS__poll(mock_send_request: Mock, pipelineFinishedItem_body: dict) -> None:
-    r = {"data": {"statusCode": 202}}
+def test_STS__poll(mock_send_request: Mock, pipelineFinishedItem_data: dict) -> None:
+    r = {"data": {"status": 202}}
 
     # with statusCode 202 the request is executed again until it gets 200
-    return_value_1 = {
-        "data": {"statusCode": 202, "body": json.dumps(pipelineFinishedItem_body)}
-    }
-    return_value_2 = {
-        "data": {"statusCode": 200, "body": json.dumps(pipelineFinishedItem_body)}
-    }
+    return_value_1 = {"data": {**{"status": 202}, **pipelineFinishedItem_data}}
+    return_value_2 = {"data": {**{"status": 200}, **pipelineFinishedItem_data}}
     mock_send_request.side_effect = [return_value_1, return_value_2]
 
     response = STS._poll(r=r, pipelineId="pipelineId")
@@ -165,18 +155,16 @@ def test_STS__poll(mock_send_request: Mock, pipelineFinishedItem_body: dict) -> 
         ]
     )
     assert isinstance(response, STS.PipelineFinishedItem)
-    assert json.loads(response.data["body"]) == pipelineFinishedItem_body
+    assert response.data == return_value_2["data"]
 
 
 def test_STS__poll_400(
-    mock_send_request: Mock, pipelineFinishedItem_body: dict
+    mock_send_request: Mock, pipelineFinishedItem_data: dict
 ) -> None:
-    r = {"data": {"statusCode": 202}}
-    pipelineFinishedItem_body
+    r = {"data": {**{"status": 202}, **pipelineFinishedItem_data}}
 
     mock_send_request.return_value = {
         "data": {
-            "statusCode": 404,
             "status": 404,
             "message": "message",
             "errors": "errors",

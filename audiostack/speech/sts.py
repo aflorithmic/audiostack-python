@@ -1,4 +1,3 @@
-import json
 from time import sleep
 from typing import Optional
 
@@ -40,11 +39,10 @@ class STS:
     class PipelineFinishedItem(APIResponseItem):
         def __init__(self, response: dict) -> None:
             super().__init__(response)
-            body = json.loads(self.data["body"])
-            self.pipelineId = body["pipelineId"]
-            self.newFileIds = body["results"]["newFileIds"]
-            self.inputFileIds = body["results"]["inputFileIds"]
-            self.replacedFileIds = body["results"]["replacedFileIds"]
+            self.pipelineId = self.data["pipelineId"]
+            self.newFileIds = self.data["results"]["newFileIds"]
+            self.inputFileIds = self.data["results"]["inputFileIds"]
+            self.replacedFileIds = self.data["results"]["replacedFileIds"]
 
     @staticmethod
     def voices() -> APIResponseList:
@@ -68,7 +66,7 @@ class STS:
             rtype=RequestTypes.GET, route="", path_parameters=pipelineId
         )
 
-        if r["data"]["statusCode"] in [200, 202]:
+        if r["data"]["status"] in [200, 202]:
             return STS._poll(r, pipelineId)
         else:
             body = r["data"]["body"]
@@ -76,14 +74,14 @@ class STS:
 
     @staticmethod
     def _poll(r: dict, pipelineId: str) -> PipelineFinishedItem:
-        pipeline_status_code = r["data"]["statusCode"]
+        pipeline_status_code = r["data"]["status"]
         while pipeline_status_code == 202:
             print("Waiting for pipeline to complete (0.5 seconds)...")
             sleep(0.5)
             r = STS.interface.send_request(
                 rtype=RequestTypes.GET, route="", path_parameters=pipelineId
             )
-            pipeline_status_code = r["data"]["statusCode"]
+            pipeline_status_code = r["data"]["status"]
 
         status = r.get("data", {}).get("status", 200)
         if status >= 400:
