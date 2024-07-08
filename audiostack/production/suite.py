@@ -72,7 +72,7 @@ class Suite:
             rtype=RequestTypes.POST, route="suite/evaluate", json=body
         )
 
-        while r["statusCode"] != 200 and r["statusCode"] != 404:  # TODO REVISE
+        while r["statusCode"] != 200 and r["statusCode"] != 404: 
             print("Response in progress please wait...")
             r = Suite.interface.send_request(
                 rtype=RequestTypes.POST, route="suite/evaluate", json=body
