@@ -59,7 +59,6 @@ class Mix:
         exportSettings: dict = {},
         strictValidation: bool = True,
         validate: bool = False,
-        sections: dict = {},
         soundLayer: str = "default",
     ) -> Item:
         counts = sum([1 for i in [speechId, scriptId, speechItem] if i])
@@ -75,15 +74,12 @@ class Mix:
             raise Exception("soundTemplate argument should be a string")
         if not isinstance(masteringPreset, str):
             raise Exception("masteringPreset should be a string")
-        if not isinstance(sections, dict):
-            raise Exception("sections should be a dict")
 
         body = {
             "soundTemplate": soundTemplate,
             "mediaFiles": mediaFiles,
             "fxFiles": fxFiles,
             "sectionProperties": sectionProperties,
-            "sections": sections, 
             "timelineProperties": timelineProperties,
             "soundLayer": soundLayer,
             "masteringPreset": masteringPreset,
