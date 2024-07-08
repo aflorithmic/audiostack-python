@@ -85,6 +85,7 @@ class Mix:
             "sectionProperties": sectionProperties,
             "timelineProperties": timelineProperties,
             "soundLayer": soundLayer,
+            "sections": sections,
             "masteringPreset": masteringPreset,
             "public": public,
             "exportSettings": exportSettings,
