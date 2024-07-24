@@ -69,6 +69,7 @@ class TTS:
             voiceIntelligence: bool = False,
             public: bool = False,
             sync: bool = True,
+            useCache: bool = True,
         ) -> "TTS.Item":
             # (start) no modify
             route = "tts/section"
@@ -148,6 +149,7 @@ class TTS:
         voiceIntelligence: bool = False,
         public: bool = False,
         sync: bool = True,
+        useCache: bool = True,
     ) -> "TTS.Item":
         # (start) no modify
         route = "tts"
@@ -203,6 +205,7 @@ class TTS:
         public: bool = False,
         sync: bool = True,
         sectionToProduce: str = "",
+        useCache: bool = True,
     ) -> "TTS.Item":
         if scriptId and scriptItem:
             raise Exception("scriptId or scriptItem should be supplied not both")
@@ -227,6 +230,7 @@ class TTS:
             "voiceIntelligence": voiceIntelligence,
             "public": public,
             "sync": sync,
+            "useCache": useCache,
         }
         if sectionToProduce:
             body["sectionToProduce"] = sectionToProduce
