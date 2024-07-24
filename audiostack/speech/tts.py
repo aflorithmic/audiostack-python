@@ -227,6 +227,7 @@ class TTS:
             "voiceIntelligence": voiceIntelligence,
             "public": public,
             "sync": sync,
+            "useCache": True,
         }
         if sectionToProduce:
             body["sectionToProduce"] = sectionToProduce
