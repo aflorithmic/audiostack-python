@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-- usaCache parameter for tts requests
+- useCache parameter for tts requests
 
 ## [2.1.0] - 2024-07-08
 
