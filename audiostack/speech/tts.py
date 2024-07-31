@@ -70,6 +70,7 @@ class TTS:
             public: bool = False,
             sync: bool = True,
             useCache: bool = True,
+            useDenoiser: bool = False,
         ) -> "TTS.Item":
             # (start) no modify
             route = "tts/section"
@@ -150,6 +151,7 @@ class TTS:
         public: bool = False,
         sync: bool = True,
         useCache: bool = True,
+        useDenoiser: bool = False,
     ) -> "TTS.Item":
         # (start) no modify
         route = "tts"
@@ -206,6 +208,7 @@ class TTS:
         sync: bool = True,
         sectionToProduce: str = "",
         useCache: bool = True,
+        useDenoiser: bool = False,
     ) -> "TTS.Item":
         if scriptId and scriptItem:
             raise Exception("scriptId or scriptItem should be supplied not both")
@@ -231,6 +234,7 @@ class TTS:
             "public": public,
             "sync": sync,
             "useCache": useCache,
+            "useDenoiser": useDenoiser,
         }
         if sectionToProduce:
             body["sectionToProduce"] = sectionToProduce
