@@ -4,6 +4,12 @@ All notable changes to `audiostack` will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.3.0] - 2024-07-31
+
+### Added
+
+- useDenoiser parameter for tts requests
+  
 ## [2.2.0] - 2024-07-24
 
 ### Added
