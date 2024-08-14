@@ -88,6 +88,11 @@ class RequestInterface:
         query_parameters: Optional[Union[dict, str]] = None,
         overwrite_base_url: Optional[str] = None,
     ) -> Any:
+        if self.DEBUG_PRINT:
+            print("sending:", route, f"({rtype}")
+            print("\t\t", path_parameters)
+            print("\t\t", query_parameters)
+            print("\t\t", json)
         if overwrite_base_url:
             url = overwrite_base_url
         else:
