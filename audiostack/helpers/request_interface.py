@@ -88,11 +88,6 @@ class RequestInterface:
         query_parameters: Optional[Union[dict, str]] = None,
         overwrite_base_url: Optional[str] = None,
     ) -> Any:
-        if self.DEBUG_PRINT:
-            print("sending:", route, f"({rtype}")
-            print("\t\t", path_parameters)
-            print("\t\t", query_parameters)
-            print("\t\t", json)
         if overwrite_base_url:
             url = overwrite_base_url
         else:
@@ -111,6 +106,12 @@ class RequestInterface:
             json = remove_empty(json)
         if query_parameters:
             query_parameters = remove_empty(query_parameters)
+
+        if self.DEBUG_PRINT:
+            print("sending:", url, f"({rtype}")
+            print("\t\t", path_parameters)
+            print("\t\t", query_parameters)
+            print("\t\t", json)
 
         # these requests are all the same input parameters.
         if rtype in [RequestTypes.POST, RequestTypes.PUT, RequestTypes.PATCH]:
