@@ -47,11 +47,10 @@ class RequestInterface:
         return header
 
     def resolve_response(self, r: Any) -> dict:
-        if self.DEBUG_PRINT:
-            print(json.dumps(r.json(), indent=4))
         if r.status_code >= 500:
             raise Exception("Internal server error - aborting")
-
+        if self.DEBUG_PRINT:
+            print(r.json())
         if r.status_code == 403:
             exc = r.json().get("message", "Not authorised - check API key is valid")
             raise Exception(exc)
