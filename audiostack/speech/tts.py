@@ -71,6 +71,7 @@ class TTS:
             sync: bool = True,
             useCache: bool = True,
             useDenoiser: bool = False,
+            useAutofix: bool = False,
         ) -> "TTS.Item":
             # (start) no modify
             route = "tts/section"
@@ -152,6 +153,7 @@ class TTS:
         sync: bool = True,
         useCache: bool = True,
         useDenoiser: bool = False,
+        useAutofix: bool = False,
     ) -> "TTS.Item":
         # (start) no modify
         route = "tts"
@@ -206,6 +208,7 @@ class TTS:
         voiceIntelligence: bool = False,
         public: bool = False,
         sync: bool = True,
+        useAutofix: bool = False,
         sectionToProduce: str = "",
         useCache: bool = True,
         useDenoiser: bool = False,
@@ -235,6 +238,7 @@ class TTS:
             "sync": sync,
             "useCache": useCache,
             "useDenoiser": useDenoiser,
+            "useAutofix": useAutofix,
         }
         if sectionToProduce:
             body["sectionToProduce"] = sectionToProduce
