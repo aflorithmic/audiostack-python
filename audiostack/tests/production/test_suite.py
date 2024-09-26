@@ -24,6 +24,12 @@ def test_denoise() -> None:
         test_constants["pipelineId"] = r.pipelineId
 
 
+def test_transcribe() -> None:
+    with patch("audiostack.production.suite.Suite.TRANSCRIBE_ENDPOINT", "suite/test"):
+        r = Suite.transcribe(test_constants["fileId"], language="en", wait=False)
+        assert isinstance(r, Suite.PipelineInProgressItem)
+
+
 def test_get() -> None:
     r = Suite.get(test_constants["pipelineId"])
     assert isinstance(r, Suite.PipelineFinishedItem)
