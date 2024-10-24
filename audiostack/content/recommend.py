@@ -88,7 +88,7 @@ class RecommendIAB:
     @staticmethod
     def create(text: str, num_tags: int = 3, language: str = "en") -> Item:
         payload = {"text": text, "num_tags": num_tags, "language": language}
-        r = RecommendTone.interface.send_request(
+        r = RecommendIAB.interface.send_request(
             rtype=RequestTypes.POST,
             route="recommend/iab_category",
             json=payload,
