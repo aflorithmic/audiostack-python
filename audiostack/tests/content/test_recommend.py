@@ -29,9 +29,11 @@ def tags() -> List[str]:
 def number_of_results() -> int:
     return 2
 
+
 @pytest.fixture
 def num_tags() -> int:
     return 3
+
 
 @pytest.fixture
 def language() -> str:
@@ -150,7 +152,9 @@ def test_RecommendIAB_create(
     num_tags: int,
     language: str,
 ) -> None:
-    response = audiostack.Content.RecommendIAB.create(text=text, num_tags=num_tags, language=language)
+    response = audiostack.Content.RecommendIAB.create(
+        text=text, num_tags=num_tags, language=language
+    )
 
     payload = {"text": text, "num_tags": num_tags, "language": language}
 
@@ -168,5 +172,3 @@ def test_integration_iab(text: str, num_tags: int, language: str) -> None:
     )
     assert item.status_code == 200
     assert any(tag["category"] == "iab" for tag in item.iab_categories)
-
-    

@@ -1,10 +1,10 @@
 from audiostack.content.file import File, Folder  # noqa: F401
 from audiostack.content.media import Media  # noqa: F401
 from audiostack.content.recommend import (  # noqa: F401
+    RecommendIAB,
     RecommendMood,
     RecommendTag,
     RecommendTone,
-    RecommendIAB
 )
 from audiostack.content.script import Script  # noqa: F401
 from audiostack.helpers.api_item import APIResponseItem
