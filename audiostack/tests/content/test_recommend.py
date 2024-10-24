@@ -155,7 +155,7 @@ def test_RecommendIAB_create(
 
 
 def test_integration_tone(text: str, num_tags: int, language: str) -> None:
-    item = audiostack.Content.RecommendTone.create(
+    item = audiostack.Content.RecommendIAB.create(
         text=text, num_tags=num_tags, language=language
     )
     assert item.status_code == 200
