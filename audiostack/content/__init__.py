@@ -4,6 +4,7 @@ from audiostack.content.recommend import (  # noqa: F401
     RecommendMood,
     RecommendTag,
     RecommendTone,
+    RecommendIAB
 )
 from audiostack.content.script import Script  # noqa: F401
 from audiostack.helpers.api_item import APIResponseItem
