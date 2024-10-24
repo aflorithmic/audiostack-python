@@ -133,7 +133,6 @@ def test_integration_mood(text: str, number_of_results: int) -> None:
     assert hasattr(item, "moods")
 
 
-
 @patch("audiostack.content.recommend.RecommendIAB.Item")
 @patch("audiostack.content.recommend.RecommendIAB.interface.send_request")
 def test_RecommendIAB_create(
@@ -143,9 +142,7 @@ def test_RecommendIAB_create(
     num_tags: int,
     language: str,
 ) -> None:
-    response = audiostack.Content.RecommendIAB.create(
-        text=text, num_tags=num_tags
-    )
+    response = audiostack.Content.RecommendIAB.create(text=text, num_tags=num_tags)
 
     payload = {"text": text, "num_tags": num_tags, language: language}
 
@@ -163,4 +160,3 @@ def test_integration_tone(text: str, num_tags: int, language: str) -> None:
     )
     assert item.status_code == 200
     assert hasattr(item, "iab")
-
