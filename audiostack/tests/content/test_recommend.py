@@ -154,7 +154,7 @@ def test_RecommendIAB_create(
     assert response == mock_iab_item.return_value
 
 
-def test_integration_tone(text: str, num_tags: int, language: str) -> None:
+def test_integration_iab(text: str, num_tags: int, language: str) -> None:
     item = audiostack.Content.RecommendIAB.create(
         text=text, num_tags=num_tags, language=language
     )
