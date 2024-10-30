@@ -4,6 +4,13 @@ All notable changes to `audiostack` will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.5.1] - 2024-10-31
+
+### Fixed
+
+- Hardened video endpoint tests
+- Excluded the tests directory (which has some audio and video fixtures) from final build to keep package size down.
+
 ## [2.5.0] - 2024-09-27
 
 ### Added
