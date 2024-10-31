@@ -89,3 +89,6 @@ workflows:
       - publish:
           <<: *only_tags
           context: aws
+          requires:
+            - unit-tests
+            - lint
