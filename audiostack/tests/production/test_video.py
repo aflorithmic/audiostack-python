@@ -7,17 +7,44 @@ audiostack.api_base = os.environ.get("AUDIO_STACK_DEV_URL", "https://v2.api.audi
 audiostack.api_key = os.environ["AUDIO_STACK_DEV_KEY"]  # type: ignore
 
 test_constants = {}  # type: dict
+from typing import Generator
+from uuid import uuid4
 
-if "staging" in audiostack.api_base:
-    FILE_IDS = {
-        "video": "e655867d-c12f-42ad-a57e-466598ab84aa",
-        "audio": "11c7fcf7-d7cd-4c83-ba6b-a383a6d16a30",
-    }
-else:
-    FILE_IDS = {
-        "video": "87c3399e-4c92-4bb5-8e95-e39564afc09a",
-        "audio": "04200ee6-d74f-4f46-adbd-90c7453beede",
-    }
+import pytest
+
+
+@pytest.fixture(scope="module")
+def _get_audio_file_id(request: pytest.FixtureRequest) -> Generator:
+    r = audiostack.Content.File.create(
+        localPath="audiostack/tests/fixtures/audio.wav",
+        uploadPath=f"sdk_unit_tests_{str(uuid4())}.wav",
+        fileType="audio",
+    )
+    r = audiostack.Content.File.get(fileId=r.fileId)
+    yield r.fileId
+
+    # Register the finalizer to delete the file at the end of the session
+    def teardown() -> None:
+        audiostack.Content.File.delete(fileId=r.fileId)
+
+    request.addfinalizer(teardown)
+
+
+@pytest.fixture(scope="module")
+def _get_video_file_id(request: pytest.FixtureRequest) -> Generator:
+    r = audiostack.Content.File.create(
+        localPath="audiostack/tests/fixtures/video.mp4",
+        uploadPath=f"sdk_unit_tests_{str(uuid4())}.mp4",
+        fileType="video",
+    )
+    r = audiostack.Content.File.get(fileId=r.fileId)
+    yield r.fileId
+
+    # Register the finalizer to delete the file at the end of the session
+    def teardown() -> None:
+        audiostack.Content.File.delete(fileId=r.fileId)
+
+    request.addfinalizer(teardown)
 
 
 def test_create_from_production_and_image() -> None:
@@ -34,17 +61,15 @@ def test_create_from_production_and_image() -> None:
     assert video.status_code == 200, "Video from production and image Failed"
 
 
-def test_create_from_production_and_video() -> None:
-    script = audiostack.Content.Script.create(scriptText="hello lars")
+def test_create_from_production_and_video(_get_video_file_id: str) -> None:
+    script = audiostack.Content.Script.create(scriptText="Hello, how are you?")
     speech = audiostack.Speech.TTS.create(scriptItem=script, voice="sara")
     mix = audiostack.Production.Mix.create(speechItem=speech)
 
-    videoFileId = FILE_IDS["video"]
     mode = {"setting": "low"}
-
     video = Video.create_from_production_and_video(
         productionItem=mix,
-        videoFileId=videoFileId,
+        videoFileId=_get_video_file_id,
         public=True,
         mode=mode,
     )
@@ -52,21 +77,20 @@ def test_create_from_production_and_video() -> None:
     assert video.status_code == 200, "Video from production and video Failed"
 
 
-def test_create_from_file_and_video() -> None:
-    fileId = FILE_IDS["audio"]
-    videoFileId = FILE_IDS["video"]
+def test_create_from_file_and_video(
+    _get_audio_file_id: str, _get_video_file_id: str
+) -> None:
     mode = {"setting": "low"}
 
     video = Video.create_from_file_and_video(
-        fileId=fileId, videoFileId=videoFileId, mode=mode
+        fileId=_get_audio_file_id, videoFileId=_get_video_file_id, mode=mode
     )
     print(video)
     assert video.status_code == 200, "Video from file and video Failed"
 
 
-def test_create_from_file_and_image() -> None:
-    fileId = FILE_IDS["audio"]
+def test_create_from_file_and_image(_get_audio_file_id: str) -> None:
 
-    video = Video.create_from_file_and_image(fileId=fileId)
+    video = Video.create_from_file_and_image(fileId=_get_audio_file_id)
     print(video)
     assert video.status_code == 200, "Video from file and image"
