@@ -30,6 +30,16 @@ def number_of_results() -> int:
     return 2
 
 
+@pytest.fixture
+def num_tags() -> int:
+    return 3
+
+
+@pytest.fixture
+def language() -> str:
+    return "en"
+
+
 @patch("audiostack.content.recommend.RecommendTag.Item")
 @patch("audiostack.content.recommend.RecommendTag.interface.send_request")
 def test_RecommendTag_create(
@@ -131,3 +141,34 @@ def test_integration_mood(text: str, number_of_results: int) -> None:
     )
     assert item.status_code == 200
     assert hasattr(item, "moods")
+
+
+@patch("audiostack.content.recommend.RecommendIAB.Item")
+@patch("audiostack.content.recommend.RecommendIAB.interface.send_request")
+def test_RecommendIAB_create(
+    mock_send_request: Mock,
+    mock_iab_item: Mock,
+    text: str,
+    num_tags: int,
+    language: str,
+) -> None:
+    response = audiostack.Content.RecommendIAB.create(
+        text=text, num_tags=num_tags, language=language
+    )
+
+    payload = {"text": text, "num_tags": num_tags, "language": language}
+
+    mock_send_request.assert_called_once_with(
+        rtype=RequestTypes.POST, route="recommend/iab_category", json=payload
+    )
+    mock_iab_item.assert_called_once_with(mock_send_request.return_value)
+
+    assert response == mock_iab_item.return_value
+
+
+def test_integration_iab(text: str, num_tags: int, language: str) -> None:
+    item = audiostack.Content.RecommendIAB.create(
+        text=text, num_tags=num_tags, language=language
+    )
+    assert item.status_code == 200
+    assert any(tag["category"] == "iab" for tag in item.iab_categories)
