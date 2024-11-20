@@ -1,4 +1,6 @@
-from typing import Any, Union
+from typing import Any
+from typing import List as ListType
+from typing import Optional, Union
 
 from audiostack.helpers.api_item import APIResponseItem
 from audiostack.helpers.api_list import APIResponseList
@@ -92,6 +94,28 @@ class Sound:
                 rtype=RequestTypes.DELETE,
                 route="template",
                 path_parameters=templateName,
+            )
+            return APIResponseItem(r)
+
+        @staticmethod
+        def recommend(
+            fileId: Optional[str] = "",
+            soundTemplateId: Optional[str] = "",
+            x: Optional[int] = 3,
+            filters: Optional[ListType[dict]] = [],
+            force_apply_filters: bool = False,
+        ) -> APIResponseItem:
+            body = {
+                "fileId": fileId,
+                "soundTemplateId": soundTemplateId,
+                "x": x,
+                "filters": filters,
+                "force_apply_filters": force_apply_filters,
+            }
+            r = Sound.interface.send_request(
+                rtype=RequestTypes.POST,
+                route="recommendations",
+                json=body,
             )
             return APIResponseItem(r)
 

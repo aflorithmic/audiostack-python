@@ -4,6 +4,12 @@ All notable changes to `audiostack` will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.7.0] - 2024-11-20
+
+### Added
+
+- Sound template endpoint for recommendation.
+
 ## [2.6.0] - 2024-10-31
 
 ### Added
