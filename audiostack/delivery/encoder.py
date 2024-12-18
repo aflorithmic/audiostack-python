@@ -1,3 +1,4 @@
+import time
 from typing import Any, Optional
 
 from audiostack.helpers.api_item import APIResponseItem
@@ -82,12 +83,19 @@ class Encoder:
             rtype=RequestTypes.POST, route="encoder", json=body
         )
 
+        start = time.time()
+        timeout = 300  # 5 minutes in seconds
+
         while r["statusCode"] == 202:
             print("Response in progress please wait...")
             encoderId = r["data"]["encoderId"]
             r = Encoder.interface.send_request(
                 rtype=RequestTypes.GET, route="encoder", path_parameters=encoderId
             )
+            if time.time() - start >= timeout:
+                raise Exception(
+                    f'Polling Encoder timed out after 5 minutes. Please contact us for support. EncoderId: {r["data"]["encoderId"]}'
+                )
         return Encoder.Item(r)
 
     @staticmethod

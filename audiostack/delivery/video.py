@@ -1,3 +1,4 @@
+import time
 from typing import Any, Optional
 
 from audiostack.helpers.api_item import APIResponseItem
@@ -154,6 +155,9 @@ class Video:
 
 
 def _poll_video(r: dict, pipelineId: str) -> dict:
+    start = time.time()
+    timeout = 300  # 5 minutes in seconds
+
     while r["statusCode"] == 202:
         interface = RequestInterface(family="production")
         print("Response in progress please wait...")
@@ -162,6 +166,11 @@ def _poll_video(r: dict, pipelineId: str) -> dict:
             route="suite/videopipeline",
             path_parameters=pipelineId,
         )
+
+        if time.time() - start >= timeout:
+            raise Exception(
+                f"Polling Video timed out after 5 minutes. Please contact us for support. PipelineId: {pipelineId}"
+            )
     status = r.get("data", {}).get("status", 200)
     if status > 400:
         msg = r.get("data", {}).get("message")

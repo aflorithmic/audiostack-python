@@ -1,3 +1,4 @@
+import time
 from typing import Any, Optional
 
 from audiostack.helpers.api_item import APIResponseItem
@@ -244,6 +245,10 @@ class TTS:
             body["sectionToProduce"] = sectionToProduce
 
         r = TTS.interface.send_request(rtype=RequestTypes.POST, route="tts", json=body)
+
+        start = time.time()
+        timeout = 300  # 5 minutes in seconds
+
         while r["statusCode"] == 202:
             print("Response in progress please wait...")
             r = TTS.interface.send_request(
@@ -252,5 +257,10 @@ class TTS:
                 path_parameters=r["data"]["speechId"],
                 query_parameters={"public": public},
             )
+
+            if time.time() - start >= timeout:
+                raise Exception(
+                    f'Polling TTS timed out after 5 minutes. Please contact us for support. SpeechId: {r["data"]["speechId"]}'
+                )
 
         return TTS.Item(r)
