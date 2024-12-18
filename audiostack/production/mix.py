@@ -108,7 +108,6 @@ class Mix:
             )
 
         start = time.time()
-        timeout = 300  # 5 minutes in seconds
 
         while r["statusCode"] == 202:
             print("Response in progress please wait...")
