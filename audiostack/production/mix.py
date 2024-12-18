@@ -1,6 +1,7 @@
 import time
 from typing import Any, Optional, Union
 
+from audiostack import TIMEOUT_THRESHOLD_S
 from audiostack.helpers.api_item import APIResponseItem
 from audiostack.helpers.api_list import APIResponseList
 from audiostack.helpers.request_interface import RequestInterface
@@ -116,8 +117,8 @@ class Mix:
                 route="mix",
                 path_parameters=r["data"]["productionId"],
             )
-            if time.time() - start >= timeout:
-                raise Exception(
+            if time.time() - start >= TIMEOUT_THRESHOLD_S:
+                raise TimeoutError(
                     f'Polling Mix timed out after 5 minutes. Please contact us for support. ProductionId: {r["data"]["productionId"]}'
                 )
         return Mix.Item(r)

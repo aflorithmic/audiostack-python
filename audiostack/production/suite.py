@@ -1,6 +1,7 @@
 import time
 from typing import Any, List, Optional, Union
 
+from audiostack import TIMEOUT_THRESHOLD_S
 from audiostack.content.file import File
 from audiostack.helpers.api_item import APIResponseItem
 from audiostack.helpers.request_interface import RequestInterface
@@ -76,7 +77,6 @@ class Suite:
         )
 
         start = time.time()
-        timeout = 300  # 5 minutes in seconds
 
         while r["statusCode"] != 200 and r["statusCode"] != 404:
             print("Response in progress please wait...")
@@ -84,8 +84,8 @@ class Suite:
                 rtype=RequestTypes.POST, route="suite/evaluate", json=body
             )
 
-            if time.time() - start >= timeout:
-                raise Exception(
+            if time.time() - start >= TIMEOUT_THRESHOLD_S:
+                raise TimeoutError(
                     "Polling Evaluate timed out after 5 minutes. Please contact us for support."
                 )
 
@@ -129,7 +129,6 @@ class Suite:
     @staticmethod
     def _poll(r: Any, pipelineId: str) -> "Suite.PipelineFinishedItem":
         start = time.time()
-        timeout = 300  # 5 minutes in seconds
 
         while r["statusCode"] == 202:
             print("Response in progress please wait...")
@@ -139,8 +138,8 @@ class Suite:
                 path_parameters=pipelineId,
             )
 
-            if time.time() - start >= timeout:
-                raise Exception(
+            if time.time() - start >= TIMEOUT_THRESHOLD_S:
+                raise TimeoutError(
                     f"Polling Suite timed out after 5 minutes. Please contact us for support. PipelineId: {pipelineId}"
                 )
 

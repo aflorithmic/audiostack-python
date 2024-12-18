@@ -2,6 +2,7 @@ import os
 import time
 from typing import Any
 
+from audiostack import TIMEOUT_THRESHOLD_S
 from audiostack.helpers.api_item import APIResponseItem
 from audiostack.helpers.api_list import APIResponseList
 from audiostack.helpers.request_interface import RequestInterface
@@ -127,15 +128,14 @@ class File:
             rtype=RequestTypes.GET, route="file/id", path_parameters=fileId
         )
         start = time.time()
-        timeout = 300  # 5 minutes in seconds
 
         while r["statusCode"] == 202:
             print("Response in progress please wait...")
             r = File.interface.send_request(
                 rtype=RequestTypes.GET, route="file/id", path_parameters=fileId
             )
-            if time.time() - start >= timeout:
-                raise Exception(
+            if time.time() - start >= TIMEOUT_THRESHOLD_S:
+                raise TimeoutError(
                     f"Polling File timed out after 5 minutes. Please contact us for support. FileId: {fileId}"
                 )
         return File.Item(r)

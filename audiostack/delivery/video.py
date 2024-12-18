@@ -1,6 +1,7 @@
 import time
 from typing import Any, Optional
 
+from audiostack import TIMEOUT_THRESHOLD_S
 from audiostack.helpers.api_item import APIResponseItem
 from audiostack.helpers.request_interface import RequestInterface
 from audiostack.helpers.request_types import RequestTypes
@@ -156,7 +157,6 @@ class Video:
 
 def _poll_video(r: dict, pipelineId: str) -> dict:
     start = time.time()
-    timeout = 300  # 5 minutes in seconds
 
     while r["statusCode"] == 202:
         interface = RequestInterface(family="production")
@@ -167,8 +167,8 @@ def _poll_video(r: dict, pipelineId: str) -> dict:
             path_parameters=pipelineId,
         )
 
-        if time.time() - start >= timeout:
-            raise Exception(
+        if time.time() - start >= TIMEOUT_THRESHOLD_S:
+            raise TimeoutError(
                 f"Polling Video timed out after 5 minutes. Please contact us for support. PipelineId: {pipelineId}"
             )
     status = r.get("data", {}).get("status", 200)
