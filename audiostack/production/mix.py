@@ -1,5 +1,7 @@
+import time
 from typing import Any, Optional, Union
 
+from audiostack import TIMEOUT_THRESHOLD_S
 from audiostack.helpers.api_item import APIResponseItem
 from audiostack.helpers.api_list import APIResponseList
 from audiostack.helpers.request_interface import RequestInterface
@@ -105,6 +107,8 @@ class Mix:
                 rtype=RequestTypes.POST, route="mix", json=body
             )
 
+        start = time.time()
+
         while r["statusCode"] == 202:
             print("Response in progress please wait...")
             r = Mix.interface.send_request(
@@ -112,7 +116,10 @@ class Mix:
                 route="mix",
                 path_parameters=r["data"]["productionId"],
             )
-
+            if time.time() - start >= TIMEOUT_THRESHOLD_S:
+                raise TimeoutError(
+                    f'Polling Mix timed out after 5 minutes. Please contact us for support. ProductionId: {r["data"]["productionId"]}'
+                )
         return Mix.Item(r)
 
     @staticmethod

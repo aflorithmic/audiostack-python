@@ -1,5 +1,7 @@
+import time
 from typing import Any, Optional
 
+from audiostack import TIMEOUT_THRESHOLD_S
 from audiostack.helpers.api_item import APIResponseItem
 from audiostack.helpers.api_list import APIResponseList
 from audiostack.helpers.request_interface import RequestInterface
@@ -82,12 +84,18 @@ class Encoder:
             rtype=RequestTypes.POST, route="encoder", json=body
         )
 
+        start = time.time()
+
         while r["statusCode"] == 202:
             print("Response in progress please wait...")
             encoderId = r["data"]["encoderId"]
             r = Encoder.interface.send_request(
                 rtype=RequestTypes.GET, route="encoder", path_parameters=encoderId
             )
+            if time.time() - start >= TIMEOUT_THRESHOLD_S:
+                raise TimeoutError(
+                    f'Polling Encoder timed out after 5 minutes. Please contact us for support. EncoderId: {r["data"]["encoderId"]}'
+                )
         return Encoder.Item(r)
 
     @staticmethod

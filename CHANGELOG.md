@@ -4,6 +4,12 @@ All notable changes to `audiostack` will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.7.1] - 2024-12-18
+
+### Improvement
+
+- Adding a default timeout of 300 seconds for polls. 
+
 ## [2.7.0] - 2024-11-20
 
 ### Added
