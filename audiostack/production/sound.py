@@ -108,7 +108,7 @@ class Sound:
             body = {
                 "fileId": fileId,
                 "soundTemplateId": soundTemplateId,
-                "x": x,
+                "numberOfResults": x,
                 "filters": filters,
                 "force_apply_filters": force_apply_filters,
             }
