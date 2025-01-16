@@ -1,4 +1,5 @@
-from typing import Any
+from typing import Any, Dict
+from typing import List as ListType
 
 from audiostack.helpers.api_item import APIResponseItem
 from audiostack.helpers.api_list import APIResponseList
@@ -27,7 +28,8 @@ class Voice:
 
     @staticmethod
     def query(
-        filters: list[dict] = [],
+        # deployment is running on python 3.8, so we can't use the built-in list type
+        filters: ListType[Dict] = [],
         minimumNumberOfResults: int = 3,
         forceApplyFilters: bool = True,
         page: int = 1,
