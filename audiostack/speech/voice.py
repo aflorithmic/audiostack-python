@@ -26,6 +26,34 @@ class Voice:
                 raise Exception()
 
     @staticmethod
+    def query(
+        filters: list[dict] = [],
+        minimumNumberOfResults: int = 3,
+        forceApplyFilters: bool = True,
+        page: int = 1,
+        pageLimit: int = 1000,
+    ) -> "Voice.List":
+        if page < 1:
+            raise ValueError("page should be greater than 0")
+        if pageLimit < 1:
+            raise ValueError("pageLimit should be greater than 0")
+        if minimumNumberOfResults < 1:
+            raise ValueError("minimumNumberOfResults should be greater than 0")
+
+        body = {
+            "filters": filters,
+            "minimumNumberOfResults": minimumNumberOfResults,
+            "forceApplyFilters": forceApplyFilters,
+            "page": page,
+            "pageLimit": pageLimit,
+        }
+
+        r = Voice.interface.send_request(
+            rtype=RequestTypes.POST, route="query", json=body
+        )
+        return Voice.List(r, list_type="voices")
+
+    @staticmethod
     def select_for_script(
         scriptId: str = "", scriptItem: Any = "", tone: str = "", targetLength: int = 20
     ) -> APIResponseItem:
