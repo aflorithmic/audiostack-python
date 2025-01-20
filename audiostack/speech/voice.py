@@ -70,7 +70,6 @@ class Voice:
         r = Voice.interface.send_request(
             rtype=RequestTypes.POST, route="select", json=body
         )
-        breakpoint()
         return APIResponseItem(r)
 
     @staticmethod
