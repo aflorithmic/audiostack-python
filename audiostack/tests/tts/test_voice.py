@@ -2,15 +2,15 @@ import os
 from typing import Any
 from unittest.mock import Mock, patch
 
+import pytest
 from pytest import fixture
 
 import audiostack
+from audiostack.helpers.api_item import APIResponseItem
 from audiostack.helpers.request_types import RequestTypes
 from audiostack.speech.voice import Voice
 
-audiostack.api_base = os.environ.get(
-    "AUDIO_STACK_DEV_URL", "https://staging-v2.api.audio"
-)
+audiostack.api_base = os.environ.get("AUDIO_STACK_DEV_URL", "https://v2.api.audio")
 audiostack.api_key = os.environ["AUDIO_STACK_DEV_KEY"]  # type: ignore
 
 
@@ -64,12 +64,32 @@ def test_Voice_query(mock_send_request: Mock, voice_data: dict) -> None:
             "pageLimit": 1000,
         },
     )
-    for v in voices:
-        assert isinstance(v, Voice.Item)
-        assert v.provider
-        assert v.alias
-        assert v.data
-        assert v.response
+    assert isinstance(voices, Voice.VoiceList)
+    assert voices.data == {"voices": [voice_data] * 10}
+
+
+def test_Voice_query_with_parameters(mock_send_request: Mock, voice_data: dict) -> None:
+    mock_send_request.return_value = {"data": {"voices": [voice_data] * 10}}
+    filters = [{"in": {"language": ["dutch"]}}]
+    voices = Voice.query(
+        filters=filters,
+        minimumNumberOfResults=1,
+        forceApplyFilters=False,
+        pageLimit=100,
+    )
+    mock_send_request.assert_called_once_with(
+        rtype=RequestTypes.POST,
+        route="query",
+        json={
+            "filters": filters,
+            "minimumNumberOfResults": 1,
+            "forceApplyFilters": False,
+            "page": 1,
+            "pageLimit": 100,
+        },
+    )
+    assert isinstance(voices, Voice.VoiceList)
+    assert voices.data == {"voices": [voice_data] * 10}
 
 
 def test_Voice_select_for_script(mock_send_request: Mock, voice_data: dict) -> None:
@@ -80,8 +100,9 @@ def test_Voice_select_for_script(mock_send_request: Mock, voice_data: dict) -> N
         route="select",
         json={"scriptId": "1", "tone": "", "targetLength": 20},
     )
-    assert r
-    assert r.response
+    assert isinstance(r, APIResponseItem)
+    breakpoint()
+    assert r.data == voice_data
 
 
 # def test_query() -> None:
@@ -177,18 +198,19 @@ def test_Voice_select_for_script(mock_send_request: Mock, voice_data: dict) -> N
 #     assert len(voices) >= 3, f"Expected 3 voices, got {len(voices)} voices"
 
 
-def test_query_negative_input_values() -> None:
-    try:
+def test_query_negative_page_input() -> None:
+    with pytest.raises(ValueError) as e:
         Voice.query(page=0)
-    except ValueError as e:
         assert str(e) == "page should be greater than 0"
 
-    try:
+
+def test_query_negative_page_limit_input() -> None:
+    with pytest.raises(ValueError) as e:
         Voice.query(pageLimit=0)
-    except ValueError as e:
         assert str(e) == "pageLimit should be greater than 0"
 
-    try:
+
+def test_query_negative_minimum_number_of_results_input() -> None:
+    with pytest.raises(ValueError) as e:
         Voice.query(minimumNumberOfResults=0)
-    except ValueError as e:
         assert str(e) == "minimumNumberOfResults should be greater than 0"

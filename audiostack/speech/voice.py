@@ -1,5 +1,4 @@
-from typing import Any, Dict
-from typing import List as ListType
+from typing import Any, Dict, List
 
 from audiostack.helpers.api_item import APIResponseItem
 from audiostack.helpers.api_list import APIResponseList
@@ -16,7 +15,7 @@ class Voice:
             self.provider = self.data["provider"]
             self.alias = self.data["alias"]
 
-    class List(APIResponseList):
+    class VoiceList(APIResponseList):
         def __init__(self, response: dict, list_type: str) -> None:
             super().__init__(response, list_type)
 
@@ -28,13 +27,12 @@ class Voice:
 
     @staticmethod
     def query(
-        # deployment is running on python 3.8, so we can't use the built-in list type
-        filters: ListType[Dict] = [],
+        filters: List[Dict] = [],
         minimumNumberOfResults: int = 3,
         forceApplyFilters: bool = True,
         page: int = 1,
         pageLimit: int = 1000,
-    ) -> "Voice.List":
+    ) -> "Voice.VoiceList":
         if page < 1:
             raise ValueError("page should be greater than 0")
         if pageLimit < 1:
@@ -53,7 +51,7 @@ class Voice:
         r = Voice.interface.send_request(
             rtype=RequestTypes.POST, route="query", json=body
         )
-        return Voice.List(r, list_type="voices")
+        return Voice.VoiceList(r, list_type="voices")
 
     @staticmethod
     def select_for_script(
@@ -72,6 +70,7 @@ class Voice:
         r = Voice.interface.send_request(
             rtype=RequestTypes.POST, route="select", json=body
         )
+        breakpoint()
         return APIResponseItem(r)
 
     @staticmethod
@@ -86,9 +85,9 @@ class Voice:
         return APIResponseItem(r)
 
     @staticmethod
-    def list() -> "Voice.List":
+    def list() -> "Voice.VoiceList":
         r = Voice.interface.send_request(rtype=RequestTypes.GET, route="")
-        return Voice.List(r, list_type="voices")
+        return Voice.VoiceList(r, list_type="voices")
 
     class Parameter:
         @staticmethod
