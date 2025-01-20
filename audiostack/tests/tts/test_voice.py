@@ -101,7 +101,7 @@ def test_Voice_select_for_script(mock_send_request: Mock, voice_data: dict) -> N
         json={"scriptId": "1", "tone": "", "targetLength": 20},
     )
     assert isinstance(r, APIResponseItem)
-    assert r.data == voice_data
+    assert r.response == voice_data
 
 
 def test_query_negative_page_input() -> None:
