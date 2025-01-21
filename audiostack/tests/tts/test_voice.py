@@ -2,7 +2,6 @@ import os
 from typing import Any
 from unittest.mock import Mock, patch
 
-import pytest
 from pytest import fixture
 
 import audiostack
@@ -102,21 +101,3 @@ def test_Voice_select_for_script(mock_send_request: Mock, voice_data: dict) -> N
     )
     assert isinstance(r, APIResponseItem)
     assert r.response == voice_data
-
-
-def test_query_negative_page_input() -> None:
-    with pytest.raises(ValueError) as e:
-        Voice.query(page=0)
-        assert str(e) == "page should be greater than 0"
-
-
-def test_query_negative_page_limit_input() -> None:
-    with pytest.raises(ValueError) as e:
-        Voice.query(pageLimit=0)
-        assert str(e) == "pageLimit should be greater than 0"
-
-
-def test_query_negative_minimum_number_of_results_input() -> None:
-    with pytest.raises(ValueError) as e:
-        Voice.query(minimumNumberOfResults=0)
-        assert str(e) == "minimumNumberOfResults should be greater than 0"

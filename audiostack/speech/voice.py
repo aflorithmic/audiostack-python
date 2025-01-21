@@ -33,13 +33,6 @@ class Voice:
         page: int = 1,
         pageLimit: int = 1000,
     ) -> "Voice.VoiceList":
-        if page < 1:
-            raise ValueError("page should be greater than 0")
-        if pageLimit < 1:
-            raise ValueError("pageLimit should be greater than 0")
-        if minimumNumberOfResults < 1:
-            raise ValueError("minimumNumberOfResults should be greater than 0")
-
         body = {
             "filters": filters,
             "minimumNumberOfResults": minimumNumberOfResults,
