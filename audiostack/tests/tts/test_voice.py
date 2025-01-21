@@ -63,7 +63,7 @@ def test_Voice_query(mock_send_request: Mock, voice_data: dict) -> None:
             "pageLimit": 1000,
         },
     )
-    assert isinstance(voices, Voice.VoiceList)
+    assert isinstance(voices, Voice.List)
     assert voices.data == {"voices": [voice_data] * 10}
 
 
@@ -87,7 +87,7 @@ def test_Voice_query_with_parameters(mock_send_request: Mock, voice_data: dict) 
             "pageLimit": 100,
         },
     )
-    assert isinstance(voices, Voice.VoiceList)
+    assert isinstance(voices, Voice.List)
     assert voices.data == {"voices": [voice_data] * 10}
 
 
