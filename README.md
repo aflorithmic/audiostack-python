@@ -15,7 +15,7 @@
 
 This repository is actively maintained by [Audiostack](https://audiostack.ai/). For examples, recipes and api reference see the [api.audio docs](https://docs.audiostack.ai/reference/quick-start). Feel free to get in touch with any questions or feedback!
 
-## :book:  Changelog
+## 📕 Changelog
 
 You can view [here](https://docs.audiostack.ai/changelog) our updated Changelog.
 
@@ -112,7 +112,7 @@ Easy right? 🔮 This is the final result:
 
 https://github.com/aflorithmic/audiostack-python/assets/64603095/6948cddb-4132-40a7-b84d-457f3fc0803d
 
-## :speedboat: More quickstarts <a name = "quickstarts"></a>
+## 🚤 More quickstarts <a name = "quickstarts"></a>
 
 Get started with our [quickstart recipes](https://docs.audiostack.ai/docs/introduction).
 
