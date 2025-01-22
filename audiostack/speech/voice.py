@@ -1,4 +1,5 @@
-from typing import Any
+from typing import Any, Dict
+from typing import List as ListType
 
 from audiostack.helpers.api_item import APIResponseItem
 from audiostack.helpers.api_list import APIResponseList
@@ -24,6 +25,27 @@ class Voice:
                 return Voice.Item({"data": item})
             else:
                 raise Exception()
+
+    @staticmethod
+    def query(
+        filters: ListType[Dict] = [],
+        minimumNumberOfResults: int = 3,
+        forceApplyFilters: bool = True,
+        page: int = 1,
+        pageLimit: int = 1000,
+    ) -> "Voice.List":
+        body = {
+            "filters": filters,
+            "minimumNumberOfResults": minimumNumberOfResults,
+            "forceApplyFilters": forceApplyFilters,
+            "page": page,
+            "pageLimit": pageLimit,
+        }
+
+        r = Voice.interface.send_request(
+            rtype=RequestTypes.POST, route="query", json=body
+        )
+        return Voice.List(r, list_type="voices")
 
     @staticmethod
     def select_for_script(
