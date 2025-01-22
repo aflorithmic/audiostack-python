@@ -4,6 +4,12 @@ All notable changes to `audiostack` will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.8.1] - 2025-01-22
+
+### Improvement
+
+- Adding custom loudness presets support.
+
 ## [2.8.0] - 2025-01-20
 
 ### Added

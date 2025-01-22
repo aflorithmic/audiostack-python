@@ -44,6 +44,10 @@ class Encoder:
         format: str = "",
         bitDepth: Optional[int] = None,
         channels: Optional[int] = None,
+        loudnessSettings: str = "",
+        loudnessTarget: Optional[float] = None,
+        dynamicRange: Optional[float] = None,
+        truePeak: Optional[float] = None,
     ) -> Item:
         if productionId and productionItem:
             raise Exception(
@@ -65,7 +69,7 @@ class Encoder:
 
         if not preset:
             raise Exception(
-                "Either a an encoding preset (preset) or a loudness preset (loudnessPreset) should be supplied"
+                "Either an encoding preset (preset) or a loudness preset (loudnessPreset) should be supplied"
             )
 
         body = {
@@ -79,6 +83,10 @@ class Encoder:
             "bitDepth": bitDepth,
             "channels": channels,
             "loudnessPreset": loudnessPreset,
+            "loudnessSettings": loudnessSettings,
+            "loudnessTarget": loudnessTarget,
+            "dynamicRange": dynamicRange,
+            "truePeak": truePeak,
         }
         r = Encoder.interface.send_request(
             rtype=RequestTypes.POST, route="encoder", json=body
