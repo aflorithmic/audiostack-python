@@ -4,11 +4,12 @@ All notable changes to `audiostack` will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [2.9.0] - 2025-01-22
+## [2.9.0] - 2025-01-23
 
 ### Fixed
 
-- Fixed emojis not showing in PyPi
+- Removed emojis from PyPi document
+- Made example asset public
 
 ## [2.8.2] - 2025-01-22
 
