@@ -32,16 +32,18 @@ class RequestInterface:
         self.family = family
 
     @staticmethod
-    def make_header() -> dict:
-        header = {
+    def make_header(headers: Optional[dict] = None) -> dict:
+        new_headers = {
             "x-api-key": audiostack.api_key,
             "x-python-sdk-version": audiostack.sdk_version,
         }
         if audiostack.customer_trace_id:
-            header["x-customer-trace-id"] = audiostack.customer_trace_id
+            new_headers["x-customer-trace-id"] = audiostack.customer_trace_id
         if audiostack.assume_org_id:
-            header["x-assume-org"] = audiostack.assume_org_id
-        return header
+            new_headers["x-assume-org"] = audiostack.assume_org_id
+        if headers:
+            new_headers.update(headers)
+        return new_headers
 
     def resolve_response(self, r: Any) -> dict:
         if self.DEBUG_PRINT:
@@ -84,6 +86,7 @@ class RequestInterface:
         path_parameters: Optional[Union[dict, str]] = None,
         query_parameters: Optional[Union[dict, str]] = None,
         overwrite_base_url: Optional[str] = None,
+        headers: Optional[dict] = None,
     ) -> Any:
         if overwrite_base_url:
             url = overwrite_base_url
@@ -113,7 +116,7 @@ class RequestInterface:
             }
 
             return self.resolve_response(
-                FUNC_MAP[rtype](url=url, json=json, headers=self.make_header())
+                FUNC_MAP[rtype](url=url, json=json, headers=self.make_header(headers))
             )
         elif rtype == RequestTypes.GET:
             if path_parameters:
@@ -121,7 +124,7 @@ class RequestInterface:
 
             return self.resolve_response(
                 requests.get(
-                    url=url, params=query_parameters, headers=self.make_header()
+                    url=url, params=query_parameters, headers=self.make_header(headers)
                 )
             )
         elif rtype == RequestTypes.DELETE:
@@ -130,7 +133,7 @@ class RequestInterface:
 
             return self.resolve_response(
                 requests.delete(
-                    url=url, params=query_parameters, headers=self.make_header()
+                    url=url, params=query_parameters, headers=self.make_header(headers)
                 )
             )
 
