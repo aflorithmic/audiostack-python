@@ -4,6 +4,25 @@ All notable changes to `audiostack` will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.10.0] - 2025-02-13
+
+### Added
+
+- Customer trace id header can now be set.
+
+## [2.9.0] - 2025-01-23
+
+### Fixed
+
+- Removed emojis from PyPi document
+- Made example asset public
+
+## [2.8.2] - 2025-01-22
+
+### Improvement
+
+- Adding custom loudness presets support.
+
 ## [2.8.0] - 2025-01-20
 
 ### Added

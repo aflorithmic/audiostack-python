@@ -4,6 +4,7 @@ api_key = None
 Authorization = None
 assume_org_id = None
 app_info = None
+customer_trace_id = None
 
 TIMEOUT_THRESHOLD_S = 300
 
