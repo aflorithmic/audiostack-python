@@ -37,6 +37,8 @@ class RequestInterface:
             "x-api-key": audiostack.api_key,
             "x-python-sdk-version": audiostack.sdk_version,
         }
+        if audiostack.customer_trace_id:
+            header["x-customer-trace-id"] = audiostack.customer_trace_id
         if audiostack.assume_org_id:
             header["x-assume-org"] = audiostack.assume_org_id
         return header
