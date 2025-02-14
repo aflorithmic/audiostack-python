@@ -1,10 +1,14 @@
 import shutil
 from typing import Any, Callable, Dict, Optional, Union
+import contextlib
+import contextvars
 
 import requests
 
 import audiostack
 from audiostack.helpers.request_types import RequestTypes
+
+_current_trace_id = contextvars.ContextVar("current_trace_id", default=None)
 
 
 def remove_empty(data: Any) -> Any:
@@ -36,8 +40,9 @@ class RequestInterface:
             "x-api-key": audiostack.api_key,
             "x-python-sdk-version": audiostack.sdk_version,
         }
-        if audiostack.customer_trace_id:
-            new_headers["x-customer-trace-id"] = audiostack.customer_trace_id
+        current_trace_id = _current_trace_id.get()
+        if current_trace_id is not None:
+            new_headers["x-customer-trace-id"] = current_trace_id
         if audiostack.assume_org_id:
             new_headers["x-assume-org"] = audiostack.assume_org_id
         if headers:
@@ -151,3 +156,13 @@ class RequestInterface:
         local_filename = f"{destination}/{name}"
         with open(local_filename, "wb") as f:
             shutil.copyfileobj(r.raw, f)
+
+
+@contextlib.contextmanager
+def use_trace(trace_id):
+    token = _current_trace_id.set(trace_id)
+
+    try:
+        yield
+    finally:
+        _current_trace_id.reset(token)

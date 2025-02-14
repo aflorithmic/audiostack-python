@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-- Customer trace id header can now be set.
+- Customer trace id header can now be set per production using the `use_trace` context manager.
 - Can pass through custom headers into `send_request`.
 
 ## [2.9.0] - 2025-01-23
