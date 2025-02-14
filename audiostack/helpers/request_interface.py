@@ -2,7 +2,7 @@ import contextlib
 import contextvars
 import json
 import shutil
-from typing import Any, Callable, Dict, Optional, Union
+from typing import Any, Callable, Dict, Generator, Optional, Union
 
 import requests
 
@@ -155,9 +155,8 @@ class RequestInterface:
 
 
 @contextlib.contextmanager
-def use_trace(trace_id):
+def use_trace(trace_id: str) -> Generator[None, None, None]:
     token = _current_trace_id.set(trace_id)
-
     try:
         yield
     finally:
