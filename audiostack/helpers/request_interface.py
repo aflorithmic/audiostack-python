@@ -156,7 +156,9 @@ class RequestInterface:
 
 @contextlib.contextmanager
 def use_trace(trace_id: str) -> Generator[None, None, None]:
-    token = _current_trace_id.set(trace_id)
+    # This is a workaround to give correct type hints to the context manager but follow ContextVar's .set() method signature
+    any_typed_trace_id: Any = trace_id
+    token = _current_trace_id.set(any_typed_trace_id)
     try:
         yield
     finally:
