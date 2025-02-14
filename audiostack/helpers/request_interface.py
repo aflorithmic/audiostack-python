@@ -1,8 +1,8 @@
+import contextlib
+import contextvars
 import json
 import shutil
 from typing import Any, Callable, Dict, Optional, Union
-import contextlib
-import contextvars
 
 import requests
 
