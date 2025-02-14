@@ -3,7 +3,6 @@ api_base = "https://v2.api.audio"
 api_key = None
 assume_org_id = None
 app_info = None
-customer_trace_id = None
 
 TIMEOUT_THRESHOLD_S = 300
 
