@@ -1,7 +1,7 @@
 import contextlib
-from contextvars import ContextVar
 import json
 import shutil
+from contextvars import ContextVar
 from typing import Any, Callable, Dict, Generator, Optional, Union
 
 import requests
