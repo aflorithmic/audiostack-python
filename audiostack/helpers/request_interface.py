@@ -1,5 +1,5 @@
 import contextlib
-import contextvars
+from contextvars import ContextVar
 import json
 import shutil
 from typing import Any, Callable, Dict, Generator, Optional, Union
@@ -9,7 +9,9 @@ import requests
 import audiostack
 from audiostack.helpers.request_types import RequestTypes
 
-_current_trace_id = contextvars.ContextVar("current_trace_id", default=None)
+_current_trace_id: ContextVar[Optional[str]] = ContextVar(
+    "current_trace_id", default=None
+)
 
 
 def remove_empty(data: Any) -> Any:
@@ -156,9 +158,7 @@ class RequestInterface:
 
 @contextlib.contextmanager
 def use_trace(trace_id: str) -> Generator[None, None, None]:
-    # This is a workaround to give correct type hints to the context manager but follow ContextVar's .set() method signature
-    any_typed_trace_id: Any = trace_id
-    token = _current_trace_id.set(any_typed_trace_id)
+    token = _current_trace_id.set(trace_id)
     try:
         yield
     finally:
