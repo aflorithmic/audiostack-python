@@ -1,11 +1,17 @@
+import contextlib
 import json
 import shutil
-from typing import Any, Callable, Dict, Optional, Union
+from contextvars import ContextVar
+from typing import Any, Callable, Dict, Generator, Optional, Union
 
 import requests
 
 import audiostack
 from audiostack.helpers.request_types import RequestTypes
+
+_current_trace_id: ContextVar[Optional[str]] = ContextVar(
+    "current_trace_id", default=None
+)
 
 
 def remove_empty(data: Any) -> Any:
@@ -32,14 +38,19 @@ class RequestInterface:
         self.family = family
 
     @staticmethod
-    def make_header() -> dict:
-        header = {
+    def make_header(headers: Optional[dict] = None) -> dict:
+        new_headers = {
             "x-api-key": audiostack.api_key,
             "x-python-sdk-version": audiostack.sdk_version,
         }
+        current_trace_id = _current_trace_id.get()
+        if current_trace_id is not None:
+            new_headers["x-customer-trace-id"] = current_trace_id
         if audiostack.assume_org_id:
-            header["x-assume-org"] = audiostack.assume_org_id
-        return header
+            new_headers["x-assume-org"] = audiostack.assume_org_id
+        if headers:
+            new_headers.update(headers)
+        return new_headers
 
     def resolve_response(self, r: Any) -> dict:
         if self.DEBUG_PRINT:
@@ -82,6 +93,7 @@ class RequestInterface:
         path_parameters: Optional[Union[dict, str]] = None,
         query_parameters: Optional[Union[dict, str]] = None,
         overwrite_base_url: Optional[str] = None,
+        headers: Optional[dict] = None,
     ) -> Any:
         if overwrite_base_url:
             url = overwrite_base_url
@@ -111,7 +123,7 @@ class RequestInterface:
             }
 
             return self.resolve_response(
-                FUNC_MAP[rtype](url=url, json=json, headers=self.make_header())
+                FUNC_MAP[rtype](url=url, json=json, headers=self.make_header(headers))
             )
         elif rtype == RequestTypes.GET:
             if path_parameters:
@@ -119,7 +131,7 @@ class RequestInterface:
 
             return self.resolve_response(
                 requests.get(
-                    url=url, params=query_parameters, headers=self.make_header()
+                    url=url, params=query_parameters, headers=self.make_header(headers)
                 )
             )
         elif rtype == RequestTypes.DELETE:
@@ -128,7 +140,7 @@ class RequestInterface:
 
             return self.resolve_response(
                 requests.delete(
-                    url=url, params=query_parameters, headers=self.make_header()
+                    url=url, params=query_parameters, headers=self.make_header(headers)
                 )
             )
 
@@ -142,3 +154,12 @@ class RequestInterface:
         local_filename = f"{destination}/{name}"
         with open(local_filename, "wb") as f:
             shutil.copyfileobj(r.raw, f)
+
+
+@contextlib.contextmanager
+def use_trace(trace_id: str) -> Generator[None, None, None]:
+    token = _current_trace_id.set(trace_id)
+    try:
+        yield
+    finally:
+        _current_trace_id.reset(token)

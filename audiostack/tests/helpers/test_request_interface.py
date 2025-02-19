@@ -3,7 +3,8 @@ from unittest.mock import Mock, patch
 import pytest
 
 import audiostack
-from audiostack.helpers.request_interface import RequestInterface
+from audiostack.helpers.request_interface import RequestInterface, use_trace
+from audiostack.helpers.request_types import RequestTypes
 
 
 @patch("audiostack.helpers.request_interface.open")
@@ -59,3 +60,49 @@ def test_RequestInterface_download_url_4XX(
     mock_requests.get.return_value.status_code = 400
     with pytest.raises(Exception):
         RequestInterface.download_url(url="foo", name="bar", destination="baz")
+
+
+@patch("audiostack.helpers.request_interface.requests")
+def test_RequestInterface_with_trace_id(mock_requests: Mock) -> None:
+    body = {
+        "scriptText": "scriptText",
+        "projectName": "projectName",
+        "moduleName": "moduleName",
+        "scriptName": "scriptName",
+        "metadata": "metadata",
+    }
+    with use_trace("trace_id"):
+        mock_requests.post.return_value.status_code = 200
+        interface = RequestInterface(family="content")
+        interface.send_request(rtype=RequestTypes.POST, route="script", json=body)
+        mock_requests.post.assert_called_once_with(
+            url=f"{audiostack.api_base}/content/script",
+            headers={
+                "x-api-key": audiostack.api_key,
+                "x-python-sdk-version": audiostack.sdk_version,
+                "x-customer-trace-id": "trace_id",
+            },
+            json=body,
+        )
+
+
+@patch("audiostack.helpers.request_interface.requests")
+def test_RequestInterface_with_no_trace_id(mock_requests: Mock) -> None:
+    body = {
+        "scriptText": "scriptText",
+        "projectName": "projectName",
+        "moduleName": "moduleName",
+        "scriptName": "scriptName",
+        "metadata": "metadata",
+    }
+    mock_requests.post.return_value.status_code = 200
+    interface = RequestInterface(family="content")
+    interface.send_request(rtype=RequestTypes.POST, route="script", json=body)
+    mock_requests.post.assert_called_once_with(
+        url=f"{audiostack.api_base}/content/script",
+        headers={
+            "x-api-key": audiostack.api_key,
+            "x-python-sdk-version": audiostack.sdk_version,
+        },
+        json=body,
+    )
