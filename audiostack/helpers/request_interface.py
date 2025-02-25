@@ -19,7 +19,9 @@ def remove_empty(data: Any) -> Any:
 
     final_dict = {}
     for key, val in data.items():  # type: ignore
-        if val or isinstance(val, int):  # val = int(0) shoud not be removed
+        if (
+            val or isinstance(val, int) or isinstance(val, float)
+        ):  # val = int(0), float(0) should not be removed
             if isinstance(val, dict):
                 final_dict[key] = remove_empty(val)
             elif isinstance(val, list):

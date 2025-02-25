@@ -4,6 +4,10 @@ All notable changes to `audiostack` will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.10.1] - 2025-02-24
+- Fixed logic that removed 0 float values from payload
+
+
 ## [2.10.0] - 2025-02-13
 
 ### Added
