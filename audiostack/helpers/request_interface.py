@@ -41,9 +41,12 @@ class RequestInterface:
     @staticmethod
     def make_header(headers: Optional[dict] = None) -> dict:
         new_headers = {
-            "x-api-key": audiostack.api_key,
             "x-python-sdk-version": audiostack.sdk_version,
         }
+        if audiostack.api_key:
+            new_headers["x-api-key"] = audiostack.api_key
+        elif audiostack.Authorization:
+            new_headers["Authorization"] = audiostack.Authorization
         current_trace_id = _current_trace_id.get()
         if current_trace_id is not None:
             new_headers["x-customer-trace-id"] = current_trace_id
