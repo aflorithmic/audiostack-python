@@ -4,6 +4,12 @@ All notable changes to `audiostack` will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.0.0] - 2025-04-23
+- Implementation of new file system
+    - Folders are now represented by ids and will have parents of their own
+    - File Item and Folder Item have new values with more information
+    - Categories are represented by ids, they can be found by name
+
 ## [2.10.1] - 2025-02-24
 - Fixed logic that removed 0 float values from payload
 

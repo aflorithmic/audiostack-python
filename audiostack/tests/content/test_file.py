@@ -3,7 +3,7 @@ import os
 import pytest
 
 import audiostack
-from audiostack.content.file import File
+from audiostack.content.file import File, Folder
 
 audiostack.api_base = os.environ.get("AUDIO_STACK_DEV_URL", "https://v2.api.audio")
 audiostack.api_key = os.environ["AUDIO_STACK_DEV_KEY"]  # type: ignore
@@ -12,8 +12,9 @@ test_constants = {}
 
 
 def test_create() -> None:
-    r = File.create(localPath="example.mp3", uploadPath="example.mp3", fileType="audio")
-    test_constants["fileId"] = r.fileId
+    r = File.create(local_path="example.mp3", file_name="test")
+    test_constants["fileId"] = r.file_id
+    test_constants["fileName"] = r.file_name
     print(r)
 
 
@@ -23,36 +24,14 @@ def test_get() -> None:
 
 
 def test_modify() -> None:
-    r = File.modify(fileId=test_constants["fileId"], category="test")
+    r = File.modify(
+        file_id=test_constants["fileId"], file_name=test_constants["fileName"]
+    )
     print(r)
-
-
-@pytest.mark.skip(reason="Raises KeyError: 'items'")
-def test_search() -> None:
-    files = File.search()
-    for f in files:
-        print(f)
-
-    files = File.search(source="pythonSDK")
-    for f in files:
-        print(f)
 
 
 def test_delete() -> None:
-    r = File.get(test_constants["fileId"])
-    r2 = r.delete()
-    print(r2)
-
-
-def test_create_2() -> None:
-    r = File.create(
-        localPath="example.mp3",
-        uploadPath="example.mp3",
-        fileType="audio",
-        category="sounds",
-        tags=["a", "b"],
-        metadata={"hello": "world"},
+    r = File.delete(
+        test_constants["fileId"], Folder.get_root().current_path_chain["folderId"]
     )
-    test_constants["fileId"] = r.fileId
     print(r)
-    r.delete()

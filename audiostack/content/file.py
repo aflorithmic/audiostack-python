@@ -1,6 +1,7 @@
 import os
 import time
-from typing import Any
+from typing import Any, Optional
+from uuid import UUID
 
 from audiostack import TIMEOUT_THRESHOLD_S
 from audiostack.helpers.api_item import APIResponseItem
@@ -16,16 +17,22 @@ class File:
     class Item(APIResponseItem):
         def __init__(self, response: dict) -> None:
             super().__init__(response)
-            self.fileId = self.data["fileId"]
-            self.filePath = self.data["filePath"]
-            self.url = self.data.get("url", None)
+            self.file_id = response["fileId"]
+            self.file_name = response["fileName"]
+            self.url = response.get("url", None)
+            self.created_by = response["createdBy"]
+            self.last_modified = response.get("lastModified", None)
+            self.file_type_id = response["fileTypeId"]
+            self.category_id = response.get("categoryId", None)
+            self.size = response["size"]
+            self.created_at = response["createdAt"]
+            self.status = response["status"]
 
-        def delete(self) -> APIResponseItem:
-            return File.delete(self.fileId)
-
-        def download(self, fileName: str = "", path: str = "./") -> None:
+        def download(self, fileName: str, path: str = "./") -> None:
             if not fileName:
-                fileName = self.filePath.split("/")[-1]
+                raise Exception("Please supply a valid file name")
+            if not self.url:
+                raise Exception("No URL found for this file")
             RequestInterface.download_url(self.url, destination=path, name=fileName)
 
     class List(APIResponseList):
@@ -40,136 +47,100 @@ class File:
 
     @staticmethod
     def create(
-        localPath: str,
-        uploadPath: str,
-        fileType: str,
+        local_path: str,
+        file_name: str,
+        folder_id: Optional[UUID] = None,
         category: str = "",
-        tags: list = [],
-        metadata: dict = {},
     ) -> Item:
-        if not os.path.isfile(localPath):
+        if not local_path:
+            raise Exception("Please supply a localPath (path to your local file)")
+
+        if not os.path.isfile(local_path):
             raise Exception("Supplied file does not eixst")
 
-        if not uploadPath or not localPath:
-            raise Exception(
-                "Please supply a localPath (path to your local file) and an uploadPath (path to where youd like this to be saved)"
-            )
+        if not file_name:
+            raise Exception("Please supply a valid file name")
 
-        data = {
-            "filePath": uploadPath,
-            "fileType": fileType,
-            "source": "pythonSDK",
-            "category": category,
-            "tags": tags,
-            "metadata": metadata,
+        if not folder_id:
+            Folder.get_root().data["folders"]["folderId"]
+
+        category_id = File.get_category_id_by_name(category)
+
+        payload = {
+            "fileName": file_name,
+            "folderId": folder_id,
+            "categoryId": category_id,
         }
 
         r = File.interface.send_request(
             rtype=RequestTypes.POST,
             route="file/create-upload-url",
-            json=data,
+            json=payload,
+            overwrite_base_url="https://v2.api.audio/v3",
         )
         response = APIResponseItem(r)
-        url = response.data["fileUploadUrl"]
-        fileId = response.data["fileId"]
+        url = response.data["uploadUrl"]
 
-        File.interface.send_upload_request(local_path=localPath, upload_url=url)
-        return File.get(fileId)
-
-    @staticmethod
-    def transfer(
-        url: str,
-        uploadPath: str,
-        category: str = "",
-        tags: list = [],
-        metadata: dict = {},
-    ) -> Item:
-        data = {
-            "filePath": uploadPath,
-            "url": url,
-            "category": category,
-            "tags": tags,
-            "metadata": metadata,
-        }
-
-        r = File.interface.send_request(
-            rtype=RequestTypes.PUT,
-            route="file/transfer-file",
-            json=data,
-        )
-        response = APIResponseItem(r)
-        return File.get(response.data["fileId"])
-
-    @staticmethod
-    def modify(
-        fileId: str,
-        filePath: str = "",
-        category: str = "",
-        tags: list = [],
-        metadata: dict = {},
-    ) -> Item:
-        data = {
-            "filePath": filePath,
-            "category": category,
-            "tags": tags,
-            "metadata": metadata,
-        }
-
-        File.interface.send_request(
-            rtype=RequestTypes.PATCH,
-            route=f"file/id/{fileId}",
-            json=data,
-        )
-        return File.get(fileId)
-
-    @staticmethod
-    def get(fileId: str) -> Item:
-        r = File.interface.send_request(
-            rtype=RequestTypes.GET, route="file/id", path_parameters=fileId
-        )
-        start = time.time()
-
-        while r["statusCode"] == 202:
-            print("Response in progress please wait...")
-            r = File.interface.send_request(
-                rtype=RequestTypes.GET, route="file/id", path_parameters=fileId
-            )
-            if time.time() - start >= TIMEOUT_THRESHOLD_S:
-                raise TimeoutError(
-                    f"Polling File timed out after 5 minutes. Please contact us for support. FileId: {fileId}"
-                )
+        File.interface.send_upload_request(local_path=local_path, upload_url=url)
         return File.Item(r)
 
     @staticmethod
-    def delete(fileId: str) -> APIResponseItem:
+    def modify(
+        file_id: str,
+        file_name: str,
+        category: str = "",
+    ) -> Item:
+        category_id = File.get_category_id_by_name(category)
+        payload = {
+            "fileName": file_name,
+            "categoryId": category_id,
+        }
         r = File.interface.send_request(
-            rtype=RequestTypes.DELETE, route="file/id", path_parameters=fileId
+            rtype=RequestTypes.PATCH,
+            route=f"file/{file_id}",
+            json=payload,
+            overwrite_base_url="https://v2.api.audio/v3",
+        )
+        return File.Item(r)
+
+    @staticmethod
+    def get(file_id: str) -> Item:
+        r = File.interface.send_request(
+            rtype=RequestTypes.GET,
+            route=f"file/{file_id}",
+            overwrite_base_url="https://v2.api.audio/v3",
+        )
+        return File.Item(r)
+
+    @staticmethod
+    def delete(file_id: str, folder_id: str) -> APIResponseItem:
+        # Needs more thought
+        r = File.interface.send_request(
+            rtype=RequestTypes.DELETE,
+            route=f"file/{file_id}/{folder_id}",
+            overwrite_base_url="https://v2.api.audio/v3",
         )
         return APIResponseItem(r)
 
     @staticmethod
-    def search(
-        path: str = "",
-        source: str = "",
-        tags: list = [],
-        name: str = "",
-        fileType: str = "",
-        category: str = "",
-        sortBy: str = "",
-    ) -> List:
-        queries = {
-            "path": path,
-            "source": source,
-            "tags": tags,
-            "name": name,
-            "fileType": fileType,
-            "category": category,
-            "soryBy": sortBy,
-        }
+    def get_file_categories() -> APIResponseItem:
         r = File.interface.send_request(
-            rtype=RequestTypes.GET, route="file/search", query_parameters=queries
+            rtype=RequestTypes.GET,
+            route="file/metadata/file-categories",
+            overwrite_base_url="https://v2.api.audio/v3",
         )
-        return File.List(r, list_type="items")
+        return APIResponseItem(r)
+
+    @staticmethod
+    def get_category_id_by_name(name: str) -> Optional[UUID]:
+        category_id = None
+        categories = [
+            {"category_id": y["categoryId"], "name": y["name"]}
+            for x in File.get_file_categories().data["fileTypes"]
+            for y in x["fileCategories"]
+        ]
+        category_id = next(filter(lambda x: x["name"] == name, categories), None)
+        return category_id
 
 
 class Folder:
@@ -179,8 +150,9 @@ class Folder:
     class Item(APIResponseItem):
         def __init__(self, response: dict) -> None:
             super().__init__(response)
-            self.folders = Folder.List(response, list_type="folders")
-            self.files = File.List(response, list_type="files")
+            self.folders = Folder.List(response["folders"], list_type="folders")
+            self.files = File.List(response["files"], list_type="files")
+            self.current_path_chain = response["currentPathChain"]
 
     class List(APIResponseList):
         def __init__(self, response: dict, list_type: str) -> None:
@@ -193,26 +165,58 @@ class Folder:
                 raise Exception()
 
     @staticmethod
-    def create(name: Any) -> APIResponseItem:
-        r = File.interface.send_request(
-            rtype=RequestTypes.POST,
-            route="folder",
-            json={"folder": name},
-        )
-        return APIResponseItem(r)
-
-    @staticmethod
-    def list(folder: str) -> "Folder.Item":
-        r = File.interface.send_request(
-            rtype=RequestTypes.GET, route="folder", query_parameters={"folder": folder}
+    def get_root() -> Item:
+        r = Folder.interface.send_request(
+            rtype=RequestTypes.GET,
+            route="v3/file/folder",
+            overwrite_base_url="https://v2.api.audio",
         )
         return Folder.Item(r)
 
     @staticmethod
-    def delete(folder: str, delete_files: bool = False) -> APIResponseItem:
+    def create(name: str, parent_folder_id: Optional[UUID] = None) -> APIResponseItem:
+        folder = {
+            "folderName": name,
+            "parentFolderId": parent_folder_id,
+        }
+        r = Folder.interface.send_request(
+            rtype=RequestTypes.POST,
+            route="file/folder",
+            json=folder,
+            overwrite_base_url="https://v2.api.audio/v3",
+        )
+        return APIResponseItem(r)
+
+    @staticmethod
+    def get(folder_id: UUID) -> APIResponseItem:
+        r = Folder.interface.send_request(
+            rtype=RequestTypes.GET,
+            route=f"folder/{folder_id}",
+            overwrite_base_url="https://v2.api.audio/v3",
+        )
+        return APIResponseItem(r)
+
+    @staticmethod
+    def modify(
+        folder_id: UUID,
+        name: str,
+    ) -> APIResponseItem:
+        folder = {
+            "folderName": name,
+        }
+        r = Folder.interface.send_request(
+            rtype=RequestTypes.PATCH,
+            route=f"folder/{folder_id}",
+            json=folder,
+            overwrite_base_url="https://v2.api.audio/v3",
+        )
+        return APIResponseItem(r)
+
+    @staticmethod
+    def delete(folder_id: UUID) -> APIResponseItem:
         r = File.interface.send_request(
             rtype=RequestTypes.DELETE,
-            route="folder",
-            query_parameters={"folder": folder, "forceDelete": delete_files},
+            route=f"folder/{folder_id}",
+            overwrite_base_url="https://v2.api.audio/v3",
         )
         return APIResponseItem(r)
