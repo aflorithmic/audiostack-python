@@ -11,7 +11,7 @@ from audiostack.helpers.request_types import RequestTypes
 
 
 class File:
-    FAMILY = "content"
+    FAMILY = "v3"
     interface = RequestInterface(family=FAMILY)
 
     class Item(APIResponseItem):
@@ -19,14 +19,8 @@ class File:
             super().__init__(response)
             self.file_id = response["fileId"]
             self.file_name = response["fileName"]
-            self.url = response.get("url", None)
-            self.created_by = response["createdBy"]
-            self.last_modified = response.get("lastModified", None)
-            self.file_type_id = response["fileTypeId"]
-            self.category_id = response.get("categoryId", None)
-            self.size = response["size"]
-            self.created_at = response["createdAt"]
-            self.status = response["status"]
+            self.folder_id = response["folderId"]
+            self.content_type = response["mimeType"]
 
         def download(self, fileName: str, path: str = "./") -> None:
             if not fileName:
@@ -61,27 +55,20 @@ class File:
         if not file_name:
             raise Exception("Please supply a valid file name")
 
-        if not folder_id:
-            Folder.get_root().data["folders"]["folderId"]
-
-        category_id = File.get_category_id_by_name(category)
-
         payload = {
             "fileName": file_name,
             "folderId": folder_id,
-            "categoryId": category_id,
         }
+
+        if category:
+            payload["categoryId"] = File.get_category_id_by_name(category)
 
         r = File.interface.send_request(
             rtype=RequestTypes.POST,
             route="file/create-upload-url",
             json=payload,
-            overwrite_base_url="https://v2.api.audio/v3",
         )
-        response = APIResponseItem(r)
-        url = response.data["uploadUrl"]
-
-        File.interface.send_upload_request(local_path=local_path, upload_url=url)
+        File.interface.send_upload_request(local_path=local_path, upload_url=r["uploadUrl"], mime_type=r["mimeType"])
         return File.Item(r)
 
     @staticmethod
@@ -99,7 +86,6 @@ class File:
             rtype=RequestTypes.PATCH,
             route=f"file/{file_id}",
             json=payload,
-            overwrite_base_url="https://v2.api.audio/v3",
         )
         return File.Item(r)
 
@@ -108,7 +94,6 @@ class File:
         r = File.interface.send_request(
             rtype=RequestTypes.GET,
             route=f"file/{file_id}",
-            overwrite_base_url="https://v2.api.audio/v3",
         )
         return File.Item(r)
 
@@ -118,7 +103,6 @@ class File:
         r = File.interface.send_request(
             rtype=RequestTypes.DELETE,
             route=f"file/{file_id}/{folder_id}",
-            overwrite_base_url="https://v2.api.audio/v3",
         )
         return APIResponseItem(r)
 
@@ -127,7 +111,6 @@ class File:
         r = File.interface.send_request(
             rtype=RequestTypes.GET,
             route="file/metadata/file-categories",
-            overwrite_base_url="https://v2.api.audio/v3",
         )
         return APIResponseItem(r)
 
@@ -144,7 +127,7 @@ class File:
 
 
 class Folder:
-    FAMILY = "content"
+    FAMILY = "v3"
     interface = RequestInterface(family=FAMILY)
 
     class Item(APIResponseItem):
@@ -168,8 +151,7 @@ class Folder:
     def get_root() -> Item:
         r = Folder.interface.send_request(
             rtype=RequestTypes.GET,
-            route="v3/file/folder",
-            overwrite_base_url="https://v2.api.audio",
+            route="folder",
         )
         return Folder.Item(r)
 
@@ -181,9 +163,8 @@ class Folder:
         }
         r = Folder.interface.send_request(
             rtype=RequestTypes.POST,
-            route="file/folder",
+            route="folder",
             json=folder,
-            overwrite_base_url="https://v2.api.audio/v3",
         )
         return APIResponseItem(r)
 
@@ -192,7 +173,6 @@ class Folder:
         r = Folder.interface.send_request(
             rtype=RequestTypes.GET,
             route=f"folder/{folder_id}",
-            overwrite_base_url="https://v2.api.audio/v3",
         )
         return APIResponseItem(r)
 
@@ -208,7 +188,6 @@ class Folder:
             rtype=RequestTypes.PATCH,
             route=f"folder/{folder_id}",
             json=folder,
-            overwrite_base_url="https://v2.api.audio/v3",
         )
         return APIResponseItem(r)
 
@@ -217,6 +196,5 @@ class Folder:
         r = File.interface.send_request(
             rtype=RequestTypes.DELETE,
             route=f"folder/{folder_id}",
-            overwrite_base_url="https://v2.api.audio/v3",
         )
         return APIResponseItem(r)

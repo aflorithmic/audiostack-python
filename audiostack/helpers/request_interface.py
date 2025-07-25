@@ -78,14 +78,15 @@ class RequestInterface:
 
         return {**r.json(), **{"statusCode": r.status_code}}
 
-    def send_upload_request(self, local_path: str, upload_url: str) -> int:
+    def send_upload_request(self, local_path: str, upload_url: str, mime_type: str) -> int:
         with open(local_path, "rb") as data:
-            r = requests.put(url=upload_url, data=data)
-
+            r = requests.put(url=upload_url, data=data, headers={"Content-Type": mime_type})
+            print("Upload response:", r.text)
             if r.status_code >= 400:
                 raise Exception("Failed to upload file")
 
             return r.status_code
+
 
     def send_request(
         self,
