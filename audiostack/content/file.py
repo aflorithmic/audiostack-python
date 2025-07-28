@@ -14,30 +14,34 @@ class File:
     FAMILY = "v3"
     interface = RequestInterface(family=FAMILY)
 
-    class Item(APIResponseItem):
+    class Item:
         def __init__(self, response: dict) -> None:
-            super().__init__(response)
-            self.file_id = response["fileId"]
-            self.file_name = response["fileName"]
-            self.folder_id = response["folderId"]
-            self.content_type = response["mimeType"]
+            self.file_id: str = response["fileId"]
+            self.file_name: str = response["fileName"]
+            self.url: str = response.get("url", "")
+            self.created_by: str = response.get("createdBy", "")
+            self.last_modified: str = response.get("lastModified", "")
+            self.file_type: dict = response.get("fileType", {})
+            self.file_category: Optional[str] = response.get("fileCategory", None)
+            self.size: str = str(response.get("size", ""))
+            self.created_at: str = response.get("createdAt", "")
+            self.status: str = response.get("status", "")
+            self.duration: Optional[str] = response.get("duration", None)
 
         def download(self, fileName: str, path: str = "./") -> None:
-            if not fileName:
-                raise Exception("Please supply a valid file name")
             if not self.url:
-                raise Exception("No URL found for this file")
-            RequestInterface.download_url(self.url, destination=path, name=fileName)
+                raise Exception(
+                    "No URL found for this file. Please check the file has been processed."
+                )
+            RequestInterface.download_url(url=self.url, destination=path, name=fileName)
 
-    class List(APIResponseList):
-        def __init__(self, response: dict, list_type: str) -> None:
-            super().__init__(response, list_type)
-
-        def resolve_item(self, list_type: str, item: Any) -> "File.Item":
-            if list_type == "items" or list_type == "files":
-                return File.Item({"data": item})
-            else:
-                raise Exception()
+    @staticmethod
+    def get(file_id: str) -> Item:
+        r = File.interface.send_request(
+            rtype=RequestTypes.GET,
+            route=f"file/{file_id}",
+        )
+        return File.Item(response=r)
 
     @staticmethod
     def create(
@@ -61,140 +65,99 @@ class File:
         }
 
         if category:
-            payload["categoryId"] = File.get_category_id_by_name(category)
+            payload["categoryId"] = File.get_category_id_by_name(name=category)
 
         r = File.interface.send_request(
             rtype=RequestTypes.POST,
             route="file/create-upload-url",
             json=payload,
         )
-        File.interface.send_upload_request(local_path=local_path, upload_url=r["uploadUrl"], mime_type=r["mimeType"])
-        return File.Item(r)
-
-    @staticmethod
-    def modify(
-        file_id: str,
-        file_name: str,
-        category: str = "",
-    ) -> Item:
-        category_id = File.get_category_id_by_name(category)
-        payload = {
-            "fileName": file_name,
-            "categoryId": category_id,
-        }
-        r = File.interface.send_request(
-            rtype=RequestTypes.PATCH,
-            route=f"file/{file_id}",
-            json=payload,
+        File.interface.send_upload_request(
+            local_path=local_path, upload_url=r["uploadUrl"], mime_type=r["mimeType"]
         )
-        return File.Item(r)
+
+        start = time.time()
+
+        file = File.get(file_id=r["fileId"])
+
+        while file.status != "uploaded" or time.time() - start >= TIMEOUT_THRESHOLD_S:
+            print("Response in progress please wait...")
+            file = File.get(file_id=r["fileId"])
+
+        if file.status != "uploaded":
+            raise Exception("File upload failed")
+
+        return file
 
     @staticmethod
-    def get(file_id: str) -> Item:
-        r = File.interface.send_request(
-            rtype=RequestTypes.GET,
-            route=f"file/{file_id}",
-        )
-        return File.Item(r)
+    def delete(file_id: str, folder_id: str = "") -> None:
+        if not folder_id:
+            folder_id = Folder.get_root_folder_id()
 
-    @staticmethod
-    def delete(file_id: str, folder_id: str) -> APIResponseItem:
-        # Needs more thought
-        r = File.interface.send_request(
+        File.interface.send_request(
             rtype=RequestTypes.DELETE,
             route=f"file/{file_id}/{folder_id}",
         )
-        return APIResponseItem(r)
-
-    @staticmethod
-    def get_file_categories() -> APIResponseItem:
-        r = File.interface.send_request(
-            rtype=RequestTypes.GET,
-            route="file/metadata/file-categories",
-        )
-        return APIResponseItem(r)
-
-    @staticmethod
-    def get_category_id_by_name(name: str) -> Optional[UUID]:
-        category_id = None
-        categories = [
-            {"category_id": y["categoryId"], "name": y["name"]}
-            for x in File.get_file_categories().data["fileTypes"]
-            for y in x["fileCategories"]
-        ]
-        category_id = next(filter(lambda x: x["name"] == name, categories), None)
-        return category_id
 
 
 class Folder:
     FAMILY = "v3"
     interface = RequestInterface(family=FAMILY)
 
-    class Item(APIResponseItem):
+    class Item:
         def __init__(self, response: dict) -> None:
-            super().__init__(response)
-            self.folders = Folder.List(response["folders"], list_type="folders")
-            self.files = File.List(response["files"], list_type="files")
-            self.current_path_chain = response["currentPathChain"]
+            self.folder_id: str = response["folderId"]
+            self.folder_name: str = response["folderName"]
+            self.parent_folder_id: str = response.get("parentFolderId", "")
+            self.created_by: str = response.get("createdBy", "")
+            self.last_modified: Optional[str] = response.get("lastModified", None)
+            self.created_at: str = response.get("createdAt", "")
 
-    class List(APIResponseList):
-        def __init__(self, response: dict, list_type: str) -> None:
-            super().__init__(response, list_type)
-
-        def resolve_item(self, list_type: str, item: Any) -> dict:
-            if list_type == "folders":
-                return {"data": item}
-            else:
-                raise Exception()
+    class ListResponse:
+        def __init__(self, response: dict) -> None:
+            self.folders: list[Folder.Item] = [
+                Folder.Item(response=x) for x in response["folders"]
+            ]
+            self.files: list[File.Item] = [
+                File.Item(response=x) for x in response["files"]
+            ]
+            self.current_path_chain: dict = response["currentPathChain"]
 
     @staticmethod
-    def get_root() -> Item:
-        r = Folder.interface.send_request(
+    def get_root_folder_id() -> str:
+        root_folder_id = Folder.interface.send_request(
             rtype=RequestTypes.GET,
             route="folder",
-        )
-        return Folder.Item(r)
+        )["currentPathChain"][0]["folderId"]
+        return root_folder_id
 
     @staticmethod
-    def create(name: str, parent_folder_id: Optional[UUID] = None) -> APIResponseItem:
-        folder = {
+    def create(name: str, parent_folder_id: Optional[UUID] = None) -> "Folder.Item":
+        payload = {
             "folderName": name,
-            "parentFolderId": parent_folder_id,
         }
+
+        if parent_folder_id:
+            payload["parentFolderId"] = str(parent_folder_id)
+
         r = Folder.interface.send_request(
             rtype=RequestTypes.POST,
             route="folder",
-            json=folder,
+            json=payload,
         )
-        return APIResponseItem(r)
+        return Folder.Item(response=r)
 
     @staticmethod
-    def get(folder_id: UUID) -> APIResponseItem:
+    def get(folder_id: UUID) -> "Folder.Item":
         r = Folder.interface.send_request(
             rtype=RequestTypes.GET,
             route=f"folder/{folder_id}",
         )
-        return APIResponseItem(r)
+        return Folder.Item(response=r["currentPathChain"][0])
 
     @staticmethod
-    def modify(
-        folder_id: UUID,
-        name: str,
-    ) -> APIResponseItem:
-        folder = {
-            "folderName": name,
-        }
-        r = Folder.interface.send_request(
-            rtype=RequestTypes.PATCH,
-            route=f"folder/{folder_id}",
-            json=folder,
-        )
-        return APIResponseItem(r)
-
-    @staticmethod
-    def delete(folder_id: UUID) -> APIResponseItem:
-        r = File.interface.send_request(
+    def delete(folder_id: UUID) -> None:
+        File.interface.send_request(
             rtype=RequestTypes.DELETE,
             route=f"folder/{folder_id}",
         )
-        return APIResponseItem(r)
