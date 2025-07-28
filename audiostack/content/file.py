@@ -1,21 +1,36 @@
 import os
 import time
-from typing import Any, Optional
+from typing import Optional
 from uuid import UUID
 
 from audiostack import TIMEOUT_THRESHOLD_S
-from audiostack.helpers.api_item import APIResponseItem
-from audiostack.helpers.api_list import APIResponseList
 from audiostack.helpers.request_interface import RequestInterface
 from audiostack.helpers.request_types import RequestTypes
 
 
 class File:
+    """File management class for handling file operations in AudioStack.
+
+    This class provides methods for creating, retrieving, and deleting files
+    in the AudioStack system.
+    """
+
     FAMILY = "v3"
     interface = RequestInterface(family=FAMILY)
 
     class Item:
+        """Represents a file item in the AudioStack system.
+
+        This class encapsulates file metadata and provides methods for
+        file operations like downloading.
+        """
+
         def __init__(self, response: dict) -> None:
+            """Initialize a File.Item instance from API response data.
+
+            Args:
+                response: Dictionary containing file metadata from the API.
+            """
             self.file_id: str = response["fileId"]
             self.file_name: str = response["fileName"]
             self.url: str = response.get("url", "")
@@ -29,6 +44,15 @@ class File:
             self.duration: Optional[str] = response.get("duration", None)
 
         def download(self, fileName: str, path: str = "./") -> None:
+            """Download the file to the specified local path.
+
+            Args:
+                fileName: Name to save the file as locally.
+                path: Directory path where the file should be saved. Defaults to "./".
+
+            Raises:
+                Exception: If no URL is available for the file.
+            """
             if not self.url:
                 raise Exception(
                     "No URL found for this file. Please check the file has been processed."
@@ -37,6 +61,14 @@ class File:
 
     @staticmethod
     def get(file_id: str) -> Item:
+        """Retrieve a file by its ID.
+
+        Args:
+            file_id: The unique identifier of the file to retrieve.
+
+        Returns:
+            File.Item: A file item containing the file metadata.
+        """
         r = File.interface.send_request(
             rtype=RequestTypes.GET,
             route=f"file/{file_id}",
@@ -48,13 +80,29 @@ class File:
         local_path: str,
         file_name: str,
         folder_id: Optional[UUID] = None,
-        category: str = "",
     ) -> Item:
+        """Create and upload a new file to AudioStack.
+
+        This method uploads a local file to the AudioStack system and waits
+        for the upload to complete before returning the file item.
+
+        Args:
+            local_path: Path to the local file to upload.
+            file_name: Name to assign to the file in AudioStack.
+            folder_id: Optional UUID of the folder to upload to. If None, uses root folder.
+
+        Returns:
+            File.Item: The created file item with complete metadata.
+
+        Raises:
+            Exception: If local_path is not provided, file doesn't exist, file_name is not provided,
+                      or if the upload fails.
+        """
         if not local_path:
             raise Exception("Please supply a localPath (path to your local file)")
 
         if not os.path.isfile(local_path):
-            raise Exception("Supplied file does not eixst")
+            raise Exception("Supplied file does not exist")
 
         if not file_name:
             raise Exception("Please supply a valid file name")
@@ -63,9 +111,6 @@ class File:
             "fileName": file_name,
             "folderId": folder_id,
         }
-
-        if category:
-            payload["categoryId"] = File.get_category_id_by_name(name=category)
 
         r = File.interface.send_request(
             rtype=RequestTypes.POST,
@@ -80,7 +125,7 @@ class File:
 
         file = File.get(file_id=r["fileId"])
 
-        while file.status != "uploaded" or time.time() - start >= TIMEOUT_THRESHOLD_S:
+        while file.status != "uploaded" and time.time() - start < TIMEOUT_THRESHOLD_S:
             print("Response in progress please wait...")
             file = File.get(file_id=r["fileId"])
 
@@ -91,6 +136,12 @@ class File:
 
     @staticmethod
     def delete(file_id: str, folder_id: str = "") -> None:
+        """Delete a file from AudioStack.
+
+        Args:
+            file_id: The unique identifier of the file to delete.
+            folder_id: The folder ID where the file is located. If empty, uses root folder.
+        """
         if not folder_id:
             folder_id = Folder.get_root_folder_id()
 
@@ -101,11 +152,27 @@ class File:
 
 
 class Folder:
+    """Folder management class for handling folder operations in AudioStack.
+
+    This class provides methods for creating, retrieving, and deleting folders
+    in the AudioStack system.
+    """
+
     FAMILY = "v3"
     interface = RequestInterface(family=FAMILY)
 
     class Item:
+        """Represents a folder item in the AudioStack system.
+
+        This class encapsulates folder metadata including ID, name, and hierarchy information.
+        """
+
         def __init__(self, response: dict) -> None:
+            """Initialize a Folder.Item instance from API response data.
+
+            Args:
+                response: Dictionary containing folder metadata from the API.
+            """
             self.folder_id: str = response["folderId"]
             self.folder_name: str = response["folderName"]
             self.parent_folder_id: str = response.get("parentFolderId", "")
@@ -114,7 +181,18 @@ class Folder:
             self.created_at: str = response.get("createdAt", "")
 
     class ListResponse:
+        """Represents a list response containing folders and files.
+
+        This class encapsulates the response from folder listing operations,
+        containing both folder and file items along with path chain information.
+        """
+
         def __init__(self, response: dict) -> None:
+            """Initialize a ListResponse instance from API response data.
+
+            Args:
+                response: Dictionary containing folder listing data from the API.
+            """
             self.folders: list[Folder.Item] = [
                 Folder.Item(response=x) for x in response["folders"]
             ]
@@ -125,6 +203,11 @@ class Folder:
 
     @staticmethod
     def get_root_folder_id() -> str:
+        """Get the ID of the root folder.
+
+        Returns:
+            str: The unique identifier of the root folder.
+        """
         root_folder_id = Folder.interface.send_request(
             rtype=RequestTypes.GET,
             route="folder",
@@ -133,6 +216,15 @@ class Folder:
 
     @staticmethod
     def create(name: str, parent_folder_id: Optional[UUID] = None) -> "Folder.Item":
+        """Create a new folder in AudioStack.
+
+        Args:
+            name: The name of the folder to create.
+            parent_folder_id: Optional UUID of the parent folder. If None, creates in root.
+
+        Returns:
+            Folder.Item: The created folder item with complete metadata.
+        """
         payload = {
             "folderName": name,
         }
@@ -149,6 +241,14 @@ class Folder:
 
     @staticmethod
     def get(folder_id: UUID) -> "Folder.Item":
+        """Retrieve a folder by its ID.
+
+        Args:
+            folder_id: The unique identifier of the folder to retrieve.
+
+        Returns:
+            Folder.Item: A folder item containing the folder metadata.
+        """
         r = Folder.interface.send_request(
             rtype=RequestTypes.GET,
             route=f"folder/{folder_id}",
@@ -157,6 +257,11 @@ class Folder:
 
     @staticmethod
     def delete(folder_id: UUID) -> None:
+        """Delete a folder from AudioStack.
+
+        Args:
+            folder_id: The unique identifier of the folder to delete.
+        """
         File.interface.send_request(
             rtype=RequestTypes.DELETE,
             route=f"folder/{folder_id}",
