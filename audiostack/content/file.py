@@ -1,6 +1,6 @@
 import os
 import time
-from typing import Optional
+from typing import List, Optional
 from uuid import UUID
 
 from audiostack import TIMEOUT_THRESHOLD_S
@@ -193,10 +193,10 @@ class Folder:
             Args:
                 response: Dictionary containing folder listing data from the API.
             """
-            self.folders: list[Folder.Item] = [
+            self.folders: List[Folder.Item] = [
                 Folder.Item(response=x) for x in response["folders"]
             ]
-            self.files: list[File.Item] = [
+            self.files: List[File.Item] = [
                 File.Item(response=x) for x in response["files"]
             ]
             self.current_path_chain: dict = response["currentPathChain"]

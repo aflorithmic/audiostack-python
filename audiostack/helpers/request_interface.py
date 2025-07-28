@@ -58,6 +58,7 @@ class RequestInterface:
         if self.DEBUG_PRINT:
             print(json.dumps(r.json(), indent=4))
         if r.status_code >= 500:
+            print(r.text)
             raise Exception("Internal server error - aborting")
 
         if r.status_code == 403:
