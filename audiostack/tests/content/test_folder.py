@@ -1,4 +1,7 @@
+# TODO: User proper pytest fixtures
 import os
+import random
+import string
 
 import audiostack
 from audiostack.content.file import Folder
@@ -9,20 +12,22 @@ audiostack.api_key = os.environ["AUDIO_STACK_DEV_KEY"]  # type: ignore
 test_constants: dict = {}  #
 
 
-def test_list() -> None:
-    r = Folder.list(folder="")
-    print(r)
-    for fol in r.folders:
-        print(fol)
-    for fi in r.files:
-        print(fi)
+def create_test_folder_name() -> str:
+    return "__PYTHON_TEST_" + "".join(
+        random.choice(string.ascii_letters) for _ in range(10)
+    )
 
 
 def test_create() -> None:
-    r = Folder.delete(folder="__PYTHON_TEST", delete_files=True)
-    r = Folder.create(name="__PYTHON_TEST")  # type: ignore
+    r = Folder.create(name=create_test_folder_name())
+    test_constants["folderId"] = r.folderId
+    print(r)
+
+
+def test_get() -> None:
+    r = Folder.get(folderId=test_constants["folderId"])
     print(r)
 
 
 def test_delete() -> None:
-    Folder.delete(folder="__PYTHON_TEST", delete_files=True)
+    Folder.delete(folderId=test_constants["folderId"])
