@@ -43,6 +43,7 @@ class Script:
         moduleName: str = "",
         scriptName: str = "",
         metadata: dict = {},
+        **kwargs: Any,  # noqa: F841
     ) -> Item:
         body = {
             "scriptText": scriptText,

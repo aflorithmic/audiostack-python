@@ -48,6 +48,7 @@ class Encoder:
         loudnessTarget: Optional[float] = None,
         dynamicRange: Optional[float] = None,
         truePeak: Optional[float] = None,
+        **kwargs: Any,  # noqa: F841
     ) -> Item:
         if productionId and productionItem:
             raise Exception(

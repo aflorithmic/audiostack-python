@@ -150,6 +150,7 @@ class Suite:
             raise Suite.FailedPipeline(
                 "pipeline failed: ", msg, "errors are as follows: ", ",".join(errors)
             )
+        print(r)
 
         return Suite.PipelineFinishedItem(r)
 

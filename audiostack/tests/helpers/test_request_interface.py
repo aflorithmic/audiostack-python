@@ -14,7 +14,6 @@ def test_RequestInterface_download_url(
     mock_requests: Mock, mock_shutil: Mock, mock_open: Mock, tmp_path: str
 ) -> None:
     mock_requests.get.return_value.status_code = 200
-
     RequestInterface.download_url(url="foo", name="bar", destination=tmp_path)
     mock_requests.get.assert_called_once_with(
         url="foo",
@@ -106,3 +105,28 @@ def test_RequestInterface_with_no_trace_id(mock_requests: Mock) -> None:
         },
         json=body,
     )
+
+
+def test_RequestInterface_make_header_api_key() -> None:
+    audiostack.Authorization = "bearer_token"  # type: ignore
+    # Gets ignored if api_key is present
+    headers = RequestInterface.make_header()
+    assert headers == {
+        "x-python-sdk-version": audiostack.sdk_version,
+        "x-api-key": audiostack.api_key,
+    }
+
+
+def test_RequestInterface_make_header_Authorization() -> None:
+    key = audiostack.api_key  # keep the key as we will reset it after the test
+    audiostack.api_key = None
+    audiostack.Authorization = "bearer_token"  # type: ignore
+    headers = RequestInterface.make_header()
+    assert headers == {
+        "x-python-sdk-version": audiostack.sdk_version,
+        "Authorization": "bearer_token",
+    }
+
+    audiostack.api_key = key
+    audiostack.Authorization = None
+    # resetting after last test - otherwise downstream tests will fail with wrong API even if they import the API key

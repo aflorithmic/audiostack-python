@@ -1,5 +1,6 @@
 from typing import Any, Dict
 from typing import List as ListType
+from typing import Optional
 
 from audiostack.helpers.api_item import APIResponseItem
 from audiostack.helpers.api_list import APIResponseList
@@ -74,6 +75,34 @@ class Voice:
 
         r = Voice.interface.send_request(
             rtype=RequestTypes.POST, route="select", json=body
+        )
+        return APIResponseItem(r)
+
+    @staticmethod
+    def recommend_similar_voice(
+        fileId: str,
+        numberOfResults: int = 3,
+        gender: str = "",
+        language: str = "",
+        providers: Optional[list] = None,
+    ) -> APIResponseItem:
+        """
+        In future make this plural
+        """
+        body = {
+            "fileId": fileId,
+            "numberOfResults": numberOfResults,
+            "filters": {},
+        }
+        if gender:
+            body["filters"]["gender"] = [gender]  # type: ignore
+        if language:
+            body["filters"]["language"] = [language, "multilingual"]  # type: ignore
+        if providers:
+            body["filters"]["provider"] = providers  # type: ignore
+
+        r = Voice.interface.send_request(
+            rtype=RequestTypes.POST, route="recommendations", json=body
         )
         return APIResponseItem(r)
 

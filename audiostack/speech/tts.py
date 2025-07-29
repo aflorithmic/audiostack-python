@@ -74,6 +74,7 @@ class TTS:
             useCache: bool = True,
             useDenoiser: bool = False,
             useAutofix: bool = False,
+            **kwargs: Any,  # noqa: F841
         ) -> "TTS.Item":
             # (start) no modify
             route = "tts/section"
@@ -156,6 +157,7 @@ class TTS:
         useCache: bool = True,
         useDenoiser: bool = False,
         useAutofix: bool = False,
+        **kwargs: Any,  # noqa: F841
     ) -> "TTS.Item":
         # (start) no modify
         route = "tts"
@@ -214,7 +216,9 @@ class TTS:
         sectionToProduce: str = "",
         useCache: bool = True,
         useDenoiser: bool = False,
+        **kwargs: Any,  # noqa: F841
     ) -> "TTS.Item":
+
         if scriptId and scriptItem:
             raise Exception("scriptId or scriptItem should be supplied not both")
         if not (scriptId or scriptItem):

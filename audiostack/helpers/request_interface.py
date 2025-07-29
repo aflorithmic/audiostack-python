@@ -42,9 +42,12 @@ class RequestInterface:
     @staticmethod
     def make_header(headers: Optional[dict] = None) -> dict:
         new_headers = {
-            "x-api-key": audiostack.api_key,
             "x-python-sdk-version": audiostack.sdk_version,
         }
+        if audiostack.api_key:
+            new_headers["x-api-key"] = audiostack.api_key
+        elif audiostack.Authorization:
+            new_headers["Authorization"] = audiostack.Authorization
         current_trace_id = _current_trace_id.get()
         if current_trace_id is not None:
             new_headers["x-customer-trace-id"] = current_trace_id
@@ -55,12 +58,11 @@ class RequestInterface:
         return new_headers
 
     def resolve_response(self, r: Any) -> dict:
-        if self.DEBUG_PRINT:
-            print(json.dumps(r.json(), indent=4))
         if r.status_code >= 500:
             print(r.text)
             raise Exception("Internal server error - aborting")
-
+        if self.DEBUG_PRINT:
+            print(r.json())
         if r.status_code == 403:
             exc = r.json().get("message", "Not authorised - check API key is valid")
             raise Exception(exc)
@@ -122,6 +124,12 @@ class RequestInterface:
             json = remove_empty(json)
         if query_parameters:
             query_parameters = remove_empty(query_parameters)
+
+        if self.DEBUG_PRINT:
+            print("sending:", url, f"({rtype}")
+            print("\t\t", path_parameters)
+            print("\t\t", query_parameters)
+            print("\t\t", json)
 
         # these requests are all the same input parameters.
         if rtype in [RequestTypes.POST, RequestTypes.PUT, RequestTypes.PATCH]:

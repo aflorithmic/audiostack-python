@@ -63,6 +63,7 @@ class Mix:
         validate: bool = False,
         sections: dict = {},
         soundLayer: str = "default",
+        **kwargs: Any,  # noqa: F841
     ) -> Item:
         counts = sum([1 for i in [speechId, scriptId, speechItem] if i])
         if counts != 1:

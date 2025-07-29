@@ -1,6 +1,7 @@
 sdk_version = "2.7.1"
 api_base = "https://v2.api.audio"
 api_key = None
+Authorization = None
 assume_org_id = None
 app_info = None
 
