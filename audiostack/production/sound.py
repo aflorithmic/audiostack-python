@@ -117,7 +117,7 @@ class Sound:
                 route="recommendations",
                 json=body,
             )
-            return APIResponseItem(r)
+            return APIResponseItem(response=r)
 
     # ----------------------------------------- TEMPLATE SEGMENT -----------------------------------------
     class Segment:

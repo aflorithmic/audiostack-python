@@ -4,15 +4,15 @@ audiostack.api_key = "your key"
 
 # Upload a file. It's important that uploadPath contains the file extension. Upload file will be available to your organisation.
 file = audiostack.Content.File.create(
-    localPath="example.mp3", uploadPath="mydir/file.mp3", fileType="audio"
+    localPath="example.mp3", uploadPath="mydir/file.mp3"
 )
 
 print("The file ID is:", file.fileId)
 
-# List files in a directory
-files = audiostack.Content.File.search(path="mydir")
+# Get file details
+file_details = audiostack.Content.File.get(fileId=file.fileId)
 
-print("Files found:", files.items)
+print("File details:", file_details.fileName, file_details.size, file_details.status)
 
 # Delete the file
-file.delete()
+audiostack.Content.File.delete(fileId=file.fileId)

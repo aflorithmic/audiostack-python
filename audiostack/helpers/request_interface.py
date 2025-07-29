@@ -58,6 +58,7 @@ class RequestInterface:
         if self.DEBUG_PRINT:
             print(json.dumps(r.json(), indent=4))
         if r.status_code >= 500:
+            print(r.text)
             raise Exception("Internal server error - aborting")
 
         if r.status_code == 403:
@@ -65,11 +66,14 @@ class RequestInterface:
             raise Exception(exc)
 
         if r.status_code >= 400:
-            msg = (
-                r.json()["message"]
-                + ". Errors listed as follows: \n\t"
-                + "\t".join(r.json()["errors"])
-            )
+            if "message" in r.json():
+                msg = (
+                    r.json()["message"]
+                    + ". Errors listed as follows: \n\t"
+                    + "\t".join(r.json()["errors"])
+                )
+            else:
+                msg = r.json()
             raise Exception(msg)
 
         if "meta" in r.json():
@@ -78,10 +82,13 @@ class RequestInterface:
 
         return {**r.json(), **{"statusCode": r.status_code}}
 
-    def send_upload_request(self, local_path: str, upload_url: str) -> int:
+    def send_upload_request(
+        self, local_path: str, upload_url: str, mime_type: str
+    ) -> int:
         with open(local_path, "rb") as data:
-            r = requests.put(url=upload_url, data=data)
-
+            r = requests.put(
+                url=upload_url, data=data, headers={"Content-Type": mime_type}
+            )
             if r.status_code >= 400:
                 raise Exception("Failed to upload file")
 

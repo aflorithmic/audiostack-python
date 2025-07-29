@@ -13,7 +13,7 @@ class TTS:
 
     class Item(APIResponseItem):
         def __init__(self, response: dict) -> None:
-            super().__init__(response)
+            super().__init__(response=response)
             self.speechId = self.data["speechId"]
 
         def download(

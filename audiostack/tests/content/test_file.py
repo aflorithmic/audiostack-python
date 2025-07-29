@@ -1,7 +1,5 @@
 import os
 
-import pytest
-
 import audiostack
 from audiostack.content.file import File
 
@@ -12,47 +10,17 @@ test_constants = {}
 
 
 def test_create() -> None:
-    r = File.create(localPath="example.mp3", uploadPath="example.mp3", fileType="audio")
+    r = File.create(localPath="example.mp3", uploadPath="test.mp3")
     test_constants["fileId"] = r.fileId
+    test_constants["fileName"] = r.fileName
     print(r)
 
 
 def test_get() -> None:
-    r = File.get(test_constants["fileId"])
+    r = File.get(fileId=test_constants["fileId"])
     print(r)
-
-
-def test_modify() -> None:
-    r = File.modify(fileId=test_constants["fileId"], category="test")
-    print(r)
-
-
-@pytest.mark.skip(reason="Raises KeyError: 'items'")
-def test_search() -> None:
-    files = File.search()
-    for f in files:
-        print(f)
-
-    files = File.search(source="pythonSDK")
-    for f in files:
-        print(f)
 
 
 def test_delete() -> None:
-    r = File.get(test_constants["fileId"])
-    r2 = r.delete()
-    print(r2)
-
-
-def test_create_2() -> None:
-    r = File.create(
-        localPath="example.mp3",
-        uploadPath="example.mp3",
-        fileType="audio",
-        category="sounds",
-        tags=["a", "b"],
-        metadata={"hello": "world"},
-    )
-    test_constants["fileId"] = r.fileId
+    r = File.delete(fileId=test_constants["fileId"])
     print(r)
-    r.delete()

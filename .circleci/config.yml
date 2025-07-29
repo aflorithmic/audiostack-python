@@ -38,8 +38,8 @@ jobs:
             ./cc-test-reporter before-build
             export AUDIO_STACK_DEV_KEY=$AFLR_API_KEY_PROD_TEST
             poetry run task test
-            ./cc-test-reporter after-build \
-            --coverage-input-type coverage.py --exit-code $?
+            # ./cc-test-reporter after-build \
+            # --coverage-input-type coverage.py --exit-code $?
   lint:
     docker:
       - image: cimg/python:3.8
