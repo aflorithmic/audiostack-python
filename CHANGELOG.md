@@ -11,28 +11,31 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 #### File System Overhaul
 - **Complete file system redesign** with hierarchical folder structure
 - **New File.Item class** with comprehensive metadata:
-  - `file_id`: Unique file identifier
-  - `file_name`: Name of the file
+  - `fileId`: Unique file identifier
+  - `fileName`: Name of the file
   - `url`: Download URL for the file
-  - `created_by`: ID of user who created the file
-  - `last_modified`: Last modification timestamp
-  - `file_type`: File type information (dict with fileTypeId and name)
-  - `file_category`: Optional file category (can be null)
+  - `createdBy`: ID of user who created the file
+  - `lastModified`: Last modification timestamp
+  - `fileType`: File type information (dict with fileTypeId and name)
+  - `fileCategory`: Optional file category (can be null)
   - `size`: File size as string
-  - `created_at`: Creation timestamp
+  - `createdAt`: Creation timestamp
   - `status`: File status (e.g., "uploaded")
   - `duration`: Optional file duration (can be null)
 
 #### New Folder System
 - **New Folder.Item class** with hierarchical structure:
-  - `folder_id`: Unique folder identifier
-  - `folder_name`: Name of the folder
-  - `parent_folder_id`: Parent folder ID (empty string for root)
-  - `created_by`: ID of user who created the folder
-  - `last_modified`: Optional last modification timestamp (can be null)
-  - `created_at`: Creation timestamp
-- **New Folder.ListResponse class** for folder listing operations
-- **New Folder.get_root_folder_id()** method to get root folder ID
+  - `folderId`: Unique folder identifier
+  - `folderName`: Name of the folder
+  - `parentFolderId`: Parent folder ID (empty string for root)
+  - `createdBy`: ID of user who created the folder
+  - `lastModified`: Optional last modification timestamp (can be null)
+  - `createdAt`: Creation timestamp
+- **New Folder.ListResponse class** for folder listing operations with:
+  - `folders`: List of Folder.Item objects
+  - `files`: List of File.Item objects  
+  - `currentPathChain`: Dictionary containing path chain information
+- **New Folder.get_root_folder_id()` method to get root folder ID
 
 #### Enhanced File Operations
 - **Improved file upload process** with automatic polling for completion
@@ -42,35 +45,43 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### 🔄 API Changes
 
 #### File.create() Method
-- **BREAKING CHANGE**: Parameter names updated to snake_case:
-  - `localPath` → `local_path`
-  - `uploadPath` → `file_name`
+- **BREAKING CHANGE**: Parameter names updated:
   - `fileType` → **REMOVED** (no longer needed)
-- **New parameter**: `folder_id` (Optional[UUID]) for specifying upload location
+- **New parameter**: `folderId` (Optional[UUID]) for specifying upload location
 - **Enhanced behavior**: Now polls for upload completion and returns complete file metadata
 
 #### File.get() Method
 - **BREAKING CHANGE**: Parameter name updated:
-  - `fileId` → `file_id`
+  - `fileId` → `fileId` (kept camelCase)
 
 #### File.delete() Method
 - **BREAKING CHANGE**: Parameter names updated:
-  - `fileId` → `file_id`
-  - `folderId` → `folder_id` (optional, defaults to root folder)
+  - `fileId` → `fileId` (kept camelCase)
+  - `folderId` → `folderId` (kept camelCase, optional, defaults to root folder)
 - **Return type change**: Now returns `None` instead of `APIResponseItem`
 
 #### File.Item Attributes
-- **BREAKING CHANGE**: All attribute names updated to snake_case:
-  - `fileId` → `file_id`
-  - `fileName` → `file_name`
-  - `createdBy` → `created_by`
-  - `lastModified` → `last_modified`
-  - `fileType` → `file_type`
-  - `fileCategory` → `file_category`
-  - `createdAt` → `created_at`
+- **BREAKING CHANGE**: All attribute names kept in camelCase:
+  - `fileId`: Unique file identifier
+  - `fileName`: Name of the file
+  - `url`: Download URL for the file
+  - `createdBy`: ID of user who created the file
+  - `lastModified`: Last modification timestamp
+  - `fileType`: File type information (dict with fileTypeId and name)
+  - `fileCategory`: Optional file category (can be null)
+  - `size`: File size as string
+  - `createdAt`: Creation timestamp
+  - `status`: File status (e.g., "uploaded")
+  - `duration`: Optional file duration (can be null)
 
 #### File.Item.download() Method
 - **BREAKING CHANGE**: Now requires `fileName` parameter (no longer optional)
+
+#### Folder Methods
+- **Folder.create(name, parentFolderId)** - Create new folder with optional parent
+- **Folder.get(folderId)** - Retrieve folder by ID  
+- **Folder.delete(folderId)** - Delete folder by ID
+- **Folder.get_root_folder_id()** - Get root folder ID
 
 ### 🗑️ Removed Features
 
@@ -108,40 +119,40 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ```python
 # OLD
 file = File.create(localPath="file.mp3", uploadPath="name.mp3", fileType="audio")
-file_id = file.fileId
-file.delete(fileId=file_id, folderId=folder_id)
+fileId = file.fileId
+file.delete(fileId=fileId, folderId=folderId)
 
 # NEW
-file = File.create(local_path="file.mp3", file_name="name.mp3", folder_id=folder_id)
-file_id = file.file_id
-File.delete(file_id=file_id, folder_id=folder_id)
+file = File.create(localPath="file.mp3", uploadPath="name.mp3", folderId=folderId)
+fileId = file.fileId
+File.delete(fileId=fileId, folderId=folderId)
 ```
 
 #### For Folder Operations
 ```python
 # OLD
 root = Folder.get_root()  # Returns Folder.Item
-folder_id = root.current_path_chain["folderId"]
+folderId = root.currentPathChain["folderId"]
 
 # NEW
-folder_id = Folder.get_root_folder_id()  # Returns string directly
+folderId = Folder.get_root_folder_id()  # Returns string directly
 ```
 
 #### For File Item Access
 ```python
 # OLD
-file_id = file.fileId
-file_name = file.fileName
+fileId = file.fileId
+fileName = file.fileName
 
 # NEW
-file_id = file.file_id
-file_name = file.file_name
+fileId = file.fileId  # No change - kept camelCase
+fileName = file.fileName  # No change - kept camelCase
 ```
 
 ### ⚠️ Breaking Changes Summary
 
-1. **All parameter names** changed from camelCase to snake_case
-2. **All attribute names** changed from camelCase to snake_case
+1. **Parameter names** kept in camelCase (no changes to existing camelCase parameters)
+2. **Attribute names** kept in camelCase (no changes to existing camelCase attributes)
 3. **File.modify()** method completely removed
 4. **File.Item.delete()** instance method removed
 5. **Media class** completely removed
@@ -149,6 +160,7 @@ file_name = file.file_name
 7. **Inheritance from APIResponseItem** removed for Item classes
 8. **File.create()** now requires `fileName` parameter in download method
 9. **Return types** changed for some methods (e.g., delete returns None)
+10. **New parameter**: `folderId` added to File.create() for specifying upload location
 
 ### 🧪 Testing
 

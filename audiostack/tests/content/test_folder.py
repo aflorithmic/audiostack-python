@@ -20,14 +20,14 @@ def create_test_folder_name() -> str:
 
 def test_create() -> None:
     r = Folder.create(name=create_test_folder_name())
-    test_constants["folder_id"] = r.folder_id
+    test_constants["folderId"] = r.folderId
     print(r)
 
 
 def test_get() -> None:
-    r = Folder.get(folder_id=test_constants["folder_id"])
+    r = Folder.get(folderId=test_constants["folderId"])
     print(r)
 
 
 def test_delete() -> None:
-    Folder.delete(folder_id=test_constants["folder_id"])
+    Folder.delete(folderId=test_constants["folderId"])

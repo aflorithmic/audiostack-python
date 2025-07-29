@@ -12,8 +12,8 @@ test_constants = {}
 
 
 def test_create() -> None:
-    r = File.create(local_path="example.mp3", file_name="example.mp3")
-    test_constants["fileId"] = r.file_id
+    r = File.create(localPath="example.mp3", uploadPath="example.mp3")
+    test_constants["fileId"] = r.fileId
     print(r)
 
 
@@ -34,4 +34,4 @@ def test_get() -> None:
     r = Suite.get(test_constants["pipelineId"])
     assert isinstance(r, Suite.PipelineFinishedItem)
     for f in r.convert_new_files_to_items():
-        f.download(fileName=f.file_name)
+        f.download(fileName=f.fileName)

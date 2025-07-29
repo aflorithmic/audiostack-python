@@ -13,7 +13,7 @@ audiostack.api_key = os.environ["AUDIO_STACK_DEV_KEY"]  # type: ignore
     reason="This test doesn't work with files v2",
 )
 def test_create() -> None:
-    r = File.create(local_path="example.mp3", file_name="example.mp3")
-    print("fileId: ", r.file_id)
-    aesItem = audiostack.Production.Suite.evaluate(fileId=r.file_id)
+    r = File.create(localPath="example.mp3", uploadPath="example.mp3")
+    print("fileId: ", r.fileId)
+    aesItem = audiostack.Production.Suite.evaluate(fileId=r.fileId)
     assert aesItem.status_code == 200, "BiG ERROR"

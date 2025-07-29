@@ -16,24 +16,24 @@ test_constants = {}  # type: dict
 @pytest.fixture(scope="module")
 def _get_audio_file_id() -> Generator:
     r = audiostack.Content.File.create(
-        local_path="audiostack/tests/fixtures/audio.wav",
-        file_name=f"sdk_unit_tests_{str(uuid4())}.wav",
+        localPath="audiostack/tests/fixtures/audio.wav",
+        uploadPath=f"sdk_unit_tests_{str(uuid4())}.wav",
     )
-    r = audiostack.Content.File.get(file_id=r.file_id)
-    yield r.file_id
+    r = audiostack.Content.File.get(fileId=r.fileId)
+    yield r.fileId
 
-    audiostack.Content.File.delete(file_id=r.file_id)
+    audiostack.Content.File.delete(fileId=r.fileId)
 
 
 @pytest.fixture(scope="module")
 def _get_video_file_id() -> Generator:
     r = audiostack.Content.File.create(
-        local_path="audiostack/tests/fixtures/video.mp4",
-        file_name=f"sdk_unit_tests_{str(uuid4())}.mp4",
+        localPath="audiostack/tests/fixtures/video.mp4",
+        uploadPath=f"sdk_unit_tests_{str(uuid4())}.mp4",
     )
-    print("my file id", r.file_id)
-    yield r.file_id
-    # audiostack.Content.File.delete(file_id=r.file_id)
+    print("my file id", r.fileId)
+    yield r.fileId
+    # audiostack.Content.File.delete(fileId=r.fileId)
 
 
 def test_create_from_production_and_image() -> None:
