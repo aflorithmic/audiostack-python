@@ -5,8 +5,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [3.1.0] - 2025-08-04
+
+### Added
+
 - Users are now able to specify the number of retries they would like in an event of a timeout with the aim to provide better automation.
-- Added a small delay inbetween GET requests for speech response to prevent hammering servers.
+- Users can also specify the timeout threshold with the default value being 300 seconds (5 minutes)
+- Added a small delay in between GET requests for speech response to prevent hammering servers.
 
 ## [3.0.0] - 2025-07-29
 
