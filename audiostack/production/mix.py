@@ -63,6 +63,8 @@ class Mix:
         validate: bool = False,
         sections: dict = {},
         soundLayer: str = "default",
+        timeoutRetries: int = 0,
+        timeoutThreshold: int = TIMEOUT_THRESHOLD_S,
     ) -> Item:
         counts = sum([1 for i in [speechId, scriptId, speechItem] if i])
         if counts != 1:
@@ -108,7 +110,7 @@ class Mix:
             )
 
         start = time.time()
-
+        attempts = 0
         while r["statusCode"] == 202:
             print("Response in progress please wait...")
             r = Mix.interface.send_request(
@@ -116,10 +118,20 @@ class Mix:
                 route="mix",
                 path_parameters=r["data"]["productionId"],
             )
-            if time.time() - start >= TIMEOUT_THRESHOLD_S:
-                raise TimeoutError(
-                    f'Polling Mix timed out after 5 minutes. Please contact us for support. ProductionId: {r["data"]["productionId"]}'
-                )
+            if time.time() - start >= timeoutThreshold:
+                if attempts < timeoutRetries:
+                    r = Mix.interface.send_request(
+                        rtype=RequestTypes.POST,
+                        route="validate" if validate else "mix",
+                        json=body,
+                    )
+                    start = time.time()
+                else:
+                    raise TimeoutError(
+                        f'Polling Mix timed out after {timeoutThreshold} seconds. Please contact us for support. ProductionId: {r["data"]["productionId"]}'
+                    )
+                attempts += 1
+            time.sleep(0.05)
         return Mix.Item(r)
 
     @staticmethod

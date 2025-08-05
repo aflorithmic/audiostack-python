@@ -156,6 +156,8 @@ class TTS:
         useCache: bool = True,
         useDenoiser: bool = False,
         useAutofix: bool = False,
+        timeoutRetries: int = 0,
+        timeoutThreshold: int = TIMEOUT_THRESHOLD_S,
     ) -> "TTS.Item":
         # (start) no modify
         route = "tts"
@@ -214,6 +216,8 @@ class TTS:
         sectionToProduce: str = "",
         useCache: bool = True,
         useDenoiser: bool = False,
+        timeoutRetries: int = 0,
+        timeoutThreshold: int = TIMEOUT_THRESHOLD_S,
     ) -> "TTS.Item":
         if scriptId and scriptItem:
             raise Exception("scriptId or scriptItem should be supplied not both")
@@ -249,6 +253,7 @@ class TTS:
 
         start = time.time()
 
+        attempts = 0
         while r["statusCode"] == 202:
             print("Response in progress please wait...")
             r = TTS.interface.send_request(
@@ -258,9 +263,17 @@ class TTS:
                 query_parameters={"public": public},
             )
 
-            if time.time() - start >= TIMEOUT_THRESHOLD_S:
-                raise TimeoutError(
-                    f'Polling TTS timed out after 5 minutes. Please contact us for support. SpeechId: {r["data"]["speechId"]}'
-                )
+            if time.time() - start >= timeoutThreshold:
+                if attempts < timeoutRetries:
+                    r = TTS.interface.send_request(
+                        rtype=RequestTypes.POST, route="tts", json=body
+                    )
+                    start = time.time()
+                else:
+                    raise TimeoutError(
+                        f'Polling TTS timed out after {timeoutThreshold} seconds and max number of retries reached. Please contact us for support. SpeechId: {r["data"]["speechId"]}'
+                    )
+                attempts += 1
+            time.sleep(0.05)
 
         return TTS.Item(r)
