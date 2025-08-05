@@ -8,10 +8,7 @@ import audiostack
 audiostack.api_base = os.environ.get(
     "AUDIO_STACK_DEV_URL", "https://staging-v2.api.audio"
 )
-API_KEY: str = (
-    os.environ["AUDIO_STACK_DEV_KEY"] if "AUDIO_STACK_DEV_KEY" in os.environ else ""
-)
-audiostack.api_key = API_KEY
+audiostack.api_key = os.environ.get("AUDIO_STACK_DEV_KEY", None)
 
 
 @pytest.fixture
