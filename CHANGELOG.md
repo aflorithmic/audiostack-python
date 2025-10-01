@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [4.0.0] - 2025-01-XX
 
-### 🆕 New Features
+### New Features
 
 #### Audioform API Integration
 - **New Audioform class** with comprehensive audioform build management:
@@ -30,7 +30,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - **Flexible input options** - accept either brief configuration object or uploaded file ID
 - **Configurable ad generation** - specify number of ads to generate (1-5, default 3)
 
-### 🔄 API Changes
+### API Changes
 
 #### Python Version Requirement
 - **BREAKING CHANGE**: Minimum Python version updated from 3.8 to 3.10
@@ -88,7 +88,7 @@ brief_config = {
 creative_brief = CreativeBrief.create(brief=brief_config, num_ads=3)
 ```
 
-### ⚠️ Breaking Changes Summary
+### Breaking Changes Summary
 
 1. **Python version requirement** - Minimum version 3.8 → 3.10
 2. **New dependencies** - No new external dependencies added
