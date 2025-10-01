@@ -1,4 +1,4 @@
-sdk_version = "2.7.1"
+sdk_version = "3.0.0"
 api_base = "https://v2.api.audio"
 api_key = None
 assume_org_id = None
@@ -6,7 +6,9 @@ app_info = None
 
 TIMEOUT_THRESHOLD_S = 300
 
+from audiostack import audioform as Audioform  # noqa: F401
 from audiostack import content as Content  # noqa: F401
+from audiostack import creator as Creator  # noqa: F401
 from audiostack import delivery as Delivery  # noqa: F401
 from audiostack import production as Production  # noqa: F401
 from audiostack import speech as Speech  # noqa: F401
