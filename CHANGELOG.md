@@ -4,6 +4,96 @@ All notable changes to `audiostack` will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [4.0.0] - 2025-01-XX
+
+### 🆕 New Features
+
+#### Audioform API Integration
+- **New Audioform class** with comprehensive audioform build management:
+  - `Audioform.create(audioform, version)` - Create new audioform build requests
+  - `Audioform.get(audioform_id, version)` - Retrieve audioform build status and results
+  - `Audioform.Item` class with properties:
+    - `audioform_id`: Unique audioform identifier
+    - `status_code`: Build status code
+    - `audioform`: Original audioform configuration
+    - `result`: Build result with processed assets and metadata
+- **Version support** for both "1" and "0.0.1" audioform formats
+- **Automatic version handling** - version parameter automatically added to header
+
+#### Creative Brief API Integration
+- **New CreativeBrief class** for AI-powered ad generation:
+  - `CreativeBrief.create(brief, field_id, num_ads)` - Generate multiple ads from brief
+  - `CreativeBrief.Item` class with properties:
+    - `status_code`: Generation status code
+    - `audioform_id`: Generated audioform identifier
+    - `audioform`: Generated audioform configuration
+- **Flexible input options** - accept either brief configuration object or uploaded file ID
+- **Configurable ad generation** - specify number of ads to generate (1-5, default 3)
+
+### 🔄 API Changes
+
+#### Python Version Requirement
+- **BREAKING CHANGE**: Minimum Python version updated from 3.8 to 3.10
+- **Rationale**: Python 3.8 and 3.9 reached End of Life (EOL)
+- **Migration**: Users must upgrade to Python 3.10 or higher
+
+### 📝 Migration Guide
+
+#### For Python Version Upgrade
+```bash
+# Update Python version requirement
+python --version  # Must be 3.10.0 or higher
+
+# Update dependencies
+pip install --upgrade audiostack
+```
+
+#### For Audioform Integration
+```python
+# Create audioform with v1 format
+audioform_config = {
+    "assets": {
+        "script_0": {
+            "type": "tts",
+            "voiceRef": "voice_0",  # v1: voiceRef
+            "text": "Sample text"
+        }
+    },
+    "production": {"masteringPreset": "balanced"},
+    "delivery": {"encoderPreset": "mp3"}
+}
+
+# Create audioform
+audioform = Audioform.create(audioform_config, version="1")
+
+# Get build status
+result = Audioform.get(audioform.audioform_id, version="1")
+```
+
+#### For Creative Brief Integration
+```python
+# Create brief from configuration
+brief_config = {
+    "script": {
+        "productName": "Test Product",
+        "productDescription": "A great product",
+        "adLength": 30
+    },
+    "voices": [{"speed": None}],
+    "production": {"masteringPreset": "balanced"},
+    "delivery": {"encoderPreset": "mp3"}
+}
+
+# Generate ads
+creative_brief = CreativeBrief.create(brief=brief_config, num_ads=3)
+```
+
+### ⚠️ Breaking Changes Summary
+
+1. **Python version requirement** - Minimum version 3.8 → 3.10
+2. **New dependencies** - No new external dependencies added
+3. **Backward compatibility** - All existing APIs remain unchanged
+
 ## [3.1.0] - 2025-08-04
 
 ### Added
