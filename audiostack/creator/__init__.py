@@ -1,1 +1,1 @@
-from audiostack.creator.creative_brief import CreativeBrief  # noqa: F401
+from audiostack.creator.creative_brief import Brief  # noqa: F401

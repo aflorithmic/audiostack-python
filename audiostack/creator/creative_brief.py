@@ -5,7 +5,7 @@ from audiostack.helpers.request_interface import RequestInterface
 from audiostack.helpers.request_types import RequestTypes
 
 
-class CreativeBrief:
+class Brief:
     FAMILY = "creator"
     interface = RequestInterface(family=FAMILY)
 
@@ -29,7 +29,7 @@ class CreativeBrief:
         brief: Optional[Dict[str, Any]] = None,
         file_id: Optional[str] = None,
         num_ads: int = 3,
-    ) -> "CreativeBrief.Item":
+    ) -> "Brief.Item":
         """
         Create a new creative brief request.
 
@@ -68,7 +68,7 @@ class CreativeBrief:
         else:
             body["fileId"] = file_id  # API uses 'fileId', not 'file_id'
 
-        r = CreativeBrief.interface.send_request(
+        r = Brief.interface.send_request(
             rtype=RequestTypes.POST, route="brief", json=body
         )
-        return CreativeBrief.Item(r)
+        return Brief.Item(r)
