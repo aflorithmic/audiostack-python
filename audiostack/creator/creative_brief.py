@@ -13,8 +13,7 @@ class Brief:
         def __init__(self, response: dict) -> None:
             super().__init__(response)
 
-            if ("data" in response and response["data"] and
-                    len(response["data"]) > 0):
+            if "data" in response and response["data"] and len(response["data"]) > 0:
                 data_item = response["data"][0]
                 self.status_code = data_item.get("statusCode", 200)
                 self.audioform_id = data_item.get("audioformId", "")
@@ -29,6 +28,7 @@ class Brief:
         brief: Optional[Dict[str, Any]] = None,
         file_id: Optional[str] = None,
         num_ads: int = 3,
+        audioform_version: str = "1",
     ) -> "Brief.Item":
         """
         Create a new creative brief request.
@@ -55,13 +55,11 @@ class Brief:
                 or both are provided
         """
         if brief and file_id:
-            raise Exception(
-                "Either brief or file_id should be provided, not both"
-            )
+            raise Exception("Either brief or file_id should be provided, not both")
         if not brief and not file_id:
             raise Exception("Either brief or file_id must be provided")
 
-        body: Dict[str, Any] = {"numAds": num_ads}
+        body: Dict[str, Any] = {"numAds": num_ads, "version": audioform_version}
 
         if brief:
             body["brief"] = brief

@@ -1,5 +1,6 @@
-import pytest
 from unittest.mock import patch
+
+import pytest
 
 from audiostack.creator.creative_brief import Brief
 
@@ -53,9 +54,9 @@ class TestCreativeBrief:
             assert result.audioform_id == "test-uuid-123"
             assert result.audioform == {"version": "0.0.1"}
 
-    def test_create_with_field_id(self) -> None:
-        """Test creating creative brief with field_id"""
-        field_id = "uploaded-brief-uuid-456"
+    def test_create_with_file_id(self) -> None:
+        """Test creating creative brief with file_id"""
+        file_id = "uploaded-brief-uuid-456"
 
         mock_response = {
             "data": [
@@ -71,13 +72,13 @@ class TestCreativeBrief:
         with patch.object(
             Brief.interface, "send_request", return_value=mock_response
         ) as mock_send:
-            result = Brief.create(field_id=field_id, num_ads=5)
+            result = Brief.create(file_id=file_id, num_ads=5)
 
             mock_send.assert_called_once_with(
                 rtype="POST",
                 route="brief",
                 json={
-                    "fieldId": field_id,
+                    "fieldId": file_id,
                     "numAds": 5,
                 },
             )
@@ -117,23 +118,23 @@ class TestCreativeBrief:
             )
 
     def test_create_error_both_provided(self) -> None:
-        """Test error when both brief and field_id are provided"""
+        """Test error when both brief and file_id are provided"""
         brief_config = {"script": {"productName": "Test"}}
-        field_id = "test-uuid"
+        file_id = "test-uuid"
 
         with pytest.raises(Exception) as exc_info:
-            Brief.create(brief=brief_config, field_id=field_id)
+            Brief.create(brief=brief_config, file_id=file_id)
 
-        assert ("Either brief or field_id should be provided, not both" in
-                str(exc_info.value))
+        assert "Either brief or file_id should be provided, not both" in str(
+            exc_info.value
+        )
 
     def test_create_error_none_provided(self) -> None:
-        """Test error when neither brief nor field_id is provided"""
+        """Test error when neither brief nor file_id is provided"""
         with pytest.raises(Exception) as exc_info:
             Brief.create()
 
-        assert ("Either brief or field_id must be provided" in
-                str(exc_info.value))
+        assert "Either brief or file_id must be provided" in str(exc_info.value)
 
     def test_item_class_properties(self) -> None:
         """Test CreativeBrief.Item class properties"""
