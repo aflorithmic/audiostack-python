@@ -14,8 +14,8 @@ class Audioform:
             super().__init__(response)
 
             if "data" in response and response["data"]:
-                self.audioform_id = response["data"].get("audioform_id", "")
-                self.status_code = response["data"].get("status_code", 200)
+                self.audioform_id = response["data"].get("audioformId", "")
+                self.status_code = response["data"].get("statusCode", 200)
                 self.audioform = response["data"].get("audioform", {})
                 self.result = response["data"].get("result", {})
             else:
@@ -30,7 +30,7 @@ class Audioform:
 
     @staticmethod
     def create(
-        audioform: Dict[str, Any], version: str = "1"
+        audioform: Dict[str, Any]
     ) -> "Audioform.Item":
         """
         Create a new audioform build request.
