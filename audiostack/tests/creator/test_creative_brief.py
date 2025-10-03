@@ -39,9 +39,9 @@ class TestCreativeBrief:
                                 "header": {"version": "0.0.1"},
                                 "assets": {},
                                 "production": {},
-                                "delivery": {}
+                                "delivery": {},
                             }
-                        }
+                        },
                     }
                 ]
             },
@@ -49,7 +49,7 @@ class TestCreativeBrief:
                 "version": "123",
                 "requestId": "test-request-id",
                 "creditsUsed": 1.0,
-                "creditsRemaining": 245.5
+                "creditsRemaining": 245.5,
             },
         }
 
@@ -75,8 +75,10 @@ class TestCreativeBrief:
 
             first_audioform = result.audioforms[0]
             assert first_audioform["audioformId"] == "test-uuid-123"
-            assert (first_audioform["audioform"]["audioform"]["header"]
-                    ["version"] == "0.0.1")
+            assert (
+                first_audioform["audioform"]["audioform"]["header"]["version"]
+                == "0.0.1"
+            )
 
     def test_create_with_file_id(self) -> None:
         """Test creating creative brief with file_id"""
@@ -96,9 +98,9 @@ class TestCreativeBrief:
                                 "header": {"version": "1"},
                                 "assets": {},
                                 "production": {},
-                                "delivery": {}
+                                "delivery": {},
                             }
-                        }
+                        },
                     }
                 ]
             },
@@ -106,7 +108,7 @@ class TestCreativeBrief:
                 "version": "123",
                 "requestId": "test-request-id-2",
                 "creditsUsed": 1.5,
-                "creditsRemaining": 244.0
+                "creditsRemaining": 244.0,
             },
         }
 
@@ -153,9 +155,9 @@ class TestCreativeBrief:
                                 "header": {"version": "0.0.1"},
                                 "assets": {},
                                 "production": {},
-                                "delivery": {}
+                                "delivery": {},
                             }
-                        }
+                        },
                     }
                 ]
             },
@@ -163,7 +165,7 @@ class TestCreativeBrief:
                 "version": "123",
                 "requestId": "test-request-id-3",
                 "creditsUsed": 0,
-                "creditsRemaining": 245.5
+                "creditsRemaining": 245.5,
             },
         }
 
@@ -199,8 +201,7 @@ class TestCreativeBrief:
         with pytest.raises(Exception) as exc_info:
             Brief.create()
 
-        assert ("Either brief or file_id must be provided" in
-                str(exc_info.value))
+        assert "Either brief or file_id must be provided" in str(exc_info.value)
 
     def test_item_class_properties(self) -> None:
         """Test CreativeBrief.Item class properties"""
@@ -214,11 +215,8 @@ class TestCreativeBrief:
                         "statusCode": 202,
                         "audioformId": "item-test-uuid",
                         "audioform": {
-                            "audioform": {
-                                "version": "0.0.1",
-                                "status": "processing"
-                            }
-                        }
+                            "audioform": {"version": "0.0.1", "status": "processing"}
+                        },
                     }
                 ]
             },
@@ -226,7 +224,7 @@ class TestCreativeBrief:
                 "version": "123",
                 "requestId": "test-request-id-4",
                 "creditsUsed": 2.0,
-                "creditsRemaining": 243.5
+                "creditsRemaining": 243.5,
             },
         }
 
@@ -237,7 +235,7 @@ class TestCreativeBrief:
             "version": "123",
             "requestId": "test-request-id-4",
             "creditsUsed": 2.0,
-            "creditsRemaining": 243.5
+            "creditsRemaining": 243.5,
         }
         assert len(item.audioforms) == 1
         assert item.get_audioform_count() == 1
@@ -257,7 +255,7 @@ class TestCreativeBrief:
                 "version": "123",
                 "requestId": "test-request-id-5",
                 "creditsUsed": 0,
-                "creditsRemaining": 245.5
+                "creditsRemaining": 245.5,
             },
         }
 
@@ -274,19 +272,23 @@ class TestCreativeBrief:
             "message": "Failed to process brief.",
             "warnings": [],
             "errors": [
-                ("Invalid value for field `brief.script.ScriptWriter`: "
-                 "Value error, Either 'productDescription' or 'scriptText' "
-                 "must be provided, but not both."),
-                ("Invalid value for field `brief.script.PrewrittenScript`: "
-                 "Value error, Either 'productDescription' or 'scriptText' "
-                 "must be provided, but not both.")
+                (
+                    "Invalid value for field `brief.script.ScriptWriter`: "
+                    "Value error, Either 'productDescription' or 'scriptText' "
+                    "must be provided, but not both."
+                ),
+                (
+                    "Invalid value for field `brief.script.PrewrittenScript`: "
+                    "Value error, Either 'productDescription' or 'scriptText' "
+                    "must be provided, but not both."
+                ),
             ],
             "data": {"audioforms": []},
             "meta": {
                 "version": "123",
                 "requestId": "test-request-id-6",
                 "creditsUsed": 0,
-                "creditsRemaining": 245.5
+                "creditsRemaining": 245.5,
             },
         }
 
@@ -297,5 +299,7 @@ class TestCreativeBrief:
         assert item.get_audioform_count() == 0
         assert item.is_failed()
         assert not item.is_success()
-        assert ("Either 'productDescription' or 'scriptText' must be provided"
-                in item.get_error_message())
+        assert (
+            "Either 'productDescription' or 'scriptText' must be provided"
+            in item.get_error_message()
+        )

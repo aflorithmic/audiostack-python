@@ -13,8 +13,11 @@ class Brief:
         def __init__(self, response: dict) -> None:
             super().__init__(response)
 
-            if ("data" in response and response["data"] and
-                    "audioforms" in response["data"]):
+            if (
+                "data" in response
+                and response["data"]
+                and "audioforms" in response["data"]
+            ):
                 self.audioforms = response["data"]["audioforms"]
             else:
                 self.audioforms = []
@@ -72,9 +75,7 @@ class Brief:
                 or both are provided
         """
         if brief and file_id:
-            raise Exception(
-                "Either brief or file_id should be provided, not both"
-            )
+            raise Exception("Either brief or file_id should be provided, not both")
         if not brief and not file_id:
             raise Exception("Either brief or file_id must be provided")
 
