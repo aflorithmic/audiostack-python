@@ -440,10 +440,10 @@ def test_audioform_get_success(mock_send_request: Mock) -> None:
     assert isinstance(result, Audioform.Item)
     assert result.audioform_id == "success-audioform-123"
     assert result.status_code == 200
-    assert result.is_success()
-    assert not result.is_failed()
-    assert not result.is_in_progress()
-    assert result.get_error_message() == ""
+    assert result.is_success
+    assert not result.is_failed
+    assert not result.is_in_progress
+    assert result.get_error_message == ""
 
     mock_send_request.assert_called_once_with(
         rtype=RequestTypes.GET,
@@ -485,10 +485,10 @@ def test_audioform_get_failed(mock_send_request: Mock) -> None:
     assert isinstance(result, Audioform.Item)
     assert result.audioform_id == "failed-audioform-123"
     assert result.status_code == 200
-    assert not result.is_success()
-    assert result.is_failed()
-    assert not result.is_in_progress()
-    assert result.get_error_message() == "Voice 'nonexistent' not found"
+    assert not result.is_success
+    assert result.is_failed
+    assert not result.is_in_progress
+    assert result.get_error_message == "Voice 'nonexistent' not found"
 
     mock_send_request.assert_called_once_with(
         rtype=RequestTypes.GET,
@@ -534,9 +534,9 @@ def test_audioform_get_with_polling(mock_send_request: Mock) -> None:
     assert isinstance(result, Audioform.Item)
     assert result.audioform_id == "polling-audioform-123"
     assert result.status_code == 200
-    assert result.is_success()
-    assert not result.is_failed()
-    assert not result.is_in_progress()
+    assert result.is_success
+    assert not result.is_failed
+    assert not result.is_in_progress
 
     # Should have made 2 calls: GET (in progress), GET (completed)
     assert mock_send_request.call_count == 2
@@ -557,7 +557,7 @@ def test_audioform_item_get(mock_get: Mock) -> None:
 
     item = Audioform.Item({"data": {"audioformId": "test-id"}})
 
-    result = item.get()
+    result = item.get
 
     assert result == mock_response
     mock_get.assert_called_once_with("test-id")
