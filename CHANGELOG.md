@@ -21,9 +21,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - **Automatic version handling** - version parameter automatically added to header
 
 #### Creative Brief API Integration
-- **New CreativeBrief class** for AI-powered ad generation:
-  - `CreativeBrief.create(brief, field_id, num_ads)` - Generate multiple ads from brief
-  - `CreativeBrief.Item` class with properties:
+- **New Brief class** for AI-powered ad generation:
+  - `Brief.create(brief, file_id, num_ads, audioform_version)` - Generate multiple ads from brief
+  - `Brief.Item` class with properties:
     - `status_code`: Generation status code
     - `audioform_id`: Generated audioform identifier
     - `audioform`: Generated audioform configuration
@@ -85,7 +85,7 @@ brief_config = {
 }
 
 # Generate ads
-creative_brief = CreativeBrief.create(brief=brief_config, num_ads=3)
+creative_brief = Brief.create(brief=brief_config, num_ads=3, audioform_version="1")
 ```
 
 ### Breaking Changes Summary
