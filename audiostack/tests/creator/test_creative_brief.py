@@ -2,10 +2,10 @@ from unittest.mock import patch
 
 import pytest
 
-from audiostack.creator.creative_brief import Brief
+from audiostack.creator.brief import Brief
 
 
-class TestCreativeBrief:
+class TestBrief:
     def test_create_with_brief_config(self) -> None:
         """Test creating creative brief with brief configuration"""
         brief_config = {
