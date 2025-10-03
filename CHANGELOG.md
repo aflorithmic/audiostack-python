@@ -10,8 +10,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 #### Audioform API Integration
 - **New Audioform class** with comprehensive audioform build management:
-  - `Audioform.create(audioform, version)` - Create new audioform build requests
-  - `Audioform.get(audioform_id, version)` - Retrieve audioform build status and results
+  - `Audioform.create(audioform)` - Create new audioform build requests
+  - `Audioform.get(audioform_id, version, wait, timeoutThreshold)` - Retrieve audioform build status and results
   - `Audioform.Item` class with properties:
     - `audioform_id`: Unique audioform identifier
     - `status_code`: Build status code
@@ -26,7 +26,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   - `Brief.Item` class with properties:
     - `status_code`: Generation status code
     - `audioform_id`: Generated audioform identifier
-    - `audioform`: Generated audioform configuration
+    - `audioforms`: Array of audioforms
 - **Flexible input options** - accept either brief configuration object or uploaded file ID
 - **Configurable ad generation** - specify number of ads to generate (1-5, default 3)
 
