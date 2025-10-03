@@ -13,15 +13,32 @@ class Brief:
         def __init__(self, response: dict) -> None:
             super().__init__(response)
 
-            if "data" in response and response["data"] and len(response["data"]) > 0:
-                data_item = response["data"][0]
-                self.status_code = data_item.get("statusCode", 200)
-                self.audioform_id = data_item.get("audioformId", "")
-                self.audioform = data_item.get("audioform", {})
+            if ("data" in response and response["data"] and
+                    "audioforms" in response["data"]):
+                self.audioforms = response["data"]["audioforms"]
             else:
-                self.status_code = 200
-                self.audioform_id = ""
-                self.audioform = {}
+                self.audioforms = []
+
+        def is_success(self) -> bool:
+            """Check if the creative brief was successfully processed"""
+            errors = self.response.get("errors", [])
+            return self.status_code == 200 and not errors
+
+        def is_failed(self) -> bool:
+            """Check if the creative brief processing failed"""
+            errors = self.response.get("errors", [])
+            return self.status_code != 200 or bool(errors)
+
+        def get_error_message(self) -> str:
+            """Get error message if processing failed"""
+            errors = self.response.get("errors", [])
+            if errors:
+                return "; ".join(errors)
+            return ""
+
+        def get_audioform_count(self) -> int:
+            """Get the number of audioforms generated"""
+            return len(self.audioforms)
 
     @staticmethod
     def create(
@@ -55,18 +72,22 @@ class Brief:
                 or both are provided
         """
         if brief and file_id:
-            raise Exception("Either brief or file_id should be provided, not both")
+            raise Exception(
+                "Either brief or file_id should be provided, not both"
+            )
         if not brief and not file_id:
             raise Exception("Either brief or file_id must be provided")
 
-        body: Dict[str, Any] = {"numAds": num_ads, "version": audioform_version}
+        body: Dict[str, Any] = {"numAds": num_ads}
 
         if brief:
             body["brief"] = brief
         else:
-            body["fileId"] = file_id  # API uses 'fileId', not 'file_id'
+            body["fileId"] = file_id
+
+        headers = {"version": audioform_version}
 
         r = Brief.interface.send_request(
-            rtype=RequestTypes.POST, route="brief", json=body
+            rtype=RequestTypes.POST, route="brief", json=body, headers=headers
         )
         return Brief.Item(r)

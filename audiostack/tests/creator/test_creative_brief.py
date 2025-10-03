@@ -26,14 +26,31 @@ class TestCreativeBrief:
         }
 
         mock_response = {
-            "data": [
-                {
-                    "statusCode": 200,
-                    "audioformId": "test-uuid-123",
-                    "audioform": {"version": "0.0.1"},
-                }
-            ],
-            "meta": {"creditsUsed": 1.0},
+            "statusCode": 200,
+            "message": "Creative brief processed into audioforms",
+            "warnings": [],
+            "data": {
+                "audioforms": [
+                    {
+                        "statusCode": 202,
+                        "audioformId": "test-uuid-123",
+                        "audioform": {
+                            "audioform": {
+                                "header": {"version": "0.0.1"},
+                                "assets": {},
+                                "production": {},
+                                "delivery": {}
+                            }
+                        }
+                    }
+                ]
+            },
+            "meta": {
+                "version": "123",
+                "requestId": "test-request-id",
+                "creditsUsed": 1.0,
+                "creditsRemaining": 245.5
+            },
         }
 
         with patch.object(
@@ -48,25 +65,49 @@ class TestCreativeBrief:
                     "brief": brief_config,
                     "numAds": 3,
                 },
+                headers={"version": "1"},
             )
 
             assert result.status_code == 200
-            assert result.audioform_id == "test-uuid-123"
-            assert result.audioform == {"version": "0.0.1"}
+            assert len(result.audioforms) == 1
+            assert result.get_audioform_count() == 1
+            assert result.is_success()
+
+            first_audioform = result.audioforms[0]
+            assert first_audioform["audioformId"] == "test-uuid-123"
+            assert (first_audioform["audioform"]["audioform"]["header"]
+                    ["version"] == "0.0.1")
 
     def test_create_with_file_id(self) -> None:
         """Test creating creative brief with file_id"""
         file_id = "uploaded-brief-uuid-456"
 
         mock_response = {
-            "data": [
-                {
-                    "statusCode": 200,
-                    "audioformId": "test-uuid-789",
-                    "audioform": {"version": "1"},
-                }
-            ],
-            "meta": {"creditsUsed": 1.5},
+            "statusCode": 200,
+            "message": "Creative brief processed into audioforms",
+            "warnings": [],
+            "data": {
+                "audioforms": [
+                    {
+                        "statusCode": 202,
+                        "audioformId": "test-uuid-789",
+                        "audioform": {
+                            "audioform": {
+                                "header": {"version": "1"},
+                                "assets": {},
+                                "production": {},
+                                "delivery": {}
+                            }
+                        }
+                    }
+                ]
+            },
+            "meta": {
+                "version": "123",
+                "requestId": "test-request-id-2",
+                "creditsUsed": 1.5,
+                "creditsRemaining": 244.0
+            },
         }
 
         with patch.object(
@@ -81,10 +122,15 @@ class TestCreativeBrief:
                     "fileId": file_id,
                     "numAds": 5,
                 },
+                headers={"version": "1"},
             )
 
             assert result.status_code == 200
-            assert result.audioform_id == "test-uuid-789"
+            assert len(result.audioforms) == 1
+            assert result.get_audioform_count() == 1
+
+            first_audioform = result.audioforms[0]
+            assert first_audioform["audioformId"] == "test-uuid-789"
 
     def test_create_with_defaults(self) -> None:
         """Test creating creative brief with default parameters"""
@@ -94,13 +140,31 @@ class TestCreativeBrief:
         }
 
         mock_response = {
-            "data": [
-                {
-                    "statusCode": 200,
-                    "audioformId": "test-uuid-default",
-                    "audioform": {},
-                }
-            ]
+            "statusCode": 200,
+            "message": "Creative brief processed into audioforms",
+            "warnings": [],
+            "data": {
+                "audioforms": [
+                    {
+                        "statusCode": 202,
+                        "audioformId": "test-uuid-default",
+                        "audioform": {
+                            "audioform": {
+                                "header": {"version": "0.0.1"},
+                                "assets": {},
+                                "production": {},
+                                "delivery": {}
+                            }
+                        }
+                    }
+                ]
+            },
+            "meta": {
+                "version": "123",
+                "requestId": "test-request-id-3",
+                "creditsUsed": 0,
+                "creditsRemaining": 245.5
+            },
         }
 
         with patch.object(
@@ -115,6 +179,7 @@ class TestCreativeBrief:
                     "brief": brief_config,
                     "numAds": 3,  # default value
                 },
+                headers={"version": "1"},  # default value
             )
 
     def test_create_error_both_provided(self) -> None:
@@ -134,34 +199,103 @@ class TestCreativeBrief:
         with pytest.raises(Exception) as exc_info:
             Brief.create()
 
-        assert "Either brief or file_id must be provided" in str(exc_info.value)
+        assert ("Either brief or file_id must be provided" in
+                str(exc_info.value))
 
     def test_item_class_properties(self) -> None:
         """Test CreativeBrief.Item class properties"""
         response_data = {
-            "data": [
-                {
-                    "statusCode": 201,
-                    "audioformId": "item-test-uuid",
-                    "audioform": {"version": "0.0.1", "status": "processing"},
-                }
-            ],
-            "meta": {"creditsUsed": 2.0},
+            "statusCode": 201,
+            "message": "Creative brief processed into audioforms",
+            "warnings": [],
+            "data": {
+                "audioforms": [
+                    {
+                        "statusCode": 202,
+                        "audioformId": "item-test-uuid",
+                        "audioform": {
+                            "audioform": {
+                                "version": "0.0.1",
+                                "status": "processing"
+                            }
+                        }
+                    }
+                ]
+            },
+            "meta": {
+                "version": "123",
+                "requestId": "test-request-id-4",
+                "creditsUsed": 2.0,
+                "creditsRemaining": 243.5
+            },
         }
 
         item = Brief.Item(response_data)
 
         assert item.status_code == 201
-        assert item.audioform_id == "item-test-uuid"
-        assert item.audioform == {"version": "0.0.1", "status": "processing"}
-        assert item.meta == {"creditsUsed": 2.0}
+        assert item.meta == {
+            "version": "123",
+            "requestId": "test-request-id-4",
+            "creditsUsed": 2.0,
+            "creditsRemaining": 243.5
+        }
+        assert len(item.audioforms) == 1
+        assert item.get_audioform_count() == 1
+
+        first_audioform = item.audioforms[0]
+        assert first_audioform["audioformId"] == "item-test-uuid"
+        assert first_audioform["audioform"]["audioform"]["version"] == "0.0.1"
 
     def test_item_class_empty_data(self) -> None:
         """Test CreativeBrief.Item with empty data"""
-        response_data: dict = {"data": []}
+        response_data: dict = {
+            "statusCode": 200,
+            "message": "Creative brief processed into audioforms",
+            "warnings": [],
+            "data": {"audioforms": []},
+            "meta": {
+                "version": "123",
+                "requestId": "test-request-id-5",
+                "creditsUsed": 0,
+                "creditsRemaining": 245.5
+            },
+        }
 
         item = Brief.Item(response_data)
 
         assert item.status_code == 200
-        assert item.audioform_id == ""
-        assert item.audioform == {}
+        assert len(item.audioforms) == 0
+        assert item.get_audioform_count() == 0
+
+    def test_item_class_error_response(self) -> None:
+        """Test CreativeBrief.Item with error response (422)"""
+        response_data = {
+            "statusCode": 422,
+            "message": "Failed to process brief.",
+            "warnings": [],
+            "errors": [
+                ("Invalid value for field `brief.script.ScriptWriter`: "
+                 "Value error, Either 'productDescription' or 'scriptText' "
+                 "must be provided, but not both."),
+                ("Invalid value for field `brief.script.PrewrittenScript`: "
+                 "Value error, Either 'productDescription' or 'scriptText' "
+                 "must be provided, but not both.")
+            ],
+            "data": {"audioforms": []},
+            "meta": {
+                "version": "123",
+                "requestId": "test-request-id-6",
+                "creditsUsed": 0,
+                "creditsRemaining": 245.5
+            },
+        }
+
+        item = Brief.Item(response_data)
+
+        assert item.status_code == 422
+        assert len(item.audioforms) == 0
+        assert item.get_audioform_count() == 0
+        assert item.is_failed()
+        assert not item.is_success()
+        assert ("Either 'productDescription' or 'scriptText' must be provided"
+                in item.get_error_message())
