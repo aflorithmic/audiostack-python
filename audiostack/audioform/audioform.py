@@ -44,22 +44,27 @@ class Audioform:
                 self.result = {}
                 self.errors = []
 
+        @property
         def get(self) -> "Audioform.Item":
-            """Get the current audioform status"""
+            """Get the current audioform"""
             return Audioform.get(self.audioform_id)
 
+        @property
         def is_success(self) -> bool:
             """Check if the audioform was successfully processed"""
             return self.status_code == 200 and not self.errors
 
+        @property
         def is_failed(self) -> bool:
             """Check if the audioform processing failed"""
             return self.status_code == 200 and bool(self.errors)
 
+        @property
         def is_in_progress(self) -> bool:
             """Check if the audioform is still being processed"""
             return self.status_code == 202
 
+        @property
         def get_error_message(self) -> str:
             """Get error message if processing failed"""
             if self.errors:
