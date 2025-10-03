@@ -20,7 +20,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - **Version support** for both "1" and "0.0.1" audioform formats
 - **Automatic version handling** - version parameter automatically added to header
 
-#### Creative Brief API Integration
+#### Brief API Integration
 - **New Brief class** for AI-powered ad generation:
   - `Brief.create(brief, file_id, num_ads, audioform_version)` - Generate multiple ads from brief
   - `Brief.Item` class with properties:
@@ -55,7 +55,7 @@ audioform_config = {
     "assets": {
         "script_0": {
             "type": "tts",
-            "voiceRef": "voice_0",  # v1: voiceRef
+            "voiceRef": "voice_0",
             "text": "Sample text"
         }
     },
@@ -70,7 +70,7 @@ audioform = Audioform.create(audioform_config, version="1")
 result = Audioform.get(audioform.audioform_id, version="1")
 ```
 
-#### For Creative Brief Integration
+#### For Brief Integration
 ```python
 # Create brief from configuration
 brief_config = {
@@ -85,7 +85,7 @@ brief_config = {
 }
 
 # Generate ads
-creative_brief = Brief.create(brief=brief_config, num_ads=3, audioform_version="1")
+brief = Brief.create(brief=brief_config, num_ads=3, audioform_version="1")
 ```
 
 ### Breaking Changes Summary
