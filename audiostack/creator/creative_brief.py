@@ -51,10 +51,10 @@ class Brief:
         audioform_version: str = "1",
     ) -> "Brief.Item":
         """
-        Create a new creative brief request.
+        Create a new brief request.
 
         Args:
-            brief: The creative brief configuration object containing:
+            brief: The brief configuration object containing:
                 - script: Script configuration with productName,
                   productDescription, adLength (default 30),
                   lang (default null),
@@ -66,9 +66,10 @@ class Brief:
                 - delivery: DeliverySettings
             file_id: UUID of an already uploaded brief file
             num_ads: Number of ads to generate (1-5, default 3)
+            audioform_version: Version of the audioform to use (default "1")
 
         Returns:
-            CreativeBrief.Item: Response containing audioformId and status
+            Brief.Item: Response containing audioformId and status
 
         Raises:
             Exception: If neither brief nor file_id is provided,
