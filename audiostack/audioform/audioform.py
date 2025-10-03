@@ -15,34 +15,31 @@ class Audioform:
         def __init__(self, response: dict) -> None:
             super().__init__(response)
 
+            if "statusCode" in response:
+                self.status_code = response["statusCode"]
+            elif "audioformId" in response and "data" not in response:
+                self.status_code = 202
+            else:
+                self.status_code = 200
+
             if "data" in response and response["data"]:
                 # Standard response with data field
                 self.audioform_id = response["data"].get("audioformId", "")
-                self.status_code = response["data"].get("statusCode", 200)
                 self.audioform = response["data"].get("audioform", {})
                 self.result = response["data"].get("result", {})
                 self.errors = response["data"].get("errors", [])
             elif "audioformId" in response:
                 # In-progress response with audioformId directly in response
                 self.audioform_id = response.get("audioformId", "")
-                self.status_code = 202  # Assume 202 for in-progress responses
                 self.audioform = {}
                 self.result = {}
                 self.errors = []
-            elif "statusCode" in response:
-                # Error response with statusCode at root level
+            else:
+                # Error response or malformed response
                 self.audioform_id = ""
-                self.status_code = response.get("statusCode", 200)
                 self.audioform = {}
                 self.result = {}
                 self.errors = response.get("errors", [])
-            else:
-                # No data, audioformId, or statusCode
-                self.audioform_id = ""
-                self.status_code = 200
-                self.audioform = {}
-                self.result = {}
-                self.errors = []
 
         @property
         def get(self) -> "Audioform.Item":
