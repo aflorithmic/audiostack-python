@@ -274,41 +274,6 @@ def test_audioform_create_invalid_version(mock_send_request: Mock) -> None:
 
 
 @patch("audiostack.audioform.audioform.Audioform.interface.send_request")
-def test_audioform_create_with_polling(mock_send_request: Mock) -> None:
-    """Test Audioform.create method returns immediately without polling"""
-    mock_response = {
-        "metadata": {
-            "requestId": "request_id_test",
-            "version": "1",
-            "creditUsed": 0.0,
-            "creditsRemaining": 0.0,
-        },
-        "warnings": [],
-        "message": "Audioform successfully posted",
-        "data": {"audioformId": "new-audioform-123"},
-    }
-
-    mock_send_request.return_value = mock_response
-
-    audioform_config = {
-        "header": {"version": "1"},
-        "assets": {"script 0": {"type": "tts", "text": "test"}},
-        "production": {"masteringPreset": "balanced"},
-        "delivery": {"encoderPreset": "mp3"},
-    }
-
-    result = Audioform.create(audioform_config)
-
-    assert isinstance(result, Audioform.Item)
-    assert result.audioform_id == "new-audioform-123"
-    assert result.status_code == 200
-
-    mock_send_request.assert_called_once_with(
-        rtype=RequestTypes.POST, route="", json={"audioform": audioform_config}
-    )
-
-
-@patch("audiostack.audioform.audioform.Audioform.interface.send_request")
 def test_audioform_create_immediate_return(mock_send_request: Mock) -> None:
     """Test Audioform.create method returns immediately"""
     mock_response = {
