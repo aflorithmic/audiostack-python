@@ -78,7 +78,7 @@ class TestCreativeBrief:
                 rtype="POST",
                 route="brief",
                 json={
-                    "fieldId": file_id,
+                    "fileId": file_id,
                     "numAds": 5,
                 },
             )
