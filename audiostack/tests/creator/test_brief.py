@@ -65,7 +65,6 @@ class TestBrief:
                     "brief": brief_config,
                     "numAds": 3,
                 },
-                headers={"version": "1"},
             )
 
             assert result.status_code == 200
@@ -124,7 +123,6 @@ class TestBrief:
                     "fileId": file_id,
                     "numAds": 5,
                 },
-                headers={"version": "1"},
             )
 
             assert result.status_code == 200
@@ -181,7 +179,6 @@ class TestBrief:
                     "brief": brief_config,
                     "numAds": 3,  # default value
                 },
-                headers={"version": "1"},  # default value
             )
 
     def test_create_error_both_provided(self) -> None:

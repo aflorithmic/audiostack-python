@@ -1,4 +1,4 @@
-sdk_version = "3.0.0"
+sdk_version = "4.0.0"
 api_base = "https://v2.api.audio"
 api_key = None
 assume_org_id = None

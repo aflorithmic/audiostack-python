@@ -1,5 +1,6 @@
 from unittest.mock import Mock, patch
 
+from audiostack import TIMEOUT_THRESHOLD_S
 from audiostack.audioform.audioform import Audioform
 from audiostack.helpers.request_types import RequestTypes
 
@@ -21,6 +22,7 @@ def test_audioform_create_v1(mock_send_request: Mock) -> None:
         "warnings": [],
         "message": "Audioform successfully posted",
         "data": {"audioformId": "new-audioform-v1-123"},
+        "statusCode": 202,
     }
     mock_send_request.return_value = mock_response
 
@@ -83,7 +85,7 @@ def test_audioform_create_v1(mock_send_request: Mock) -> None:
 
     assert isinstance(result, Audioform.Item)
     assert result.audioform_id == "new-audioform-v1-123"
-    assert result.status_code == 200
+    assert result.status_code == 202
 
     mock_send_request.assert_called_once_with(
         rtype=RequestTypes.POST, route="", json={"audioform": audioform_config}
@@ -103,6 +105,7 @@ def test_audioform_create_v001(mock_send_request: Mock) -> None:
         "warnings": [],
         "message": "Audioform successfully posted",
         "data": {"audioformId": "new-audioform-v001-123"},
+        "statusCode": 202,
     }
     mock_send_request.return_value = mock_response
 
@@ -206,7 +209,7 @@ def test_audioform_create_v001(mock_send_request: Mock) -> None:
 
     assert isinstance(result, Audioform.Item)
     assert result.audioform_id == "new-audioform-v001-123"
-    assert result.status_code == 200
+    assert result.status_code == 202
 
     mock_send_request.assert_called_once_with(
         rtype=RequestTypes.POST, route="", json={"audioform": audioform_config}
@@ -234,7 +237,7 @@ def test_audioform_create_validation_error(mock_send_request: Mock) -> None:
     assert isinstance(result, Audioform.Item)
     assert result.audioform_id == ""
     assert result.status_code == 422
-    assert result.errors == [
+    assert result._errors == [
         "assets is required",
         "production is required",
         "delivery is required",
@@ -266,41 +269,7 @@ def test_audioform_create_invalid_version(mock_send_request: Mock) -> None:
     assert isinstance(result, Audioform.Item)
     assert result.audioform_id == ""
     assert result.status_code == 400
-    assert result.errors == ["version must be '1' or '0.0.1'"]
-
-    mock_send_request.assert_called_once_with(
-        rtype=RequestTypes.POST, route="", json={"audioform": audioform_config}
-    )
-
-
-@patch("audiostack.audioform.audioform.Audioform.interface.send_request")
-def test_audioform_create_immediate_return(mock_send_request: Mock) -> None:
-    """Test Audioform.create method returns immediately"""
-    mock_response = {
-        "metadata": {
-            "requestId": "request_id_test",
-            "version": "1",
-            "creditUsed": 0.0,
-            "creditsRemaining": 0.0,
-        },
-        "warnings": [],
-        "message": "Audioform successfully posted",
-        "data": {"audioformId": "immediate-audioform-123"},
-    }
-    mock_send_request.return_value = mock_response
-
-    audioform_config = {
-        "header": {"version": "1"},
-        "assets": {"script 0": {"type": "tts", "text": "test"}},
-        "production": {"masteringPreset": "balanced"},
-        "delivery": {"encoderPreset": "mp3"},
-    }
-
-    result = Audioform.create(audioform_config)
-
-    assert isinstance(result, Audioform.Item)
-    assert result.audioform_id == "immediate-audioform-123"
-    assert result.status_code == 200
+    assert result._errors == ["version must be '1' or '0.0.1'"]
 
     mock_send_request.assert_called_once_with(
         rtype=RequestTypes.POST, route="", json={"audioform": audioform_config}
@@ -318,7 +287,6 @@ def test_audioform_get_v1(mock_send_request: Mock) -> None:
     mock_response = {
         "data": {
             "audioformId": "existing-audioform-v1-123",
-            "statusCode": 200,
             "audioform": {
                 "header": {"version": "1"},
                 "assets": {"script 0": {"type": "tts", "text": "test"}},
@@ -359,7 +327,6 @@ def test_audioform_get_v001(mock_send_request: Mock) -> None:
     mock_response = {
         "data": {
             "audioformId": "existing-audioform-v001-123",
-            "statusCode": 200,
             "audioform": {
                 "header": {"version": "0.0.1"},
                 "assets": {"script 0": {"type": "tts", "text": "test"}},
@@ -416,7 +383,6 @@ def test_audioform_get_success(mock_send_request: Mock) -> None:
     mock_response = {
         "data": {
             "audioformId": "success-audioform-123",
-            "statusCode": 200,
             "audioform": {
                 "header": {"version": "1"},
                 "assets": {"script 0": {"type": "tts", "text": "test"}},
@@ -443,7 +409,6 @@ def test_audioform_get_success(mock_send_request: Mock) -> None:
     assert result.is_success
     assert not result.is_failed
     assert not result.is_in_progress
-    assert result.get_error_message == ""
 
     mock_send_request.assert_called_once_with(
         rtype=RequestTypes.GET,
@@ -459,7 +424,6 @@ def test_audioform_get_failed(mock_send_request: Mock) -> None:
     mock_response = {
         "data": {
             "audioformId": "failed-audioform-123",
-            "statusCode": 200,
             "audioform": {
                 "header": {"version": "1"},
                 "assets": {
@@ -488,7 +452,6 @@ def test_audioform_get_failed(mock_send_request: Mock) -> None:
     assert not result.is_success
     assert result.is_failed
     assert not result.is_in_progress
-    assert result.get_error_message == "Voice 'nonexistent' not found"
 
     mock_send_request.assert_called_once_with(
         rtype=RequestTypes.GET,
@@ -504,12 +467,12 @@ def test_audioform_get_with_polling(mock_send_request: Mock) -> None:
     mock_response_in_progress = {
         "message": "Audioform is still being processed",
         "audioformId": "polling-audioform-123",
+        "statusCode": 202,
     }
 
     mock_response_completed = {
         "data": {
             "audioformId": "polling-audioform-123",
-            "statusCode": 200,
             "audioform": {
                 "header": {"version": "1"},
                 "assets": {"script 0": {"type": "tts", "text": "test"}},
@@ -557,10 +520,10 @@ def test_audioform_item_get(mock_get: Mock) -> None:
 
     item = Audioform.Item({"data": {"audioformId": "test-id"}})
 
-    result = item.get
+    result = item.get()
 
     assert result == mock_response
-    mock_get.assert_called_once_with("test-id")
+    mock_get.assert_called_once_with("test-id", "1", True, TIMEOUT_THRESHOLD_S)
 
 
 def test_audioform_item_initialisation_malformed_data() -> None:

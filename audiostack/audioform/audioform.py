@@ -17,44 +17,54 @@ class Audioform:
 
             if "statusCode" in response:
                 self.status_code = response["statusCode"]
-            elif "audioformId" in response and "data" not in response:
-                self.status_code = 202
-            else:
-                self.status_code = 200
 
             if "data" in response and response["data"]:
                 # Standard response with data field
                 self.audioform_id = response["data"].get("audioformId", "")
                 self.audioform = response["data"].get("audioform", {})
                 self.result = response["data"].get("result", {})
-                self.errors = response["data"].get("errors", [])
+                self._errors = response["data"].get("errors", [])
             elif "audioformId" in response:
                 # In-progress response with audioformId directly in response
                 self.audioform_id = response.get("audioformId", "")
                 self.audioform = {}
                 self.result = {}
-                self.errors = []
+                self._errors = []
             else:
                 # Error response or malformed response
                 self.audioform_id = ""
                 self.audioform = {}
                 self.result = {}
-                self.errors = response.get("errors", [])
+                self._errors = response.get("errors", [])
 
-        @property
-        def get(self) -> "Audioform.Item":
-            """Get the current audioform"""
-            return Audioform.get(self.audioform_id)
+        def get(
+            self,
+            version: str = "1",
+            wait: bool = True,
+            timeoutThreshold: int = TIMEOUT_THRESHOLD_S,
+        ) -> "Audioform.Item":
+            """
+            Get the current audioform with updated status and result.
+
+            Args:
+                version: Audioform version ("1" or "0.0.1", default: "1")
+                wait: Whether to poll until status changes from 202 to 200
+                timeoutThreshold: Maximum time to wait for completion in seconds
+
+            Returns:
+                Audioform.Item: Updated audioform with current status and result
+            """
+            return Audioform.get(self.audioform_id, version, wait, timeoutThreshold)
 
         @property
         def is_success(self) -> bool:
             """Check if the audioform was successfully processed"""
-            return self.status_code == 200 and not self.errors
+            return self.status_code == 200 and not self._errors
 
         @property
         def is_failed(self) -> bool:
             """Check if the audioform processing failed"""
-            return self.status_code == 200 and bool(self.errors)
+            return self.status_code == 200 and bool(self._errors)
 
         @property
         def is_in_progress(self) -> bool:
@@ -62,10 +72,10 @@ class Audioform:
             return self.status_code == 202
 
         @property
-        def get_error_message(self) -> str:
+        def errors(self) -> str:
             """Get error message if processing failed"""
-            if self.errors:
-                return "; ".join(self.errors)
+            if self._errors:
+                return "; ".join(self._errors)
             return ""
 
     @staticmethod
@@ -121,12 +131,10 @@ class Audioform:
             headers=headers,
         )
 
-        # Check if response indicates processing is still in progress
-        # This happens when the response has audioformId but no data field
-        if wait and "audioformId" in r and "data" not in r:
+        if wait and r.get("statusCode") == 202:
             start = time.time()
 
-            while "audioformId" in r and "data" not in r:
+            while r.get("statusCode") == 202:
                 print("Audioform build in progress, please wait...")
                 r = Audioform.interface.send_request(
                     rtype=RequestTypes.GET,
