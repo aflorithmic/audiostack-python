@@ -2,7 +2,7 @@ import time
 from typing import Any, List, Optional, Union
 
 from audiostack import TIMEOUT_THRESHOLD_S
-from audiostack.content.file import File
+from audiostack.files.file import File
 from audiostack.helpers.api_item import APIResponseItem
 from audiostack.helpers.request_interface import RequestInterface
 from audiostack.helpers.request_types import RequestTypes

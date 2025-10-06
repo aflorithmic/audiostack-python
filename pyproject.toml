@@ -72,3 +72,15 @@ mypy-check = "mypy ."
 yaml-check = "yamllint ."
 test = "coverage run -m pytest -vvv -s -x &&  coverage xml  &&  coverage html"
 vulture-check = "vulture ."
+
+# -------------------------------------------------------- test -------------------------------------------------------
+export-test-result = "poetry run coverage html && poetry run coverage xml -o coverage.xml"
+
+# Files
+test-files = "poetry run coverage run -m pytest audiostack/tests/files/ && poetry run task export-test-result"
+
+# Folders  
+test-folders = "poetry run coverage run -m pytest audiostack/tests/folders/ && poetry run task export-test-result"
+
+# Files and Folders Integration
+test-files-folders-integration = "poetry run coverage run -m pytest audiostack/tests/test_files_folders_integration.py && poetry run task export-test-result"
