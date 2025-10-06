@@ -30,6 +30,27 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - **Flexible input options** - accept either brief configuration object or uploaded file ID
 - **Configurable ad generation** - specify number of ads to generate (1-5, default 3)
 
+#### Files and Folders API v2 Integration
+- **Complete Files and Folders API overhaul** with new v2 endpoints:
+  - **New API endpoints**: `/files` and `/folders` replacing legacy `/v3/file` and `/v3/folder`
+  - **Hard link concept**: `fileId` now represents a hard link between files and folders
+  - **Enhanced file operations** with new methods:
+    - `File.copy(fileId, currentFolderId, newFolderId)` - Copy files between folders
+    - `File.patch(fileId, file_name, category_id, category_name)` - Update file metadata
+    - `File.get_file_categories()` - Retrieve available file categories and types
+  - **Enhanced folder operations** with new methods:
+    - `Folder.list(path)` - List files and folders in directory
+    - `Folder.search(query)` - Search for files and folders
+    - `Folder.patch(folderId, folderName)` - Update folder names
+- **Updated response structures** with new field mappings:
+  - `file_id` → `fileId` (UUID to string conversion)
+  - `folder_id` → `folderId` (UUID to string conversion)
+  - `parent_folder_id` → `parentFolderId` (optional field)
+  - `file_category` → `fileCategory` (now dict instead of string)
+  - `current_path_chain` → `currentPathChain` (list of Folder.Item objects)
+- **Simplified file deletion** - `File.delete(fileId)` no longer requires `folderId`
+- **Enhanced type safety** with proper UUID handling and optional field management
+
 ### API Changes
 
 #### Python Version Requirement
@@ -92,7 +113,12 @@ ads = Brief.create(brief=brief, num_ads=3, audioform_version="1")
 
 1. **Python version requirement** - Minimum version 3.8 → 3.10
 2. **New dependencies** - No new external dependencies added
-3. **Backward compatibility** - All existing APIs remain unchanged
+3. **Files and Folders API v2** - Breaking changes to file and folder operations:
+   - `File.create()` now requires `fileName` parameter
+   - `File.delete()` simplified to only require `fileId` (no `folderId`)
+   - New API endpoints `/files` and `/folders` replace legacy `/v3/file` and `/v3/folder`
+   - Response field mappings updated (e.g., `file_id` → `fileId`)
+   - Hard link concept introduced for file-folder relationships
 
 ## [3.1.0] - 2025-08-04
 
