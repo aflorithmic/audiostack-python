@@ -31,16 +31,16 @@ class File:
             Args:
                 response: Dictionary containing file metadata from the API.
             """
-            self.fileId: str = str(response["file_id"])  # Hard link
-            self.fileName: str = response["file_name"]
-            self.folderId: str = str(response["folder_id"])
+            self.fileId: str = str(response["fileId"])  # Hard link
+            self.fileName: str = response["fileName"]
+            self.folderId: str = str(response["folderId"])
             self.url: Optional[str] = response.get("url")
-            self.createdBy: str = response["created_by"]
-            self.lastModified: Optional[str] = response.get("last_modified")
-            self.fileType: dict = response["file_type"]
-            self.fileCategory: Optional[dict] = response.get("file_category")
+            self.createdBy: str = response["createdBy"]
+            self.lastModified: Optional[str] = response.get("lastModified")
+            self.fileType: dict = response["fileType"]
+            self.fileCategory: Optional[dict] = response.get("fileCategory")
             self.size: int = response["size"]
-            self.createdAt: str = response["created_at"]
+            self.createdAt: str = response["createdAt"]
             self.status: str = response["status"]
             self.duration: Optional[float] = response.get("duration")
 

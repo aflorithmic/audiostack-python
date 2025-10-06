@@ -14,9 +14,7 @@ test_constants: dict = {}
 
 
 def create_test_folder_name() -> str:
-    return "__PYTHON_TEST_" + "".join(
-        random.choice(string.ascii_letters) for _ in range(10)
-    )
+    return f"test_folder_{random.randint(1000, 9999)}"
 
 
 def test_create() -> None:

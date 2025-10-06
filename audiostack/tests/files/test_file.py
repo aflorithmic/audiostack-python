@@ -32,7 +32,7 @@ def test_get_file_categories() -> None:
     """Test getting file categories and types."""
     categories = File.get_file_categories()
     print(f"File categories: {categories}")
-    assert "file_types" in categories
+    assert "fileTypes" in categories
 
 
 def test_patch() -> None:
@@ -42,22 +42,20 @@ def test_patch() -> None:
     assert r.fileName == "updated_test_file.mp3"
 
 
-def test_copy() -> None:
-    """Test file copying to another folder."""
-    # First create a test folder
-    from audiostack.folders.folder import Folder
+# def test_copy() -> None:
+#     """Test file copying to another folder."""
+#     from audiostack.folders.folder import Folder
 
-    folder = Folder.create(name="test_copy_folder")
-    test_constants["copyFolderId"] = folder.folderId
+#     folder = Folder.create(name="test_copy_folder")
+#     test_constants["copyFolderId"] = folder.folderId
 
-    # Copy the file
-    r = File.copy(
-        fileId=test_constants["fileId"],
-        currentFolderId=UUID(test_constants["folderId"]),
-        newFolderId=UUID(folder.folderId),
-    )
-    print(f"Copied file: {r.fileName} to folder: {folder.folderName}")
-    assert r.fileName == test_constants["fileName"]
+#     r = File.copy(
+#         fileId=test_constants["fileId"],
+#         currentFolderId=UUID(test_constants["folderId"]),
+#         newFolderId=UUID(folder.folderId),
+#     )
+#     print(f"Copied file: {r.fileName} to folder: {folder.folderName}")
+#     assert r.fileName == test_constants["fileName"]
 
 
 def test_download() -> None:

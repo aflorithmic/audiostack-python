@@ -29,16 +29,16 @@ class Folder:
             Args:
                 response: Dictionary containing folder metadata from the API.
             """
-            self.folderId: str = str(response["folder_id"])
-            self.folderName: str = response["folder_name"]
+            self.folderId: str = str(response["folderId"])
+            self.folderName: str = response["folderName"]
             self.parentFolderId: Optional[str] = (
-                str(response.get("parent_folder_id"))
-                if response.get("parent_folder_id")
+                str(response.get("parentFolderId"))
+                if response.get("parentFolderId")
                 else None
             )
-            self.lastModified: Optional[str] = response.get("last_modified")
-            self.createdBy: str = response["created_by"]
-            self.createdAt: str = response["created_at"]
+            self.lastModified: Optional[str] = response.get("lastModified")
+            self.createdBy: str = response["createdBy"]
+            self.createdAt: str = response["createdAt"]
 
     class ListResponse:
         """Represents a list response containing folders and files.
@@ -60,7 +60,27 @@ class Folder:
                 File.Item(response=x) for x in response["files"]
             ]
             self.currentPathChain: List[Folder.Item] = [
-                Folder.Item(response=x) for x in response.get("current_path_chain", [])
+                Folder.Item(response=x) for x in response.get("currentPathChain", [])
+            ]
+
+    class SearchResponse:
+        """Represents a search response containing folders and files.
+
+        This class is specifically for search operations and contains
+        only folders and files, without currentPathChain.
+        """
+
+        def __init__(self, response: dict) -> None:
+            """Initialize a SearchResponse instance from API response data.
+
+            Args:
+                response: Dictionary containing search results from the API.
+            """
+            self.folders: List[Folder.Item] = [
+                Folder.Item(response=x) for x in response["folders"]
+            ]
+            self.files: List[File.Item] = [
+                File.Item(response=x) for x in response["files"]
             ]
 
     @staticmethod
@@ -74,7 +94,7 @@ class Folder:
             rtype=RequestTypes.GET,
             route="",
         )
-        rootFolderId = response["current_path_chain"][0]["folder_id"]
+        rootFolderId = response["currentPathChain"][0]["folderId"]
         return rootFolderId
 
     @staticmethod
@@ -116,7 +136,7 @@ class Folder:
             rtype=RequestTypes.GET,
             route=f"{folderId}",
         )
-        return Folder.Item(response=r["current_path_chain"][0])
+        return Folder.Item(response=r["currentPathChain"][0])
 
     @staticmethod
     def delete(folderId: UUID) -> None:
@@ -152,21 +172,21 @@ class Folder:
         return Folder.ListResponse(response=r)
 
     @staticmethod
-    def search(query: str) -> "ListResponse":
+    def search(query: str) -> "SearchResponse":
         """Search for files and folders.
 
         Args:
             query: Search query string.
 
         Returns:
-            ListResponse: Contains matching folders and files.
+            SearchResponse: Contains matching folders and files.
         """
         r = Folder.interface.send_request(
             rtype=RequestTypes.GET,
             route="search",
             query_parameters={"query": query},
         )
-        return Folder.ListResponse(response=r)
+        return Folder.SearchResponse(response=r)
 
     @staticmethod
     def patch(folderId: UUID, folderName: str) -> None:
