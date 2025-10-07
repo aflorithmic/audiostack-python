@@ -24,7 +24,7 @@ class Folder:
         """
 
         def __init__(self, response: dict) -> None:
-            """Initialize a Folder.Item instance from API response data.
+            """Initialise a Folder.Item instance from API response data.
 
             Args:
                 response: Dictionary containing folder metadata from the API.
@@ -48,7 +48,7 @@ class Folder:
         """
 
         def __init__(self, response: dict) -> None:
-            """Initialize a ListResponse instance from API response data.
+            """Initialise a ListResponse instance from API response data.
 
             Args:
                 response: Dictionary containing folder listing data from the API.
@@ -71,7 +71,7 @@ class Folder:
         """
 
         def __init__(self, response: dict) -> None:
-            """Initialize a SearchResponse instance from API response data.
+            """Initialise a SearchResponse instance from API response data.
 
             Args:
                 response: Dictionary containing search results from the API.

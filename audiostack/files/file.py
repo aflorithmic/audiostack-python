@@ -26,7 +26,7 @@ class File:
         """
 
         def __init__(self, response: dict) -> None:
-            """Initialize a File.Item instance from API response data.
+            """Initialise a File.Item instance from API response data.
 
             Args:
                 response: Dictionary containing file metadata from the API.
