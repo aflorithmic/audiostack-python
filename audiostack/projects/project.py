@@ -108,7 +108,7 @@ class Project:
             projects_data = ast.literal_eval(r["message"])
         else:
             projects_data = []
-    
+
         return Project.ListResponse(response=projects_data)
 
 
