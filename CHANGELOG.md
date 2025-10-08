@@ -37,7 +37,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
     - `File.copy(fileId, currentFolderId, newFolderId)` - Copy files between folders
     - `File.patch(fileId, file_name, category_id, category_name)` - Update file metadata
     - `File.get_file_categories()` - Retrieve available file categories and types
-    - `File.create(localPath, uploadPath, fileName, folderId, categoryId)` - Create files with required fileName parameter
+    - `File.create(localPath, fileName, folderId, categoryId)` - Create files with required fileName parameter
   - **Enhanced folder operations** with new methods:
     - `Folder.create(name, parentFolderId)` - Create new folders
     - `Folder.get(folderId)` - Retrieve folder by ID
@@ -157,7 +157,6 @@ folder = Folder.create(name="My Audio Files")
 # Upload a file to the folder
 file = File.create(
     localPath="audio.mp3",
-    uploadPath="uploaded_audio.mp3", 
     fileName="my_audio_file.mp3",
     folderId=UUID(folder.folderId)
 )

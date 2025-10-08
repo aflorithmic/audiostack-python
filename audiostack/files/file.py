@@ -63,10 +63,10 @@ class File:
 
     @staticmethod
     def get(fileId: str) -> Item:
-        """Retrieve a file by its hard link ID.
+        """Retrieve a file by its ID.
 
         Args:
-            fileId: The unique hard link identifier of the file to retrieve.
+            fileId: The unique file ID.
 
         Returns:
             File.Item: A file item containing the file metadata.
@@ -80,7 +80,6 @@ class File:
     @staticmethod
     def create(
         localPath: str,
-        uploadPath: str,
         fileName: str,
         folderId: Optional[UUID] = None,
         categoryId: Optional[UUID] = None,
@@ -92,7 +91,6 @@ class File:
 
         Args:
             localPath: Path to the local file to upload.
-            uploadPath: Name to assign to the file in AudioStack.
             fileName: Name to assign to the file.
             folderId: Optional UUID of the folder to upload to. If None, uses
                 root folder.
@@ -102,17 +100,13 @@ class File:
             File.Item: The created file item with complete metadata.
 
         Raises:
-            Exception: If localPath is not provided, file doesn't exist,
-                uploadPath is not provided, or if the upload fails.
+            Exception: If localPath is not provided, file doesn't exist
         """
         if not localPath:
             raise Exception("Please supply a localPath (path to your local file)")
 
         if not os.path.isfile(localPath):
             raise Exception("Supplied file does not exist")
-
-        if not uploadPath:
-            raise Exception("Please supply a valid file name")
 
         payload = {
             "file_name": fileName,
@@ -147,7 +141,7 @@ class File:
         """Delete a file from AudioStack.
 
         Args:
-            fileId: The unique hard link identifier of the file to delete.
+            fileId: The unique file ID to delete.
         """
         File.interface.send_request(
             rtype=RequestTypes.DELETE,
@@ -158,15 +152,13 @@ class File:
     def copy(fileId: str, currentFolderId: UUID, newFolderId: UUID) -> Item:
         """Copy a file to a new folder.
 
-        This creates a new hard link for the file in the specified folder.
-
         Args:
-            fileId: The unique hard link identifier of the file to copy.
+            fileId: The unique ID of the file to copy.
             currentFolderId: The UUID of the folder to copy the file from.
             newFolderId: The UUID of the folder to copy the file to.
 
         Returns:
-            File.Item: The new file item with the new hard link ID.
+            File.Item: The new file item with the new file ID.
         """
         payload = {
             "file_id": fileId,
@@ -191,7 +183,7 @@ class File:
         """Patch/update file metadata.
 
         Args:
-            fileId: The unique hard link identifier of the file to update.
+            fileId: The unique file ID to update.
             file_name: Optional new name for the file.
             category_id: Optional new category ID for the file.
             category_name: Optional new category name for the file.

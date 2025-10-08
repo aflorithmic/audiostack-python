@@ -14,7 +14,7 @@ audiostack.api_key = os.environ["AUDIO_STACK_DEV_KEY"]  # type: ignore
 )
 def test_create() -> None:
     r = File.create(
-        localPath="example.mp3", uploadPath="example.mp3", fileName="example.mp3"
+        localPath="example.mp3", fileName="example.mp3"
     )
     print("fileId: ", r.fileId)
     aesItem = audiostack.Production.Suite.evaluate(fileId=r.fileId)

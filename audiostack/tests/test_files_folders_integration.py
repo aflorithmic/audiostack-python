@@ -38,7 +38,6 @@ def test_file_folder_workflow() -> None:
     file_name = f"test_file_{random.randint(1000, 9999)}.mp3"
     file = File.create(
         localPath="example.mp3",
-        uploadPath="test.mp3",
         fileName=file_name,
         folderId=UUID(folder.folderId),
     )

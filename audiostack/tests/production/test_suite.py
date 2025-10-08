@@ -13,7 +13,7 @@ test_constants = {}
 
 def test_create() -> None:
     r = File.create(
-        localPath="example.mp3", uploadPath="example.mp3", fileName="example.mp3"
+        localPath="example.mp3", fileName="example.mp3"
     )
     test_constants["fileId"] = r.fileId
     print(r)
