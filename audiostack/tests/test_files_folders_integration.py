@@ -58,7 +58,7 @@ def test_file_folder_workflow() -> None:
 
     # 5. Copy file to new folder
     copied_file = File.copy(
-        fileId=file.fileId,
+        fileId=UUID(file.fileId),
         currentFolderId=UUID(folder.folderId),
         newFolderId=UUID(copy_folder.folderId),
     )
@@ -106,7 +106,7 @@ def test_file_folder_workflow() -> None:
 
     # 8. Test file patching
     new_file_name = f"patched_file_{random.randint(1000, 9999)}.mp3"
-    patched_file = File.patch(fileId=file.fileId, file_name=new_file_name)
+    patched_file = File.patch(fileId=UUID(file.fileId), fileName=new_file_name)
     assert patched_file.fileName == new_file_name, "File name should be updated"
     print(f"✓ File patched: {patched_file.fileName}")
 
@@ -124,7 +124,7 @@ def test_error_handling() -> None:
 
     # Test getting non-existent file
     try:
-        File.get(fileId="00000000-0000-0000-0000-000000000000")
+        File.get(fileId=UUID("00000000-0000-0000-0000-000000000000"))
         assert False, "Should have raised an exception"
     except Exception as e:
         print(f"✓ Correctly handled non-existent file: {e}")
@@ -139,7 +139,7 @@ def test_error_handling() -> None:
     # Test copying with invalid folder IDs
     try:
         File.copy(
-            fileId="00000000-0000-0000-0000-000000000000",
+            fileId=UUID("00000000-0000-0000-0000-000000000000"),
             currentFolderId=UUID("00000000-0000-0000-0000-000000000000"),
             newFolderId=UUID("00000000-0000-0000-0000-000000000000"),
         )
@@ -164,14 +164,14 @@ def test_cleanup() -> None:
 
     if "copiedFileId" in test_constants:
         try:
-            File.delete(fileId=test_constants["copiedFileId"])
+            File.delete(fileId=UUID(test_constants["copiedFileId"]))
             print("✓ Deleted copied file")
         except Exception as e:
             print(f"Warning: Could not delete copied file: {e}")
 
     if "fileId" in test_constants:
         try:
-            File.delete(fileId=test_constants["fileId"])
+            File.delete(fileId=UUID(test_constants["fileId"]))
             print("✓ Deleted original file")
         except Exception as e:
             print(f"Warning: Could not delete original file: {e}")

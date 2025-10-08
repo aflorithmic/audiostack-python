@@ -31,7 +31,7 @@ class File:
             Args:
                 response: Dictionary containing file metadata from the API.
             """
-            self.fileId: str = str(response["fileId"])  # Hard link
+            self.fileId: str = str(response["fileId"])
             self.fileName: str = response["fileName"]
             self.folderId: str = str(response["folderId"])
             self.url: Optional[str] = response.get("url")
@@ -62,7 +62,7 @@ class File:
             RequestInterface.download_url(url=self.url, destination=path, name=fileName)
 
     @staticmethod
-    def get(fileId: str) -> Item:
+    def get(fileId: UUID) -> Item:
         """Retrieve a file by its ID.
 
         Args:
@@ -137,7 +137,7 @@ class File:
         return file
 
     @staticmethod
-    def delete(fileId: str) -> None:
+    def delete(fileId: UUID) -> None:
         """Delete a file from AudioStack.
 
         Args:
@@ -149,7 +149,7 @@ class File:
         )
 
     @staticmethod
-    def copy(fileId: str, currentFolderId: UUID, newFolderId: UUID) -> Item:
+    def copy(fileId: UUID, currentFolderId: UUID, newFolderId: UUID) -> Item:
         """Copy a file to a new folder.
 
         Args:
@@ -175,10 +175,10 @@ class File:
 
     @staticmethod
     def patch(
-        fileId: str,
-        file_name: Optional[str] = None,
-        category_id: Optional[UUID] = None,
-        category_name: Optional[str] = None,
+        fileId: UUID,
+        fileName: Optional[str] = None,
+        categoryId: Optional[UUID] = None,
+        categoryName: Optional[str] = None,
     ) -> Item:
         """Patch/update file metadata.
 
@@ -192,12 +192,12 @@ class File:
             File.Item: The updated file item.
         """
         payload = {}
-        if file_name is not None:
-            payload["file_name"] = file_name
-        if category_id is not None:
-            payload["category_id"] = str(category_id)
-        if category_name is not None:
-            payload["category_name"] = category_name
+        if fileName is not None:
+            payload["file_name"] = fileName
+        if categoryId is not None:
+            payload["category_id"] = str(categoryId)
+        if categoryName is not None:
+            payload["category_name"] = categoryName
 
         r = File.interface.send_request(
             rtype=RequestTypes.PATCH,

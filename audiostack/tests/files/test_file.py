@@ -26,7 +26,7 @@ def test_create() -> None:
 
 def test_get() -> None:
     """Test file retrieval."""
-    r = File.get(fileId=test_constants["fileId"])
+    r = File.get(fileId=UUID(test_constants["fileId"]))
     print(f"Retrieved file: {r.fileName}")
     assert r.fileId == test_constants["fileId"]
 
@@ -41,23 +41,23 @@ def test_get_file_categories() -> None:
 def test_patch() -> None:
     """Test file patching."""
     # Get original file name for verification
-    original_file = File.get(fileId=test_constants["fileId"])
+    original_file = File.get(fileId=UUID(test_constants["fileId"]))
     original_name = original_file.fileName
     print(f"Original file name: {original_name}")
 
     # Test patching file name
     new_name = "updated_test_file.mp3"
-    patched_file = File.patch(fileId=test_constants["fileId"], file_name=new_name)
+    patched_file = File.patch(fileId=UUID(test_constants["fileId"]), fileName=new_name)
     print(f"Patched file: {patched_file.fileName}")
     assert patched_file.fileName == new_name
 
     # Verify the change persisted by retrieving the file again
-    retrieved_file = File.get(fileId=test_constants["fileId"])
+    retrieved_file = File.get(fileId=UUID(test_constants["fileId"]))
     assert retrieved_file.fileName == new_name
     print(f"✓ File name change verified: {retrieved_file.fileName}")
 
     # Revert the change for other tests
-    File.patch(fileId=test_constants["fileId"], file_name=original_name)
+    File.patch(fileId=UUID(test_constants["fileId"]), fileName=original_name)
     print(f"✓ Reverted file name back to: {original_name}")
 
 
@@ -65,14 +65,14 @@ def test_patch_error_handling() -> None:
     """Test file patching error handling."""
     # Test patching non-existent file
     try:
-        File.patch(fileId="00000000-0000-0000-0000-000000000000", file_name="test.mp3")
+        File.patch(fileId=UUID("00000000-0000-0000-0000-000000000000"), fileName="test.mp3")
         assert False, "Should have raised an exception for non-existent file"
     except Exception as e:
         print(f"✓ Correctly handled non-existent file patch: {e}")
 
     # Test patching with no parameters
     try:
-        File.patch(fileId=test_constants["fileId"])
+        File.patch(fileId=UUID(test_constants["fileId"]))
         print("✓ Patch with no parameters handled gracefully")
     except Exception as e:
         print(f"⚠ Patch with no parameters failed: {e}")
@@ -88,7 +88,7 @@ def test_copy() -> None:
 
     # Copy the file to the new folder
     copied_file = File.copy(
-        fileId=test_constants["fileId"],
+        fileId=UUID(test_constants["fileId"]),
         currentFolderId=UUID(test_constants["folderId"]),
         newFolderId=UUID(folder.folderId),
     )
@@ -108,7 +108,7 @@ def test_copy() -> None:
     print("✓ Copied file found in destination folder")
 
     # Verify original file still exists in original folder
-    original_file = File.get(fileId=test_constants["fileId"])
+    original_file = File.get(fileId=UUID(test_constants["fileId"]))
     assert original_file.fileId == test_constants["fileId"]
     print("✓ Original file still exists")
 
@@ -118,7 +118,7 @@ def test_copy_error_handling() -> None:
     # Test copying with invalid file ID
     try:
         File.copy(
-            fileId="00000000-0000-0000-0000-000000000000",
+            fileId=UUID("00000000-0000-0000-0000-000000000000"),
             currentFolderId=UUID(test_constants["folderId"]),
             newFolderId=UUID(test_constants["folderId"]),
         )
@@ -129,7 +129,7 @@ def test_copy_error_handling() -> None:
     # Test copying with invalid folder IDs
     try:
         File.copy(
-            fileId=test_constants["fileId"],
+            fileId=UUID(test_constants["fileId"]),
             currentFolderId=UUID("00000000-0000-0000-0000-000000000000"),
             newFolderId=UUID("00000000-0000-0000-0000-000000000000"),
         )
@@ -140,7 +140,7 @@ def test_copy_error_handling() -> None:
 
 def test_download() -> None:
     """Test file download (if URL is available)."""
-    r = File.get(fileId=test_constants["fileId"])
+    r = File.get(fileId=UUID(test_constants["fileId"]))
     if r.url:
         download_path = "./downloaded_test.mp3"
         # Ensure file doesn't exist before download
@@ -172,17 +172,17 @@ def test_download() -> None:
 def test_delete() -> None:
     """Test file deletion."""
     # Verify file exists before deletion
-    file_before = File.get(fileId=test_constants["fileId"])
+    file_before = File.get(fileId=UUID(test_constants["fileId"]))
     assert file_before.fileId == test_constants["fileId"]
     print(f"File exists before deletion: {file_before.fileName}")
 
     # Delete the file
-    File.delete(fileId=test_constants["fileId"])
+    File.delete(fileId=UUID(test_constants["fileId"]))
     print(f"Deleted file: {test_constants['fileId']}")
 
     # Verify file no longer exists
     try:
-        File.get(fileId=test_constants["fileId"])
+        File.get(fileId=UUID(test_constants["fileId"]))
         assert False, "File should not exist after deletion"
     except Exception as e:
         print(f"✓ File successfully deleted - retrieval failed as expected: {e}")
