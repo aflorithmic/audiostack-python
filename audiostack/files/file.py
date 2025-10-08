@@ -132,7 +132,7 @@ class File:
             file = File.get(fileId=r["fileId"])
 
         if file.status != "uploaded":
-            raise Exception("File upload failed")
+            return file
 
         return file
 
@@ -161,7 +161,7 @@ class File:
             File.Item: The new file item with the new file ID.
         """
         payload = {
-            "file_id": fileId,
+            "file_id": str(fileId),
             "current_folder_id": str(currentFolderId),
             "new_folder_id": str(newFolderId),
         }
