@@ -237,8 +237,10 @@ Session.delete(
    - `File.create()` now requires `fileName` parameter
    - `File.delete()` simplified to only require `fileId` (no `folderId`)
    - New API endpoints `/files` and `/folders` replace legacy `/v3/file` and `/v3/folder`
-   - Response field mappings updated (e.g., `file_id` → `fileId`)
-   - Hard link concept introduced for file-folder relationships
+4. **Projects and Sessions API** - New API endpoints for project and session management:
+   - New `/projects` endpoint for project creation, retrieval, and listing
+   - New `/sessions` endpoint for session management within projects
+5. **Recommend IAB** - IAB endpoint support removed
 
 ## [3.1.0] - 2025-08-04
 
