@@ -15,10 +15,7 @@ import pytest
 
 import audiostack
 from audiostack.projects.project import Project, Session
-from audiostack.tests.utils import (
-    create_test_project_name,
-    create_test_session_name,
-)
+from audiostack.tests.utils import create_test_project_name, create_test_session_name
 
 # Configure AudioStack for integration tests
 audiostack.api_base = os.environ.get("AUDIO_STACK_DEV_URL", "https://v2.api.audio")

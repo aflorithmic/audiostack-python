@@ -15,9 +15,7 @@ test_constants = {}
 
 def test_create() -> None:
     """Test file creation."""
-    r = File.create(
-        localPath="example.mp3", fileName="test_file.mp3"
-    )
+    r = File.create(localPath="example.mp3", fileName="test_file.mp3")
     test_constants["fileId"] = r.fileId
     test_constants["fileName"] = r.fileName
     test_constants["folderId"] = r.folderId
@@ -65,7 +63,9 @@ def test_patch_error_handling() -> None:
     """Test file patching error handling."""
     # Test patching non-existent file
     try:
-        File.patch(fileId=UUID("00000000-0000-0000-0000-000000000000"), fileName="test.mp3")
+        File.patch(
+            fileId=UUID("00000000-0000-0000-0000-000000000000"), fileName="test.mp3"
+        )
         assert False, "Should have raised an exception for non-existent file"
     except Exception as e:
         print(f"✓ Correctly handled non-existent file patch: {e}")
@@ -76,6 +76,7 @@ def test_patch_error_handling() -> None:
         print("✓ Patch with no parameters handled gracefully")
     except Exception as e:
         print(f"⚠ Patch with no parameters failed: {e}")
+
 
 @pytest.mark.skip(reason="failing at different id assertion")
 def test_copy() -> None:
