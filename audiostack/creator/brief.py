@@ -80,7 +80,10 @@ class Brief:
         if not brief and not file_id:
             raise Exception("Either brief or file_id must be provided")
 
-        body: Dict[str, Any] = {"numAds": num_ads, "audioformVersion": audioform_version}
+        body: Dict[str, Any] = {
+            "numAds": num_ads,
+            "audioformVersion": audioform_version,
+        }
 
         if brief:
             body["brief"] = brief

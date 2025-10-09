@@ -75,10 +75,7 @@ class TestBrief:
 
             first_audioform = result.audioforms[0]
             assert first_audioform["audioformId"] == "test-uuid-123"
-            assert (
-                first_audioform["audioform"]["audioform"]["header"]["version"]
-                == "1"
-            )
+            assert first_audioform["audioform"]["audioform"]["header"]["version"] == "1"
 
     def test_create_with_file_id(self) -> None:
         """Test creating creative brief with file_id"""

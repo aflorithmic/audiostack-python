@@ -86,7 +86,9 @@ class RequestInterface:
                 if "message" in response_json:
                     msg = response_json["message"]
                     if "errors" in response_json and response_json["errors"]:
-                        msg += ". Errors listed as follows: \n\t" + "\t".join(response_json["errors"])
+                        msg += ". Errors listed as follows: \n\t" + "\t".join(
+                            response_json["errors"]
+                        )
                     else:
                         msg += ". No additional error details provided."
                 else:
