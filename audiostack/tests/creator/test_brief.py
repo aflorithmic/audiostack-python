@@ -64,8 +64,8 @@ class TestBrief:
                 json={
                     "brief": brief_config,
                     "numAds": 3,
+                    "audioformVersion": "1",
                 },
-                headers={"audioformVersion": "1"},
             )
 
             assert result.status_code == 200
@@ -123,8 +123,8 @@ class TestBrief:
                 json={
                     "fileId": file_id,
                     "numAds": 5,
+                    "audioformVersion": "1",
                 },
-                headers={"audioformVersion": "1"},
             )
 
             assert result.status_code == 200
@@ -180,8 +180,8 @@ class TestBrief:
                 json={
                     "brief": brief_config,
                     "numAds": 3,  # default value
+                    "audioformVersion": "1",
                 },
-                headers={"audioformVersion": "1"},
             )
 
     def test_create_error_both_provided(self) -> None:
