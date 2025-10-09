@@ -102,14 +102,7 @@ class Project:
             rtype=RequestTypes.GET,
             route="",
         )
-        if isinstance(r, list):
-            projects_data = r
-        elif isinstance(r, dict) and "message" in r:
-            projects_data = ast.literal_eval(r["message"])
-        else:
-            projects_data = []
-
-        return Project.ListResponse(response=projects_data)
+        return Project.ListResponse(response=r)
 
 
 class Session:

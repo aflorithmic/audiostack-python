@@ -84,11 +84,11 @@ class RequestInterface:
             # Error responses should be dicts
             if isinstance(response_json, dict):
                 if "message" in response_json:
-                    msg = (
-                        response_json["message"]
-                        + ". Errors listed as follows: \n\t"
-                        + "\t".join(response_json["errors"])
-                    )
+                    msg = response_json["message"]
+                    if "errors" in response_json and response_json["errors"]:
+                        msg += ". Errors listed as follows: \n\t" + "\t".join(response_json["errors"])
+                    else:
+                        msg += ". No additional error details provided."
                 else:
                     msg = str(response_json)
                 raise Exception(msg)
