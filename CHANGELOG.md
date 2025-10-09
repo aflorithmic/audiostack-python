@@ -73,7 +73,7 @@ result = Audioform.get(audioform.audioform_id, version="1")
 #### For Brief Integration
 ```python
 # Create brief from configuration
-brief_config = {
+brief = {
     "script": {
         "productName": "Test Product",
         "productDescription": "A great product",
@@ -85,7 +85,7 @@ brief_config = {
 }
 
 # Generate ads
-brief = Brief.create(brief=brief_config, num_ads=3, audioform_version="1")
+ads = Brief.create(brief=brief, num_ads=3, audioform_version="1")
 ```
 
 ### Breaking Changes Summary
