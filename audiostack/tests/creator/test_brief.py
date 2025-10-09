@@ -36,7 +36,7 @@ class TestBrief:
                         "audioformId": "test-uuid-123",
                         "audioform": {
                             "audioform": {
-                                "header": {"version": "0.0.1"},
+                                "header": {"version": "1"},
                                 "assets": {},
                                 "production": {},
                                 "delivery": {},
@@ -56,7 +56,7 @@ class TestBrief:
         with patch.object(
             Brief.interface, "send_request", return_value=mock_response
         ) as mock_send:
-            result = Brief.create(brief=brief_config, num_ads=3)
+            result = Brief.create(brief=brief_config, num_ads=3, audioform_version="1")
 
             mock_send.assert_called_once_with(
                 rtype="POST",
@@ -64,6 +64,7 @@ class TestBrief:
                 json={
                     "brief": brief_config,
                     "numAds": 3,
+                    "audioformVersion": "1",
                 },
             )
 
@@ -76,7 +77,7 @@ class TestBrief:
             assert first_audioform["audioformId"] == "test-uuid-123"
             assert (
                 first_audioform["audioform"]["audioform"]["header"]["version"]
-                == "0.0.1"
+                == "1"
             )
 
     def test_create_with_file_id(self) -> None:
@@ -114,7 +115,7 @@ class TestBrief:
         with patch.object(
             Brief.interface, "send_request", return_value=mock_response
         ) as mock_send:
-            result = Brief.create(file_id=file_id, num_ads=5)
+            result = Brief.create(file_id=file_id, num_ads=5, audioform_version="1")
 
             mock_send.assert_called_once_with(
                 rtype="POST",
@@ -122,6 +123,7 @@ class TestBrief:
                 json={
                     "fileId": file_id,
                     "numAds": 5,
+                    "audioformVersion": "1",
                 },
             )
 
@@ -178,6 +180,7 @@ class TestBrief:
                 json={
                     "brief": brief_config,
                     "numAds": 3,  # default value
+                    "audioformVersion": "1",
                 },
             )
 

@@ -69,7 +69,7 @@ class Brief:
             audioform_version: Version of the audioform to use (default "1")
 
         Returns:
-            Brief.Item: Response containing audioformId and status
+            Brief.Item: Response containing array of audioforms, audioformIds and statuses
 
         Raises:
             Exception: If neither brief nor file_id is provided,
@@ -80,16 +80,14 @@ class Brief:
         if not brief and not file_id:
             raise Exception("Either brief or file_id must be provided")
 
-        body: Dict[str, Any] = {"numAds": num_ads}
+        body: Dict[str, Any] = {"numAds": num_ads, "audioformVersion": audioform_version}
 
         if brief:
             body["brief"] = brief
         else:
             body["fileId"] = file_id
 
-        headers = {"version": audioform_version}
-
         r = Brief.interface.send_request(
-            rtype=RequestTypes.POST, route="brief", json=body, headers=headers
+            rtype=RequestTypes.POST, route="brief", json=body
         )
         return Brief.Item(r)
