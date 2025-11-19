@@ -1,18 +1,10 @@
-"""
-Unit tests for Projects endpoint using mocked API responses.
-"""
 
-import os
 from unittest.mock import MagicMock, patch
 from uuid import UUID, uuid4
 
 import pytest
 
-import audiostack
 from audiostack.projects.project import Project
-
-audiostack.api_base = os.environ.get("AUDIO_STACK_DEV_URL", "https://v2.api.audio")
-audiostack.api_key = os.environ["AUDIO_STACK_DEV_KEY"]  # type: ignore
 
 
 # ============================================================================
@@ -147,7 +139,9 @@ def test_project_create_error_handling(mock_send_request: MagicMock) -> None:
 
     with pytest.raises(Exception) as exc_info:
         Project.create(projectName="")
-    assert "422" in str(exc_info.value) or "validation" in str(exc_info.value).lower()
+    assert "422" in str(exc_info.value) or "validation" in str(
+        exc_info.value
+    ).lower()
 
 
 @pytest.mark.unit
@@ -157,8 +151,12 @@ def test_project_get_error_handling(mock_send_request: MagicMock) -> None:
     mock_send_request.side_effect = Exception("404 Project not found")
 
     with pytest.raises(Exception) as exc_info:
-        Project.get(projectId=UUID("00000000-0000-0000-0000-000000000000"))
-    assert "404" in str(exc_info.value) or "not found" in str(exc_info.value).lower()
+        Project.get(
+            projectId=UUID("00000000-0000-0000-0000-000000000000")
+        )
+    assert "404" in str(exc_info.value) or "not found" in str(
+        exc_info.value
+    ).lower()
 
 
 @pytest.mark.unit
@@ -185,10 +183,14 @@ def test_project_list_response_initialisation(
 )
 @patch("audiostack.projects.project.Project.interface.send_request")
 def test_project_create_validation_errors(
-    mock_send_request: MagicMock, invalid_name: str, expected_error: str
+    mock_send_request: MagicMock,
+    invalid_name: str,
+    expected_error: str,
 ) -> None:
     """Test project creation with invalid names."""
-    mock_send_request.side_effect = Exception(f"{expected_error} Validation error")
+    mock_send_request.side_effect = Exception(
+        f"{expected_error} Validation error"
+    )
 
     with pytest.raises(Exception) as exc_info:
         Project.create(projectName=invalid_name)

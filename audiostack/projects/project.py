@@ -16,18 +16,9 @@ class Project:
     interface = RequestInterface(family=FAMILY)
 
     class Item:
-        """Represents a project item in the AudioStack system.
-
-        This class encapsulates project metadata including ID, name, and
-        creation information.
-        """
+        """Represents a project item in the AudioStack system."""
 
         def __init__(self, response: dict) -> None:
-            """Initialise a Project.Item instance from API response data.
-
-            Args:
-                response: Dictionary containing project metadata from the API.
-            """
             self.projectId: str = str(response["projectId"])
             self.projectName: str = response["projectName"]
             self.folderId: str = str(response["folderId"])
@@ -36,33 +27,15 @@ class Project:
             self.lastModified: Optional[str] = response.get("lastModified")
 
     class ListResponse:
-        """Represents a list response containing projects.
-
-        This class encapsulates the response from project listing operations,
-        containing a list of project items.
-        """
+        """Represents a list response containing projects."""
 
         def __init__(self, response: List[dict]) -> None:
-            """Initialise a ListResponse instance from API response data.
-
-            Args:
-                response: List of dictionaries containing project data from
-                    the API.
-            """
             self.projects: List[Project.Item] = [
                 Project.Item(response=x) for x in response
             ]
 
     @staticmethod
     def get(projectId: UUID) -> Item:
-        """Retrieve a project by its ID.
-
-        Args:
-            projectId: The unique identifier of the project to retrieve.
-
-        Returns:
-            Project.Item: A project item containing the project metadata.
-        """
         r = Project.interface.send_request(
             rtype=RequestTypes.GET,
             route=f"{projectId}",
@@ -71,14 +44,6 @@ class Project:
 
     @staticmethod
     def create(projectName: str) -> Item:
-        """Create a new project in AudioStack.
-
-        Args:
-            projectName: The name of the project to create.
-
-        Returns:
-            Project.Item: The created project item with complete metadata.
-        """
         payload = {
             "project_name": projectName,
         }
@@ -92,16 +57,21 @@ class Project:
 
     @staticmethod
     def list() -> ListResponse:
-        """List all projects.
-
-        Returns:
-            ListResponse: Contains a list of project items.
-        """
         r = Project.interface.send_request(
             rtype=RequestTypes.GET,
             route="",
         )
-        return Project.ListResponse(response=r)
+
+        # Handle case where response only contains status code (e.g. 204)
+        if isinstance(r, dict) and "statusCode" in r and len(r) == 1:
+            projects_data = []
+        elif isinstance(r, dict) and "data" in r:
+            # API returns {"data": [...], "pagination": {...}}
+            projects_data = r["data"]
+        else:
+            # Response is already a list
+            projects_data = r
+        return Project.ListResponse(response=projects_data)
 
 
 class Session:
@@ -115,18 +85,10 @@ class Session:
     interface = RequestInterface(family=FAMILY)
 
     class Item:
-        """Represents a session item in the AudioStack system.
-
-        This class encapsulates session metadata including ID, name, status,
-        workflow information, and state data.
-        """
+        """Represents a session item in the AudioStack system."""
 
         def __init__(self, response: dict) -> None:
-            """Initialise a Session.Item instance from API response data.
-
-            Args:
-                response: Dictionary containing session metadata from the API.
-            """
+            """Initialise a Session.Item instance from API response data."""
             self.sessionId: str = str(response["sessionId"])
             self.sessionName: str = response["sessionName"]
             self.status: str = response["status"]
@@ -144,27 +106,9 @@ class Session:
             )
 
     class ListResponse:
-        """Represents a list response containing sessions.
-
-        This class encapsulates the response from session listing operations,
-        containing a list of session items.
-        """
+        """Represents a list response containing sessions."""
 
         def __init__(self, response: List[dict]) -> None:
-            """Initialise a ListResponse instance from API response data.
-
-            Args:
-                response: List of dictionaries containing session data from
-                    the API.
-            """
-            # Handle case where response is a dict with sessions key
-            # if isinstance(response, dict) and "sessions" in response:
-            #     sessions_data = response["sessions"]
-            # elif isinstance(response, list):
-            #     sessions_data = response
-            # else:
-            #     # Handle case where response is not a list or doesn't have sessions key
-            #     sessions_data = []
             self.sessions: List[Session.Item] = [
                 Session.Item(response=x) for x in response
             ]
@@ -211,16 +155,6 @@ class Session:
 
     @staticmethod
     def get(projectId: UUID, sessionId: UUID) -> Item:
-        """Retrieve a session by its ID.
-
-        Args:
-            projectId: The unique identifier of the project containing the
-                session.
-            sessionId: The unique identifier of the session to retrieve.
-
-        Returns:
-            Session.Item: A session item containing the session metadata.
-        """
         r = Session.interface.send_request(
             rtype=RequestTypes.GET,
             route=f"{projectId}/sessions/{sessionId}",
@@ -232,16 +166,6 @@ class Session:
         projectId: UUID,
         workflowId: Optional[str] = None,
     ) -> ListResponse:
-        """List all sessions for a project.
-
-        Args:
-            projectId: The unique identifier of the project to list sessions
-                for.
-            workflowId: Optional workflow ID to filter sessions by.
-
-        Returns:
-            ListResponse: Contains a list of session items.
-        """
         query_parameters = {}
         if workflowId is not None:
             query_parameters["workflowId"] = workflowId
@@ -255,9 +179,11 @@ class Session:
         # Handle case where response only contains status code (e.g. 204)
         if isinstance(r, dict) and "statusCode" in r and len(r) == 1:
             sessions_data = []
-        elif isinstance(r, dict) and "sessions" in r:
-            sessions_data = r["sessions"]
+        elif isinstance(r, dict) and "data" in r:
+            # API returns {"data": [...], "pagination": {...}}
+            sessions_data = r["data"]
         else:
+            # Response is already a list
             sessions_data = r
         return Session.ListResponse(response=sessions_data)
 
@@ -270,21 +196,7 @@ class Session:
         state: Optional[Dict[str, Any]] = None,
         audioformId: Optional[UUID] = None,
     ) -> Item:
-        """Update a session in AudioStack.
-
-        Args:
-            projectId: The unique identifier of the project containing the
-                session.
-            sessionId: The unique identifier of the session to update.
-            sessionName: Optional new name for the session.
-            status: Optional new status for the session.
-            state: Optional new state data for the session.
-            audioformId: Optional new audioform ID for the session.
-
-        Returns:
-            Session.Item: The updated session item.
-        """
-        payload = {}
+        payload: Dict[str, Any] = {}
         if sessionName is not None:
             payload["session_name"] = sessionName
         if status is not None:
@@ -303,13 +215,6 @@ class Session:
 
     @staticmethod
     def delete(projectId: UUID, sessionId: UUID) -> None:
-        """Delete a session from AudioStack.
-
-        Args:
-            projectId: The unique identifier of the project containing the
-                session.
-            sessionId: The unique identifier of the session to delete.
-        """
         Session.interface.send_request(
             rtype=RequestTypes.DELETE,
             route=f"{projectId}/sessions/{sessionId}",
