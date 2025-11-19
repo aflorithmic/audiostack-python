@@ -1,11 +1,19 @@
-import os
+import enum
 import time
 from typing import Optional
 from uuid import UUID
 
 from audiostack import TIMEOUT_THRESHOLD_S
+from audiostack.helpers.file_path import validate_and_resolve_file_path
 from audiostack.helpers.request_interface import RequestInterface
 from audiostack.helpers.request_types import RequestTypes
+
+
+class AccessControl(str, enum.Enum):
+    """Access control enum for file visibility."""
+
+    public = "public"
+    private = "private"
 
 
 class File:
@@ -36,13 +44,32 @@ class File:
             self.folderId: str = str(response["folderId"])
             self.url: Optional[str] = response.get("url")
             self.createdBy: str = response["createdBy"]
-            self.lastModified: Optional[str] = response.get("lastModified")
-            self.fileType: dict = response["fileType"]
-            self.fileCategory: Optional[dict] = response.get("fileCategory")
+            self.updatedAt: Optional[str] = response.get("updatedAt")
+            self.updatedBy: Optional[str] = response.get("updatedBy")
+
+            file_type = response["fileType"]
+            if not isinstance(file_type, dict):
+                raise ValueError("fileType must be a dictionary")
+            self.fileType: dict = file_type
+
+            file_category = response.get("fileCategory")
+            self.fileCategory: Optional[dict] = (
+                file_category if isinstance(file_category, dict) else None
+            )
+
             self.size: int = response["size"]
             self.createdAt: str = response["createdAt"]
             self.status: str = response["status"]
             self.duration: Optional[float] = response.get("duration")
+
+            access_control = response["accessControl"]
+            try:
+                self.accessControl: str = AccessControl(access_control).value
+            except ValueError:
+                raise ValueError(
+                    f"Invalid accessControl value: {access_control}. "
+                    f"Must be one of: {[e.value for e in AccessControl]}"
+                )
 
         def download(self, fileName: str, path: str = "./") -> None:
             """Download the file to the specified local path.
@@ -57,7 +84,8 @@ class File:
             """
             if not self.url:
                 raise Exception(
-                    "No URL found for this file. Please check the file has been processed."
+                    "No URL found for this file. "
+                    "Please check the file has been processed."
                 )
             RequestInterface.download_url(url=self.url, destination=path, name=fileName)
 
@@ -86,9 +114,6 @@ class File:
     ) -> Item:
         """Create and upload a new file to AudioStack.
 
-        This method uploads a local file to the AudioStack system and waits
-        for the upload to complete before returning the file item.
-
         Args:
             localPath: Path to the local file to upload.
             fileName: Name to assign to the file.
@@ -100,13 +125,12 @@ class File:
             File.Item: The created file item with complete metadata.
 
         Raises:
-            Exception: If localPath is not provided, file doesn't exist
+            ValueError: If localPath is not provided, is not a string, or is
+                not a valid file path.
+            FileNotFoundError: If the file does not exist.
+            PermissionError: If the file cannot be read.
         """
-        if not localPath:
-            raise Exception("Please supply a localPath (path to your local file)")
-
-        if not os.path.isfile(localPath):
-            raise Exception("Supplied file does not exist")
+        localPath = validate_and_resolve_file_path(localPath)
 
         payload = {
             "file_name": fileName,
@@ -119,18 +143,22 @@ class File:
             route="",
             json=payload,
         )
+        upload_url = r["uploadUrl"]
+        mime_type = r["mimeType"]
+        file_id = r["fileId"]
+
         File.interface.send_upload_request(
-            local_path=localPath, upload_url=r["uploadUrl"], mime_type=r["mimeType"]
+            local_path=localPath, upload_url=upload_url, mime_type=mime_type
         )
 
         start = time.time()
 
-        file = File.get(fileId=r["fileId"])
+        file = File.get(fileId=UUID(file_id))
 
         while file.status != "uploaded" and time.time() - start < TIMEOUT_THRESHOLD_S:
             print("Response in progress please wait...")
             time.sleep(0.05)
-            file = File.get(fileId=r["fileId"])
+            file = File.get(fileId=UUID(file_id))
 
         if file.status != "uploaded":
             return file
@@ -180,14 +208,16 @@ class File:
         fileName: Optional[str] = None,
         categoryId: Optional[UUID] = None,
         categoryName: Optional[str] = None,
+        accessControl: Optional[AccessControl] = None,
     ) -> Item:
         """Patch/update file metadata.
 
         Args:
             fileId: The unique file ID to update.
-            file_name: Optional new name for the file.
-            category_id: Optional new category ID for the file.
-            category_name: Optional new category name for the file.
+            fileName: Optional new name for the file.
+            categoryId: Optional new category ID for the file.
+            categoryName: Optional new category name for the file.
+            accessControl: Optional access control setting (public or private).
 
         Returns:
             File.Item: The updated file item.
@@ -199,6 +229,8 @@ class File:
             payload["category_id"] = str(categoryId)
         if categoryName is not None:
             payload["category_name"] = categoryName
+        if accessControl is not None:
+            payload["access_control"] = accessControl.value
 
         r = File.interface.send_request(
             rtype=RequestTypes.PATCH,
