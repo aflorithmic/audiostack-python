@@ -11,9 +11,7 @@ import audiostack
 from audiostack.projects.project import Project
 from audiostack.tests.utils import create_test_project_name
 
-audiostack.api_base = os.environ.get(
-    "AUDIO_STACK_DEV_URL", "https://v2.api.audio"
-)
+audiostack.api_base = os.environ.get("AUDIO_STACK_DEV_URL", "https://v2.api.audio")
 audiostack.api_key = os.environ["AUDIO_STACK_DEV_KEY"]  # type: ignore
 
 

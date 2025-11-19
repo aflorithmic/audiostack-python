@@ -1,5 +1,6 @@
 import os
 from typing import Generator
+from uuid import UUID
 
 import pytest
 
@@ -28,3 +29,31 @@ def speech_item(
     )
     yield tts
     audiostack.Speech.TTS.delete(speechId=tts.speechId)
+
+
+@pytest.fixture
+def cleanup_resources() -> Generator[dict, None, None]:
+    """Fixture to track and clean up test resources for files/folders tests."""
+    from audiostack.files.file import File
+    from audiostack.folders.folder import Folder
+
+    resources = {
+        "file_ids": [],
+        "folder_ids": [],
+    }
+
+    yield resources
+
+    # Cleanup: delete all tracked resources
+    for file_id in resources["file_ids"]:
+        try:
+            File.delete(fileId=UUID(file_id))
+        except Exception:
+            pass
+
+    for folder_id in resources["folder_ids"]:
+        try:
+            Folder.delete(folderId=UUID(folder_id))
+        except Exception:
+            pass
+
