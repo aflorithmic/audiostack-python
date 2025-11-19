@@ -31,10 +31,9 @@ class Folder:
             """
             self.folderId: str = str(response["folderId"])
             self.folderName: str = response["folderName"]
+            parent_folder_id = response.get("parentFolderId")
             self.parentFolderId: Optional[str] = (
-                str(response.get("parentFolderId"))
-                if response.get("parentFolderId")
-                else None
+                str(parent_folder_id) if parent_folder_id is not None else None
             )
             self.lastModified: Optional[str] = response.get("lastModified")
             self.createdBy: str = response["createdBy"]

@@ -30,7 +30,7 @@ class Project:
             """
             self.projectId: str = str(response["projectId"])
             self.projectName: str = response["projectName"]
-            self.folderId: str = response["folderId"]
+            self.folderId: str = str(response["folderId"])
             self.createdBy: str = response["createdBy"]
             self.createdAt: str = response["createdAt"]
             self.lastModified: Optional[str] = response.get("lastModified")
@@ -138,7 +138,7 @@ class Session:
             self.lastModifiedBy: Optional[str] = response.get("lastModifiedBy")
             self.lastModified: Optional[str] = response.get("lastModified")
             self.audioformId: Optional[str] = (
-                str(response["audioformId"]) if response.get("audioformId") else None
+                str(response["audioformId"]) if response.get("audioformId") is not None else None
             )
 
     class ListResponse:
