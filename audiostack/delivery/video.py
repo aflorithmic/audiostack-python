@@ -55,6 +55,7 @@ class Video:
         max_retries = 30
         while r["statusCode"] == 202 and retries < max_retries:
             print("Response in progress please wait...")
+            time.sleep(0.05)
             videoId = r["data"]["videoId"]
             r = Video.interface.send_request(
                 rtype=RequestTypes.GET, route="video", path_parameters=videoId
@@ -101,6 +102,7 @@ class Video:
         max_retries = 30
         while r["statusCode"] == 202 and retries < max_retries:
             print("Response in progress please wait...")
+            time.sleep(0.05)
             videoId = r["data"]["videoId"]
             r = Video.interface.send_request(
                 rtype=RequestTypes.GET, route="video", path_parameters=videoId
@@ -161,6 +163,7 @@ def _poll_video(r: dict, pipelineId: str) -> dict:
     while r["statusCode"] == 202:
         interface = RequestInterface(family="production")
         print("Response in progress please wait...")
+        time.sleep(0.05)
         r = interface.send_request(
             rtype=RequestTypes.GET,
             route="suite/videopipeline",
