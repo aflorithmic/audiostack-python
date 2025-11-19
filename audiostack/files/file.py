@@ -129,6 +129,7 @@ class File:
 
         while file.status != "uploaded" and time.time() - start < TIMEOUT_THRESHOLD_S:
             print("Response in progress please wait...")
+            time.sleep(0.05)
             file = File.get(fileId=r["fileId"])
 
         if file.status != "uploaded":
