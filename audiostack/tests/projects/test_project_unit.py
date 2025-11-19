@@ -8,7 +8,6 @@ import pytest
 
 from audiostack.projects.project import Project
 
-
 # ============================================================================
 # FIXTURES
 # ============================================================================
@@ -141,9 +140,7 @@ def test_project_create_error_handling(mock_send_request: MagicMock) -> None:
 
     with pytest.raises(Exception) as exc_info:
         Project.create(projectName="")
-    assert "422" in str(exc_info.value) or "validation" in str(
-        exc_info.value
-    ).lower()
+    assert "422" in str(exc_info.value) or "validation" in str(exc_info.value).lower()
 
 
 @pytest.mark.unit
@@ -153,12 +150,8 @@ def test_project_get_error_handling(mock_send_request: MagicMock) -> None:
     mock_send_request.side_effect = Exception("404 Project not found")
 
     with pytest.raises(Exception) as exc_info:
-        Project.get(
-            projectId=UUID("00000000-0000-0000-0000-000000000000")
-        )
-    assert "404" in str(exc_info.value) or "not found" in str(
-        exc_info.value
-    ).lower()
+        Project.get(projectId=UUID("00000000-0000-0000-0000-000000000000"))
+    assert "404" in str(exc_info.value) or "not found" in str(exc_info.value).lower()
 
 
 @pytest.mark.unit

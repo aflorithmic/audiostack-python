@@ -39,11 +39,7 @@ def test_project_listing(test_project: Project.Item) -> None:
     assert test_project.projectId in project_ids
 
     test_project_found = next(
-        (
-            p
-            for p in response.projects
-            if p.projectId == test_project.projectId
-        ),
+        (p for p in response.projects if p.projectId == test_project.projectId),
         None,
     )
     assert test_project_found is not None
@@ -86,9 +82,7 @@ def test_project_validation_errors() -> None:
 def test_project_not_found_error() -> None:
     \"\"\"Test project retrieval with non-existent ID.\"\"\"
     with pytest.raises(Exception) as exc_info:
-        Project.get(
-            projectId=UUID("00000000-0000-0000-0000-000000000000")
-        )
+        Project.get(projectId=UUID("00000000-0000-0000-0000-000000000000"))
     error_str = str(exc_info.value).lower()
     assert "404" in str(exc_info.value) or "not found" in error_str
 
