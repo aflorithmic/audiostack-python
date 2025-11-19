@@ -135,7 +135,7 @@ class Folder:
             rtype=RequestTypes.GET,
             route=f"{folderId}",
         )
-        return Folder.Item(response=r["currentPathChain"][0])
+        return Folder.Item(response=r)
 
     @staticmethod
     def delete(folderId: UUID) -> None:
