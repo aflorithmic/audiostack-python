@@ -138,7 +138,9 @@ class Session:
             self.lastModifiedBy: Optional[str] = response.get("lastModifiedBy")
             self.lastModified: Optional[str] = response.get("lastModified")
             self.audioformId: Optional[str] = (
-                str(response["audioformId"]) if response.get("audioformId") is not None else None
+                str(response["audioformId"])
+                if response.get("audioformId") is not None
+                else None
             )
 
     class ListResponse:
