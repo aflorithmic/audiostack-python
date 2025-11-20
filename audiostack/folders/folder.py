@@ -133,6 +133,8 @@ class Folder:
         folderId: UUID,
         filter: Optional[str] = None,
         orderBy: Optional[str] = None,
+        limit: Optional[int] = None,
+        offset: Optional[int] = None,
     ) -> "ListResponse":
         """Retrieve a folder by its ID and list its contents.
 
@@ -140,16 +142,22 @@ class Folder:
             folderId: The unique identifier of the folder to retrieve.
             filter: Optional OData $filter expression for filtering files.
             orderBy: Optional OData $orderBy expression for sorting.
+            limit: Optional limit for pagination (number of items per page).
+            offset: Optional offset for pagination (number of items to skip).
 
         Returns:
             ListResponse: A list response containing folders, files,
-                and path chain.
+                and path chain with pagination.
         """
-        query_params = {}
+        query_params: dict[str, str | int] = {}
         if filter:
             query_params["$filter"] = filter
-        if orderBy:
+        if orderBy: 
             query_params["$orderBy"] = orderBy
+        if limit is not None:
+            query_params["limit"] = limit
+        if offset is not None:
+            query_params["offset"] = offset
 
         r = Folder.interface.send_request(
             rtype=RequestTypes.GET,
@@ -174,6 +182,8 @@ class Folder:
         path: Optional[str] = None,
         filter: Optional[str] = None,
         orderBy: Optional[str] = None,
+        limit: Optional[int] = None,
+        offset: Optional[int] = None,
     ) -> "ListResponse":
         """List files and folders in a directory.
 
@@ -181,18 +191,24 @@ class Folder:
             path: Optional path to list. If None, lists root folder.
             filter: Optional OData $filter expression for filtering files.
             orderBy: Optional OData $orderBy expression for sorting.
-
+            limit: Optional limit for pagination (number of items per page).
+            offset: Optional offset for pagination (number of items to skip).
+       
         Returns:
-            ListResponse: Contains folders, files, current path chain,
-                and pagination.
+            ListResponse: A list response containing folders, files,
+                and path chain with pagination.
         """
-        query_params = {}
+        query_params: dict[str, str | int] = {}
         if path:
             query_params["path"] = path
         if filter:
             query_params["$filter"] = filter
         if orderBy:
             query_params["$orderBy"] = orderBy
+        if limit is not None:
+            query_params["limit"] = limit
+        if offset is not None:
+            query_params["offset"] = offset
 
         r = Folder.interface.send_request(
             rtype=RequestTypes.GET,
@@ -242,6 +258,8 @@ class Folder:
         folderId: UUID,
         filter: Optional[str] = None,
         orderBy: Optional[str] = None,
+        limit: Optional[int] = None,
+        offset: Optional[int] = None,
     ) -> List[File.Item]:
         """List files in a folder.
 
@@ -249,12 +267,18 @@ class Folder:
             folderId: The unique identifier of the folder.
             filter: Optional OData $filter expression for filtering files.
             orderBy: Optional OData $orderBy expression for sorting.
+            limit: Optional limit for pagination (number of items per page).
+            offset: Optional offset for pagination (number of items to skip).
         """
-        query_params = {}
+        query_params: dict[str, str | int] = {}
         if filter:
             query_params["$filter"] = filter
         if orderBy:
             query_params["$orderBy"] = orderBy
+        if limit is not None:
+            query_params["limit"] = limit
+        if offset is not None:
+            query_params["offset"] = offset
 
         r = Folder.interface.send_request(
             rtype=RequestTypes.GET,
