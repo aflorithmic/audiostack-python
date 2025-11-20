@@ -95,16 +95,20 @@ def test_list_with_pagination() -> None:
 
 def test_list_files() -> None:
     """Test list_files() method."""
-    files = Folder.list_files(folderId=UUID(test_constants["folderId"]))
-    assert isinstance(files, list)
+    result = Folder.list_files(folderId=UUID(test_constants["folderId"]))
+    assert isinstance(result.files, list)
+    assert hasattr(result, "pagination")
 
 
 def test_list_files_with_pagination() -> None:
     """Test list_files() with pagination parameters."""
-    files = Folder.list_files(
+    result = Folder.list_files(
         folderId=UUID(test_constants["folderId"]), limit=5, offset=0
     )
-    assert isinstance(files, list)
+    assert isinstance(result.files, list)
+    if result.pagination:
+        assert result.pagination.get("limit") == 5
+        assert result.pagination.get("offset") == 0
 
 
 def test_search() -> None:

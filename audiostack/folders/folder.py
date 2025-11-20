@@ -64,6 +64,24 @@ class Folder:
                 pagination.get("offset") if pagination else None
             )
 
+    class FilesListResponse:
+        """Represents a paginated list of files in a folder."""
+
+        def __init__(self, response: dict) -> None:
+            if isinstance(response, dict) and "data" in response:
+                files_data = response["data"]
+                pagination = response.get("pagination", {})
+            else:
+                files_data = response if isinstance(response, list) else []
+                pagination = {}
+
+            self.files: List[File.Item] = [File.Item(response=x) for x in files_data]
+            self.pagination: Optional[dict] = pagination if pagination else None
+            self.limit: Optional[int] = pagination.get("limit") if pagination else None
+            self.offset: Optional[int] = (
+                pagination.get("offset") if pagination else None
+            )
+
     class SearchResponse:
         """Represents a search response containing folders and files.
 
@@ -259,7 +277,7 @@ class Folder:
         orderBy: Optional[str] = None,
         limit: Optional[int] = None,
         offset: Optional[int] = None,
-    ) -> List[File.Item]:
+    ) -> "FilesListResponse":
         """List files in a folder.
 
         Args:
@@ -268,6 +286,9 @@ class Folder:
             orderBy: Optional OData $orderBy expression for sorting.
             limit: Optional limit for pagination (number of items per page).
             offset: Optional offset for pagination (number of items to skip).
+
+        Returns:
+            FilesListResponse: A list response containing files with pagination.
         """
         query_params: dict[str, str | int] = {}
         if filter:
@@ -285,13 +306,7 @@ class Folder:
             query_parameters=query_params if query_params else None,
         )
 
-        # handle paginated response structure
-        if isinstance(r, dict) and "data" in r:
-            files_data = r["data"]
-        else:
-            files_data = []
-
-        return [File.Item(response=x) for x in files_data]
+        return Folder.FilesListResponse(response=r)
 
     class StatsResponse:
         def __init__(self, response: dict) -> None:
@@ -299,7 +314,11 @@ class Folder:
             self.fileTypes: List[dict] = response.get("fileTypes", [])
 
     @staticmethod
-    def get_stats(folderId: UUID) -> "StatsResponse":
+    def get_stats(
+        folderId: UUID,
+    ) -> (
+        "StatsResponse"
+    ):  # todo check what get_stats returns - is it wrapped in a 'data' object? if so, fix
         """Get folder statistics.
 
         Args:
