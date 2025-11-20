@@ -5,6 +5,8 @@ from uuid import UUID
 import pytest
 
 import audiostack
+from audiostack.files.file import File
+from audiostack.folders.folder import Folder
 
 audiostack.api_base = os.environ.get(
     "AUDIO_STACK_DEV_URL", "https://staging-v2.api.audio"
@@ -34,8 +36,6 @@ def speech_item(
 @pytest.fixture
 def cleanup_resources() -> Generator[dict, None, None]:
     """Fixture to track and clean up test resources for files/folders tests."""
-    from audiostack.files.file import File
-    from audiostack.folders.folder import Folder
 
     resources = {
         "file_ids": [],

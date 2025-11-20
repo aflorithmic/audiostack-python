@@ -157,7 +157,7 @@ class Folder:
         query_params: dict[str, str | int] = {}
         if filter:
             query_params["$filter"] = filter
-        if orderBy: 
+        if orderBy:
             query_params["$orderBy"] = orderBy
         if limit is not None:
             query_params["limit"] = limit
@@ -198,7 +198,7 @@ class Folder:
             orderBy: Optional OData $orderBy expression for sorting.
             limit: Optional limit for pagination (number of items per page).
             offset: Optional offset for pagination (number of items to skip).
-       
+
         Returns:
             ListResponse: A list response containing folders, files,
                 and path chain with pagination.
