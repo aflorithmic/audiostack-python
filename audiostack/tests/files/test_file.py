@@ -1,4 +1,5 @@
 import os
+import random
 from uuid import UUID
 
 import pytest
@@ -6,6 +7,7 @@ import pytest
 import audiostack
 from audiostack.files.file import AccessControl, File
 from audiostack.folders.folder import Folder
+from audiostack.tests.utils import create_test_file_name
 
 audiostack.api_base = os.environ.get("AUDIO_STACK_DEV_URL", "https://v2.api.audio")
 audiostack.api_key = os.environ["AUDIO_STACK_DEV_KEY"]  # type: ignore
@@ -37,8 +39,9 @@ def test_create_path_validation() -> None:
         File.create(localPath=".", fileName="test.mp3")
 
     try:
-        r = File.create(localPath="./example.mp3", fileName="test.mp3")
-        assert r.fileName == "test.mp3"
+        unique_name = create_test_file_name() + ".mp3"
+        r = File.create(localPath="./example.mp3", fileName=unique_name)
+        assert r.fileName == unique_name
     except FileNotFoundError:
         # If example.mp3 doesn't exist in current dir, that's fine
         pass
