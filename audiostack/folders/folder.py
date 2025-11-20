@@ -295,7 +295,7 @@ class Folder:
         if isinstance(r, dict) and "data" in r:
             files_data = r["data"]
         else:
-            files_data = r if isinstance(r, list) else []
+            files_data = []
 
         return [File.Item(response=x) for x in files_data]
 

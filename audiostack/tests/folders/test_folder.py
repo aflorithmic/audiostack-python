@@ -54,11 +54,7 @@ def test_get() -> None:
 
 def test_get_with_pagination() -> None:
     """Test get() with pagination parameters."""
-    r = Folder.get(
-        folderId=UUID(test_constants["folderId"]),
-        limit=10,
-        offset=0
-    )
+    r = Folder.get(folderId=UUID(test_constants["folderId"]), limit=10, offset=0)
     assert len(r.currentPathChain) > 0, "Should have current path chain"
     if r.pagination:
         assert r.pagination.get("limit") == 10
@@ -82,13 +78,13 @@ def test_list_with_pagination() -> None:
     assert isinstance(result.files, list)
     if result.pagination:
         assert result.pagination.get("limit") == 10
-    
+
     result = Folder.list(offset=5)
     assert isinstance(result.folders, list)
     assert isinstance(result.files, list)
     if result.pagination:
         assert result.pagination.get("offset") == 5
-    
+
     result = Folder.list(limit=20, offset=10)
     assert isinstance(result.folders, list)
     assert isinstance(result.files, list)
@@ -106,9 +102,7 @@ def test_list_files() -> None:
 def test_list_files_with_pagination() -> None:
     """Test list_files() with pagination parameters."""
     files = Folder.list_files(
-        folderId=UUID(test_constants["folderId"]),
-        limit=5,
-        offset=0
+        folderId=UUID(test_constants["folderId"]), limit=5, offset=0
     )
     assert isinstance(files, list)
 
