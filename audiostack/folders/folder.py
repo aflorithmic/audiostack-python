@@ -53,9 +53,7 @@ class Folder:
             self.files: List[File.Item] = [
                 File.Item(response=x) for x in data.get("files", [])
             ]
-            current_path_chain = data.get("currentPathChain") or data.get(
-                "current_path_chain", []
-            )
+            current_path_chain = data.get("currentPathChain", [])
             self.currentPathChain: List[Folder.Item] = [
                 Folder.Item(response=x) for x in current_path_chain
             ]
@@ -95,17 +93,13 @@ class Folder:
         # Handle paginated response structure
         if isinstance(response, dict) and "data" in response:
             data = response["data"]
-            current_path_chain = data.get("currentPathChain") or data.get(
-                "current_path_chain", []
-            )
+            current_path_chain = data.get("currentPathChain", [])
         else:
-            current_path_chain = response.get("currentPathChain") or response.get(
-                "current_path_chain", []
-            )
+            current_path_chain = response.get("currentPathChain", [])
 
         if current_path_chain:
             root_folder = current_path_chain[0]
-            rootFolderId = root_folder.get("folderId") or root_folder.get("folder_id")
+            rootFolderId = root_folder.get("folderId")
             if rootFolderId:
                 return str(rootFolderId)
         raise Exception("Root folder not found in response")
