@@ -61,15 +61,7 @@ class File:
             self.createdAt: str = response["createdAt"]
             self.status: str = response["status"]
             self.duration: Optional[float] = response.get("duration")
-
-            access_control = response["accessControl"]
-            try:
-                self.accessControl: str = AccessControl(access_control).value
-            except ValueError:
-                raise ValueError(
-                    f"Invalid accessControl value: {access_control}. "
-                    f"Must be one of: {[e.value for e in AccessControl]}"
-                )
+            self.accessControl: Optional[str] = response.get("accessControl")
 
         def download(self, fileName: str, path: str = "./") -> None:
             """Download the file to the specified local path.
