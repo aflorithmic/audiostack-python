@@ -74,11 +74,16 @@ class Folder:
         """
 
         def __init__(self, response: dict) -> None:
+            if isinstance(response, dict) and "data" in response:  # handle pagination
+                data = response["data"]
+            else:
+                data = response
+
             self.folders: List[Folder.Item] = [
-                Folder.Item(response=x) for x in response.get("folders", [])
+                Folder.Item(response=x) for x in data.get("folders", [])
             ]
             self.files: List[File.Item] = [
-                File.Item(response=x) for x in response.get("files", [])
+                File.Item(response=x) for x in data.get("files", [])
             ]
 
     @staticmethod
