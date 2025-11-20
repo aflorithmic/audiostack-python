@@ -42,7 +42,13 @@ def test_get() -> None:
     r = Folder.get(folderId=UUID(test_constants["folderId"]))
     # Folder.get() now returns ListResponse, get folder from currentPathChain
     assert len(r.currentPathChain) > 0, "Should have current path chain"
-    folder = r.currentPathChain[-1]  # Last item is the current folder
+    folder = next(
+        (f for f in r.currentPathChain if f.folderId == test_constants["folderId"]),
+        None,
+    )
+    assert (
+        folder is not None
+    ), f"Folder {test_constants['folderId']} should be in currentPathChain"
     assert folder.folderId == test_constants["folderId"]
 
 
