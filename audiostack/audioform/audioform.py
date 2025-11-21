@@ -47,7 +47,7 @@ class Audioform:
             Get the current audioform with updated status and result.
 
             Args:
-                version: Audioform version ("1" or "0.0.1", default: "1")
+                version: Audioform version ("2","1" or "0.0.1", default: "2")
                 wait: Whether to poll until status changes from 202 to 200
                 timeoutThreshold: Maximum time to wait for completion in seconds
 
