@@ -8,9 +8,7 @@ from audiostack.files.file import AccessControl, File
 from audiostack.folders.folder import Folder
 from audiostack.tests.utils import create_test_file_name
 
-audiostack.api_base = os.environ.get(
-    "AUDIO_STACK_DEV_URL", "https://v2.api.audio"
-)
+audiostack.api_base = os.environ.get("AUDIO_STACK_DEV_URL", "https://v2.api.audio")
 audiostack.api_key = os.environ["AUDIO_STACK_DEV_KEY"]  # type: ignore
 
 
@@ -118,18 +116,14 @@ def test_copy_returns_new_file_item(
     assert copied_file.fileName == test_file.fileName
     assert copied_file.fileId is not None
     # Copied file should be in the destination folder
-    assert (
-        copied_file.folderId == folder.folderId
-    ), (
+    assert copied_file.folderId == folder.folderId, (
         f"Copied file should be in destination folder. "
         f"Expected folderId: {folder.folderId}, "
         f"Got: {copied_file.folderId}"
     )
     # Copy creates a new hard link, so the fileId (hard_link_id) should be
     # different from the original
-    assert (
-        copied_file.fileId != test_file.fileId
-    ), (
+    assert copied_file.fileId != test_file.fileId, (
         f"Copied file should have a different fileId (hard_link_id). "
         f"Original: {test_file.fileId}, Copied: {copied_file.fileId}"
     )
@@ -177,9 +171,7 @@ def test_download(test_file: File.Item) -> None:
 
         # clean up the downloaded file
         os.remove(download_path)
-        assert not os.path.exists(
-            download_path
-        ), "Downloaded file should be removed"
+        assert not os.path.exists(download_path), "Downloaded file should be removed"
 
 
 def test_delete() -> None:
