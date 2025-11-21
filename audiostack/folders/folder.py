@@ -185,14 +185,11 @@ class Folder:
 
     @staticmethod
     def delete(folderId: UUID) -> str:
-        r = Folder.interface.send_request(
+        Folder.interface.send_request(
             rtype=RequestTypes.DELETE,
             route=f"{folderId}",
         )
-        # API returns "Ok!" as a string response
-        if isinstance(r, str):
-            return r
-        return r.get("message", "Ok!") if isinstance(r, dict) else "Ok!"
+        return f"Folder {folderId} deleted successfully"
 
     @staticmethod
     def list(

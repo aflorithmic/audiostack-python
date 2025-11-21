@@ -110,7 +110,6 @@ def test_patch_error_handling() -> None:
     assert result is not None
 
 
-@pytest.mark.skip(reason="failing at different id assertion")
 def test_copy() -> None:
     # create a destination folder for the copy
     folder_name = f"test_copy_folder_{os.getpid()}"
