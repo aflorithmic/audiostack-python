@@ -7,7 +7,9 @@ import audiostack
 from audiostack.folders.folder import Folder
 from audiostack.tests.utils import create_test_folder_name
 
-audiostack.api_base = os.environ.get("AUDIO_STACK_DEV_URL", "https://v2.api.audio")
+audiostack.api_base = os.environ.get(
+    "AUDIO_STACK_DEV_URL", "https://v2.api.audio"
+)
 audiostack.api_key = os.environ["AUDIO_STACK_DEV_KEY"]  # type: ignore
 
 
@@ -40,7 +42,11 @@ def test_get(test_folder: Folder.Item) -> None:
     # Folder.get() now returns ListResponse, get folder from currentPathChain
     assert len(response.currentPathChain) > 0, "Should have current path chain"
     folder = next(
-        (f for f in response.currentPathChain if f.folderId == test_folder.folderId),
+        (
+            f
+            for f in response.currentPathChain
+            if f.folderId == test_folder.folderId
+        ),
         None,
     )
     assert (
@@ -50,7 +56,9 @@ def test_get(test_folder: Folder.Item) -> None:
 
 
 def test_get_with_pagination(test_folder: Folder.Item) -> None:
-    response = Folder.get(folderId=UUID(test_folder.folderId), limit=10, offset=0)
+    response = Folder.get(
+        folderId=UUID(test_folder.folderId), limit=10, offset=0
+    )
     assert len(response.currentPathChain) > 0, "Should have current path chain"
     if response.pagination:
         assert response.pagination.get("limit") == 10
@@ -97,7 +105,9 @@ def test_list_files(test_folder: Folder.Item) -> None:
 
 
 def test_list_files_with_pagination(test_folder: Folder.Item) -> None:
-    result = Folder.list_files(folderId=UUID(test_folder.folderId), limit=5, offset=0)
+    result = Folder.list_files(
+        folderId=UUID(test_folder.folderId), limit=5, offset=0
+    )
     assert isinstance(result.files, list)
     if result.pagination:
         assert result.pagination.get("limit") == 5
@@ -120,7 +130,18 @@ def test_patch(test_folder: Folder.Item) -> None:
     # Verify with get() - now returns ListResponse
     response = Folder.get(folderId=UUID(test_folder.folderId))
     assert len(response.currentPathChain) > 0, "Should have current path chain"
-    folder = response.currentPathChain[-1]  # Last item is the current folder
+    # Find the folder in the path chain that matches our folderId
+    folder = next(
+        (
+            f
+            for f in response.currentPathChain
+            if f.folderId == test_folder.folderId
+        ),
+        None,
+    )
+    assert (
+        folder is not None
+    ), f"Folder {test_folder.folderId} should be in path chain"
     assert folder.folderName == new_name
 
 
