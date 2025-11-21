@@ -11,25 +11,22 @@ from audiostack.tests.utils import create_test_file_name
 audiostack.api_base = os.environ.get("AUDIO_STACK_DEV_URL", "https://v2.api.audio")
 audiostack.api_key = os.environ["AUDIO_STACK_DEV_KEY"]  # type: ignore
 
-test_constants = {}
 
-
-def test_create() -> None:
-    """Test file creation."""
+def test_create(cleanup_resources: dict) -> None:
     root_folder_id = Folder.get_root_folder_id()
-    r = File.create(
-        localPath="example.mp3", fileName="test_file.mp3", folderId=UUID(root_folder_id)
+    file = File.create(
+        localPath="example.mp3",
+        fileName=create_test_file_name() + ".mp3",
+        folderId=UUID(root_folder_id),
     )
-    test_constants["fileId"] = r.fileId
-    test_constants["fileName"] = r.fileName
-    test_constants["folderId"] = r.folderId
-    assert r.fileId is not None
-    assert r.fileName is not None
-    assert r.folderId is not None
+    cleanup_resources["file_ids"].append(file.fileId)
+
+    assert file.fileId is not None
+    assert file.fileName is not None
+    assert file.folderId is not None
 
 
-def test_create_path_validation() -> None:
-    """Test file creation path validation."""
+def test_create_path_validation(cleanup_resources: dict) -> None:
     # empty path
     with pytest.raises(ValueError, match="Please supply a file path"):
         File.create(localPath="", fileName="test.mp3")
@@ -44,17 +41,18 @@ def test_create_path_validation() -> None:
 
     try:
         unique_name = create_test_file_name() + ".mp3"
-        r = File.create(localPath="./example.mp3", fileName=unique_name)
-        assert r.fileName == unique_name
-    except FileNotFoundError:
-        # If example.mp3 doesn't exist in current dir, that's fine
+        file = File.create(localPath="./example.mp3", fileName=unique_name)
+        cleanup_resources["file_ids"].append(file.fileId)
+        assert file.fileName == unique_name
+    except FileNotFoundError as e:
+        print(e)
         pass
 
 
-def test_get() -> None:
-    r = File.get(fileId=UUID(test_constants["fileId"]))
-    assert r.fileId == test_constants["fileId"]
-    assert r.fileName is not None
+def test_get(test_file: File.Item) -> None:
+    retrieved_file = File.get(fileId=UUID(test_file.fileId))
+    assert retrieved_file.fileId == test_file.fileId
+    assert retrieved_file.fileName is not None
 
 
 def test_get_file_categories() -> None:
@@ -63,37 +61,31 @@ def test_get_file_categories() -> None:
     assert isinstance(categories, dict)
 
 
-def test_patch() -> None:
-    # get original file name for verification
-    original_file = File.get(fileId=UUID(test_constants["fileId"]))
-    original_name = original_file.fileName
-    assert original_name is not None
-
-    # patching file name
-    new_name = "updated_test_file.mp3"
-    patched_file = File.patch(fileId=UUID(test_constants["fileId"]), fileName=new_name)
+def test_patch_file_name(test_file: File.Item) -> None:
+    new_name = create_test_file_name() + ".mp3"
+    patched_file = File.patch(fileId=UUID(test_file.fileId), fileName=new_name)
     assert patched_file.fileName == new_name
 
     # verify the change persisted by retrieving the file again
-    retrieved_file = File.get(fileId=UUID(test_constants["fileId"]))
+    retrieved_file = File.get(fileId=UUID(test_file.fileId))
     assert retrieved_file.fileName == new_name
 
-    # patching access control
+
+def test_patch_access_control(test_file: File.Item) -> None:
     patched_file = File.patch(
-        fileId=UUID(test_constants["fileId"]),
+        fileId=UUID(test_file.fileId),
         accessControl=AccessControl.private,
     )
     assert patched_file.accessControl == "private"
 
     # verify access control change persisted
-    retrieved_file = File.get(fileId=UUID(test_constants["fileId"]))
+    retrieved_file = File.get(fileId=UUID(test_file.fileId))
     assert retrieved_file.accessControl == "private"
 
-    # revert the change for other tests
-    reverted_file = File.patch(
-        fileId=UUID(test_constants["fileId"]), fileName=original_name
-    )
-    assert reverted_file.fileName == original_name
+
+def test_patch_no_parameters(test_file: File.Item) -> None:
+    result = File.patch(fileId=UUID(test_file.fileId))
+    assert result is not None
 
 
 def test_patch_error_handling() -> None:
@@ -104,71 +96,62 @@ def test_patch_error_handling() -> None:
             fileName="test.mp3",
         )
 
-    # patching with no parameters should not raise an error
-    # (it's a valid operation to patch with no changes)
-    result = File.patch(fileId=UUID(test_constants["fileId"]))
-    assert result is not None
 
-
-def test_copy() -> None:
+def test_copy_returns_new_file_item(
+    test_file: File.Item, cleanup_resources: dict
+) -> None:
     # create a destination folder for the copy
-    folder_name = f"test_copy_folder_{os.getpid()}"
-    folder = Folder.create(name=folder_name)
-    test_constants["copyFolderId"] = folder.folderId
-    assert folder.folderId is not None
+    folder = Folder.create(name=create_test_file_name())
+    cleanup_resources["folder_ids"].append(folder.folderId)
 
     # copy the file to the new folder
     copied_file = File.copy(
-        fileId=UUID(test_constants["fileId"]),
-        currentFolderId=UUID(test_constants["folderId"]),
+        fileId=UUID(test_file.fileId),
+        currentFolderId=UUID(test_file.folderId),
         newFolderId=UUID(folder.folderId),
     )
-    test_constants["copiedFileId"] = copied_file.fileId
+    cleanup_resources["file_ids"].append(copied_file.fileId)
 
-    # verify the copy was successful
-    assert copied_file.fileName == test_constants["fileName"]
-    # Should be different ID (new hard link)
-    assert copied_file.fileId != test_constants["fileId"]
+    # verify the copy operation returns expected results
+    assert copied_file.fileName == test_file.fileName
+    # should be different ID (new hard link)
+    assert copied_file.fileId != test_file.fileId
     assert copied_file.fileId is not None
+    assert copied_file.folderId == folder.folderId
 
-    # verify the copied file exists in the destination folder
-    folder_contents = Folder.list(path=folder_name)
-    copy_found = any(f.fileId == copied_file.fileId for f in folder_contents.files)
-    assert copy_found, "Copied file should be found in destination folder"
-
-    # verify original file still exists in original folder
-    original_file = File.get(fileId=UUID(test_constants["fileId"]))
-    assert original_file.fileId == test_constants["fileId"]
+    # verify original file still exists
+    original_file = File.get(fileId=UUID(test_file.fileId))
+    assert original_file.fileId == test_file.fileId
 
 
-def test_copy_error_handling() -> None:
+def test_copy_error_handling(test_file: File.Item) -> None:
     # copying with invalid file ID
     with pytest.raises(Exception):
         File.copy(
             fileId=UUID("00000000-0000-0000-0000-000000000000"),
-            currentFolderId=UUID(test_constants["folderId"]),
-            newFolderId=UUID(test_constants["folderId"]),
+            currentFolderId=UUID(test_file.folderId),
+            newFolderId=UUID(test_file.folderId),
         )
 
     # copying with invalid folder IDs
     with pytest.raises(Exception):
         File.copy(
-            fileId=UUID(test_constants["fileId"]),
+            fileId=UUID(test_file.fileId),
             currentFolderId=UUID("00000000-0000-0000-0000-000000000000"),
             newFolderId=UUID("00000000-0000-0000-0000-000000000000"),
         )
 
 
-def test_download() -> None:
-    r = File.get(fileId=UUID(test_constants["fileId"]))
-    if r.url:
+def test_download(test_file: File.Item) -> None:
+    file = File.get(fileId=UUID(test_file.fileId))
+    if file.url:
         download_path = "./downloaded_test.mp3"
         # ensure file doesn't exist before download
         if os.path.exists(download_path):
             os.remove(download_path)
 
         # download the file
-        r.download(fileName="downloaded_test.mp3", path="./")
+        file.download(fileName="downloaded_test.mp3", path="./")
 
         # verify file was actually downloaded
         assert os.path.exists(
@@ -183,12 +166,20 @@ def test_download() -> None:
 
 
 def test_delete() -> None:
-    file_before = File.get(fileId=UUID(test_constants["fileId"]))
-    assert file_before.fileId == test_constants["fileId"]
+    # create a file to delete
+    root_folder_id = Folder.get_root_folder_id()
+    file = File.create(
+        localPath="example.mp3",
+        fileName=create_test_file_name() + ".mp3",
+        folderId=UUID(root_folder_id),
+    )
+
+    file_before = File.get(fileId=UUID(file.fileId))
+    assert file_before.fileId == file.fileId
     assert file_before.fileName is not None
 
-    File.delete(fileId=UUID(test_constants["fileId"]))
+    File.delete(fileId=UUID(file.fileId))
 
     # verify file no longer exists
     with pytest.raises(Exception):
-        File.get(fileId=UUID(test_constants["fileId"]))
+        File.get(fileId=UUID(file.fileId))

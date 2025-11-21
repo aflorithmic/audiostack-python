@@ -1,35 +1,21 @@
-"""
-Integration tests for Files and Folders functionality.
-
-This module tests the interaction between files and folders,
-including file operations within folder contexts.
-"""
-
-import random
 from uuid import UUID
-
-import pytest
 
 from audiostack.files.file import File
 from audiostack.folders.folder import Folder
-
-
-def create_test_name(prefix: str = "TEST") -> str:
-    """Create a unique test name."""
-    return f"{prefix}_{random.randint(1000, 9999)}"
+from audiostack.tests.utils import create_test_file_name, create_test_folder_name
 
 
 def test_file_folder_workflow(cleanup_resources: dict) -> None:
     """Test complete file and folder workflow."""
     # 1. Create a test folder
-    folder_name = f"test_folder_{random.randint(1000, 9999)}"
+    folder_name = create_test_folder_name()
     folder = Folder.create(name=folder_name)
     cleanup_resources["folder_ids"].append(folder.folderId)
     assert folder.folderId is not None
     assert folder.folderName == folder_name
 
     # 2. Upload a file to the folder
-    file_name = f"test_file_{random.randint(1000, 9999)}.mp3"
+    file_name = create_test_file_name() + ".mp3"
     file = File.create(
         localPath="example.mp3",
         fileName=file_name,
@@ -45,7 +31,7 @@ def test_file_folder_workflow(cleanup_resources: dict) -> None:
     assert file_found, "File should be in the folder"
 
     # 4. Create another folder for copying
-    copy_folder_name = f"copy_folder_{random.randint(1000, 9999)}"
+    copy_folder_name = create_test_folder_name()
     copy_folder = Folder.create(name=copy_folder_name)
     cleanup_resources["folder_ids"].append(copy_folder.folderId)
     assert copy_folder.folderId is not None
@@ -59,7 +45,7 @@ def test_file_folder_workflow(cleanup_resources: dict) -> None:
     cleanup_resources["file_ids"].append(copied_file.fileId)
     assert copied_file.fileId is not None
 
-    # 6. Verify file is in both folders
+    # 6. Verify file is in both folders (integration test)
     original_folder_contents = Folder.list(path=folder_name)
     copy_folder_contents = Folder.list(path=copy_folder_name)
 
@@ -87,13 +73,23 @@ def test_file_folder_workflow(cleanup_resources: dict) -> None:
         f"Found files: {found_file_ids}"
     )
 
-    # 7. Test file patching
-    new_file_name = f"patched_file_{random.randint(1000, 9999)}.mp3"
+    # 7. Test file patching and verify it reflects in folder listing
+    new_file_name = create_test_file_name() + ".mp3"
     patched_file = File.patch(fileId=UUID(file.fileId), fileName=new_file_name)
     assert patched_file.fileName == new_file_name, "File name should be updated"
 
-    # 8. Test folder patching
-    new_folder_name = f"patched_folder_{random.randint(1000, 9999)}"
+    # Verify patched file name appears in folder listing
+    updated_folder_contents = Folder.list(path=folder_name)
+    patched_file_in_list = next(
+        (f for f in updated_folder_contents.files if f.fileId == file.fileId), None
+    )
+    assert patched_file_in_list is not None, "Patched file should be in folder"
+    assert (
+        patched_file_in_list.fileName == new_file_name
+    ), "Folder listing should show updated file name"
+
+    # 8. Test folder patching and verify it reflects in folder operations
+    new_folder_name = create_test_folder_name()
     patched_folder = Folder.patch(
         folderId=UUID(folder.folderId), folderName=new_folder_name
     )
@@ -107,24 +103,9 @@ def test_file_folder_workflow(cleanup_resources: dict) -> None:
     updated_folder = updated_folder_response.currentPathChain[-1]
     assert updated_folder.folderName == new_folder_name, "Folder name should be updated"
 
-
-def test_error_handling() -> None:
-    """Test error handling for various scenarios."""
-    # Test getting non-existent file
-    with pytest.raises(Exception):
-        File.get(fileId=UUID("00000000-0000-0000-0000-000000000000"))
-
-    # Test getting non-existent folder
-    with pytest.raises(Exception):
-        Folder.get(folderId=UUID("00000000-0000-0000-0000-000000000000"))
-
-    # Test copying with invalid folder IDs
-    with pytest.raises(Exception):
-        File.copy(
-            fileId=UUID("00000000-0000-0000-0000-000000000000"),
-            currentFolderId=UUID("00000000-0000-0000-0000-000000000000"),
-            newFolderId=UUID("00000000-0000-0000-0000-000000000000"),
-        )
+    # Verify folder can be listed by new name
+    renamed_folder_contents = Folder.list(path=new_folder_name)
+    assert len(renamed_folder_contents.files) > 0, "Should find files in renamed folder"
 
 
 def test_file_categories() -> None:

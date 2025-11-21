@@ -7,6 +7,7 @@ import pytest
 import audiostack
 from audiostack.files.file import File
 from audiostack.folders.folder import Folder
+from audiostack.tests.utils import create_test_file_name, create_test_folder_name
 
 audiostack.api_base = os.environ.get(
     "AUDIO_STACK_DEV_URL", "https://staging-v2.api.audio"
@@ -57,3 +58,23 @@ def cleanup_resources() -> Generator[dict, None, None]:
         except Exception:
             pass
 
+
+@pytest.fixture
+def test_file(cleanup_resources: dict) -> File.Item:
+    """Fixture to create a test file for unit tests."""
+    root_folder_id = Folder.get_root_folder_id()
+    file = File.create(
+        localPath="example.mp3",
+        fileName=create_test_file_name() + ".mp3",
+        folderId=UUID(root_folder_id),
+    )
+    cleanup_resources["file_ids"].append(file.fileId)
+    return file
+
+
+@pytest.fixture
+def test_folder(cleanup_resources: dict) -> Folder.Item:
+    """Fixture to create a test folder for unit tests."""
+    folder = Folder.create(name=create_test_folder_name())
+    cleanup_resources["folder_ids"].append(folder.folderId)
+    return folder

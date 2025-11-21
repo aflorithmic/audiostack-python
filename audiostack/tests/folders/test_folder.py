@@ -1,78 +1,75 @@
 import os
-import random
 from uuid import UUID
+
+import pytest
 
 import audiostack
 from audiostack.folders.folder import Folder
+from audiostack.tests.utils import create_test_folder_name
 
 audiostack.api_base = os.environ.get("AUDIO_STACK_DEV_URL", "https://v2.api.audio")
 audiostack.api_key = os.environ["AUDIO_STACK_DEV_KEY"]  # type: ignore
 
-test_constants: dict = {}
+
+def test_create(cleanup_resources: dict) -> None:
+    """Test folder creation."""
+    folder = Folder.create(name=create_test_folder_name())
+    cleanup_resources["folder_ids"].append(folder.folderId)
+
+    assert folder.folderId is not None
+    assert folder.folderName is not None
 
 
-def create_test_folder_name() -> str:
-    return f"test_folder_{random.randint(1000, 9999)}"
-
-
-def test_create() -> None:
-    r = Folder.create(name=create_test_folder_name())
-    test_constants["folderId"] = r.folderId
-    test_constants["folderName"] = r.folderName
-    assert r.folderId is not None
-    assert r.folderName is not None
-
-
-def test_create_with_parent() -> None:
+def test_create_with_parent(cleanup_resources: dict) -> None:
+    """Test folder creation with parent folder."""
     parent_folder = Folder.create(name=create_test_folder_name())
-    test_constants["parentFolderId"] = parent_folder.folderId
+    cleanup_resources["folder_ids"].append(parent_folder.folderId)
 
-    r = Folder.create(
+    child_folder = Folder.create(
         name=create_test_folder_name(),
         parentFolderId=UUID(parent_folder.folderId),
     )
-    test_constants["childFolderId"] = r.folderId
-    assert r.folderId is not None
-    assert r.parentFolderId == parent_folder.folderId
+    cleanup_resources["folder_ids"].append(child_folder.folderId)
+
+    assert child_folder.folderId is not None
+    assert child_folder.parentFolderId == parent_folder.folderId
 
 
-
-@pytest.mark.skip(reason="address in next pr")
-def test_get() -> None:
-    r = Folder.get(folderId=UUID(test_constants["folderId"]))
+def test_get(test_folder: Folder.Item) -> None:
+    response = Folder.get(folderId=UUID(test_folder.folderId))
     # Folder.get() now returns ListResponse, get folder from currentPathChain
-    assert len(r.currentPathChain) > 0, "Should have current path chain"
+    assert len(response.currentPathChain) > 0, "Should have current path chain"
     folder = next(
-        (f for f in r.currentPathChain if f.folderId == test_constants["folderId"]),
+        (f for f in response.currentPathChain if f.folderId == test_folder.folderId),
         None,
     )
     assert (
         folder is not None
-    ), f"Folder {test_constants['folderId']} should be in currentPathChain"
-    assert folder.folderId == test_constants["folderId"]
+    ), f"Folder {test_folder.folderId} should be in currentPathChain"
+    assert folder.folderId == test_folder.folderId
 
 
-def test_get_with_pagination() -> None:
-    """Test get() with pagination parameters."""
-    r = Folder.get(folderId=UUID(test_constants["folderId"]), limit=10, offset=0)
-    assert len(r.currentPathChain) > 0, "Should have current path chain"
-    if r.pagination:
-        assert r.pagination.get("limit") == 10
-        assert r.pagination.get("offset") == 0
+def test_get_with_pagination(test_folder: Folder.Item) -> None:
+    response = Folder.get(folderId=UUID(test_folder.folderId), limit=10, offset=0)
+    assert len(response.currentPathChain) > 0, "Should have current path chain"
+    if response.pagination:
+        assert response.pagination.get("limit") == 10
+        assert response.pagination.get("offset") == 0
 
 
-def test_list() -> None:
+def test_list_root() -> None:
     root_list = Folder.list()
     assert isinstance(root_list.folders, list)
     assert isinstance(root_list.files, list)
 
-    folder_list = Folder.list(path=test_constants["folderName"])
+
+def test_list_by_path(test_folder: Folder.Item) -> None:
+    folder_list = Folder.list(path=test_folder.folderName)
     assert isinstance(folder_list.folders, list)
     assert isinstance(folder_list.files, list)
 
 
 def test_list_with_pagination() -> None:
-    """Test list() with pagination parameters."""
     result = Folder.list(limit=10)
     assert isinstance(result.folders, list)
     assert isinstance(result.files, list)
@@ -93,42 +90,37 @@ def test_list_with_pagination() -> None:
         assert result.pagination.get("offset") == 10
 
 
-def test_list_files() -> None:
-    """Test list_files() method."""
-    result = Folder.list_files(folderId=UUID(test_constants["folderId"]))
+def test_list_files(test_folder: Folder.Item) -> None:
+    result = Folder.list_files(folderId=UUID(test_folder.folderId))
     assert isinstance(result.files, list)
     assert hasattr(result, "pagination")
 
 
-def test_list_files_with_pagination() -> None:
-    """Test list_files() with pagination parameters."""
-    result = Folder.list_files(
-        folderId=UUID(test_constants["folderId"]), limit=5, offset=0
-    )
+def test_list_files_with_pagination(test_folder: Folder.Item) -> None:
+    result = Folder.list_files(folderId=UUID(test_folder.folderId), limit=5, offset=0)
     assert isinstance(result.files, list)
     if result.pagination:
         assert result.pagination.get("limit") == 5
         assert result.pagination.get("offset") == 0
 
 
-def test_search() -> None:
-    search_results = Folder.search(query=test_constants["folderName"])
+def test_search(test_folder: Folder.Item) -> None:
+    search_results = Folder.search(query=test_folder.folderName)
     assert isinstance(search_results.folders, list)
     assert isinstance(search_results.files, list)
 
 
-def test_patch() -> None:
+def test_patch(test_folder: Folder.Item) -> None:
     new_name = create_test_folder_name()
     patched_folder = Folder.patch(
-        folderId=UUID(test_constants["folderId"]), folderName=new_name
+        folderId=UUID(test_folder.folderId), folderName=new_name
     )
-    test_constants["updatedFolderName"] = new_name
     assert patched_folder.folderName == new_name
 
     # Verify with get() - now returns ListResponse
-    r = Folder.get(folderId=UUID(test_constants["folderId"]))
-    assert len(r.currentPathChain) > 0, "Should have current path chain"
-    folder = r.currentPathChain[-1]  # Last item is the current folder
+    response = Folder.get(folderId=UUID(test_folder.folderId))
+    assert len(response.currentPathChain) > 0, "Should have current path chain"
+    folder = response.currentPathChain[-1]  # Last item is the current folder
     assert folder.folderName == new_name
 
 
@@ -139,13 +131,10 @@ def test_get_root_folder_id() -> None:
 
 
 def test_delete() -> None:
-    if "childFolderId" in test_constants:
-        result = Folder.delete(folderId=UUID(test_constants["childFolderId"]))
-        assert isinstance(result, str)
+    folder = Folder.create(name=create_test_folder_name())
 
-    if "parentFolderId" in test_constants:
-        result = Folder.delete(folderId=UUID(test_constants["parentFolderId"]))
-        assert isinstance(result, str)
-
-    result = Folder.delete(folderId=UUID(test_constants["folderId"]))
+    result = Folder.delete(folderId=UUID(folder.folderId))
     assert isinstance(result, str)
+
+    with pytest.raises(Exception):
+        Folder.get(folderId=UUID(folder.folderId))
