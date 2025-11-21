@@ -1,9 +1,12 @@
+# Temporarily disabled - projects and sessions integration
+# This file will be re-enabled in the future
 """
+\"\"\"
 Comprehensive test suite for AudioStack Session functionality.
 
 This module provides both integration tests (against real API) and unit tests
 (with mocked responses) for the Session class.
-"""
+\"\"\"
 
 import os
 import random
@@ -29,7 +32,7 @@ audiostack.api_key = os.environ["AUDIO_STACK_DEV_KEY"]  # type: ignore
 
 @pytest.fixture
 def test_project() -> Generator[Project.Item, None, None]:
-    """Create a test project for session testing."""
+    \"\"\"Create a test project for session testing.\"\"\"
     project_name = create_test_project_name()
     project = Project.create(projectName=project_name)
     yield project
@@ -37,7 +40,7 @@ def test_project() -> Generator[Project.Item, None, None]:
 
 @pytest.fixture
 def test_session(test_project: Project.Item) -> Generator[Session.Item, None, None]:
-    """Create a test session for testing."""
+    \"\"\"Create a test session for testing.\"\"\"
     workflow_id = f"workflow_{random.randint(1000, 9999)}"
     session_name = create_test_session_name()
     status = "active"
@@ -61,7 +64,7 @@ def test_session(test_project: Project.Item) -> Generator[Session.Item, None, No
 
 @pytest.fixture
 def mock_session_response() -> dict:
-    """Mock session response data for unit tests."""
+    \"\"\"Mock session response data for unit tests.\"\"\"
     return {
         "sessionId": "12345678-1234-5678-9abc-123456789012",
         "sessionName": "test_session",
@@ -79,7 +82,7 @@ def mock_session_response() -> dict:
 
 @pytest.fixture
 def mock_session_list_response() -> list[dict]:
-    """Mock session list response data for unit tests."""
+    \"\"\"Mock session list response data for unit tests.\"\"\"
     return [
         {
             "sessionId": "11111111-1111-1111-1111-111111111111",
@@ -117,11 +120,11 @@ def mock_session_list_response() -> list[dict]:
 
 @pytest.mark.unit
 class TestSessionUnit:
-    """Unit tests for Session class with mocked API responses."""
+    \"\"\"Unit tests for Session class with mocked API responses.\"\"\"
 
     @patch("audiostack.helpers.request_interface.RequestInterface.send_request")
     def test_create(self, mock_send_request: Any, mock_session_response: dict) -> None:
-        """Test session creation with mocked response."""
+        \"\"\"Test session creation with mocked response.\"\"\"
         mock_send_request.return_value = mock_session_response
 
         session = Session.create(
@@ -149,7 +152,7 @@ class TestSessionUnit:
     def test_create_with_audioform(
         self, mock_send_request: Any, mock_session_response: dict
     ) -> None:
-        """Test session creation with audioform ID."""
+        \"\"\"Test session creation with audioform ID.\"\"\"
         mock_send_request.return_value = mock_session_response
 
         audioform_id = UUID("33333333-3333-3333-3333-333333333333")
@@ -167,7 +170,7 @@ class TestSessionUnit:
 
     @patch("audiostack.helpers.request_interface.RequestInterface.send_request")
     def test_get(self, mock_send_request: Any, mock_session_response: dict) -> None:
-        """Test session retrieval with mocked response."""
+        \"\"\"Test session retrieval with mocked response.\"\"\"
         mock_send_request.return_value = mock_session_response
 
         session = Session.get(
@@ -190,7 +193,7 @@ class TestSessionUnit:
     def test_list(
         self, mock_send_request: Any, mock_session_list_response: list[dict]
     ) -> None:
-        """Test session listing with mocked response."""
+        \"\"\"Test session listing with mocked response.\"\"\"
         mock_send_request.return_value = mock_session_list_response
 
         sessions = Session.list(projectId=UUID("87654321-4321-8765-cba9-876543210987"))
@@ -208,7 +211,7 @@ class TestSessionUnit:
     def test_list_with_workflow_filter(
         self, mock_send_request: Any, mock_session_list_response: list[dict]
     ) -> None:
-        """Test session listing with workflow filter."""
+        \"\"\"Test session listing with workflow filter.\"\"\"
         mock_send_request.return_value = mock_session_list_response
 
         Session.list(
@@ -221,7 +224,7 @@ class TestSessionUnit:
 
     @patch("audiostack.helpers.request_interface.RequestInterface.send_request")
     def test_update(self, mock_send_request: Any, mock_session_response: dict) -> None:
-        """Test session update with mocked response."""
+        \"\"\"Test session update with mocked response.\"\"\"
         mock_send_request.return_value = mock_session_response
 
         Session.update(
@@ -243,7 +246,7 @@ class TestSessionUnit:
 
     @patch("audiostack.helpers.request_interface.RequestInterface.send_request")
     def test_delete(self, mock_send_request: Any) -> None:
-        """Test session deletion with mocked response."""
+        \"\"\"Test session deletion with mocked response.\"\"\"
         mock_send_request.return_value = {"statusCode": 200}
 
         Session.delete(
@@ -260,7 +263,7 @@ class TestSessionUnit:
         assert call_args[1]["route"] == expected_route
 
     def test_session_item_initialisation(self, mock_session_response: dict) -> None:
-        """Test Session.Item initialisation with various response formats."""
+        \"\"\"Test Session.Item initialisation with various response formats.\"\"\"
         # Test with all fields present
         session = Session.Item(mock_session_response)
         assert session.sessionId == "12345678-1234-5678-9abc-123456789012"
@@ -277,7 +280,7 @@ class TestSessionUnit:
     def test_session_list_response_initialisation(
         self, mock_session_list_response: list[dict]
     ) -> None:
-        """Test Session.ListResponse initialisation."""
+        \"\"\"Test Session.ListResponse initialisation.\"\"\"
         sessions = Session.ListResponse(mock_session_list_response)
         assert len(sessions.sessions) == 2
         assert isinstance(sessions.sessions[0], Session.Item)
@@ -292,16 +295,16 @@ class TestSessionUnit:
 
 @pytest.mark.integration
 class TestSessionIntegration:
-    """Integration tests for Session class against real AudioStack API.
+    \"\"\"Integration tests for Session class against real AudioStack API.
 
     Focuses on high-value scenarios that can't be adequately tested with mocks:
     - API error handling and edge cases
     - Real API response format validation
     - Complex filtering and bulk operations
-    """
+    \"\"\"
 
     def test_crud_workflow(self, test_project: Project.Item) -> None:
-        """Test complete CRUD workflow against real API."""
+        \"\"\"Test complete CRUD workflow against real API.\"\"\"
         # CREATE
         session_name = create_test_session_name()
         workflow_id = f"workflow_{random.randint(1000, 9999)}"
@@ -365,7 +368,7 @@ class TestSessionIntegration:
             )
 
     def test_error_handling(self, test_project: Project.Item) -> None:
-        """Test error handling against real API."""
+        \"\"\"Test error handling against real API.\"\"\"
         # Test getting non-existent session
         with pytest.raises(Exception):
             Session.get(
@@ -382,3 +385,4 @@ class TestSessionIntegration:
                 status="active",
                 state={},
             )
+"""

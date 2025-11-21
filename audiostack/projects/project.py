@@ -1,3 +1,6 @@
+# Temporarily disabled - projects and sessions integration
+# This file will be re-enabled in the future
+"""
 from typing import Any, Dict, List, Optional
 from uuid import UUID
 
@@ -6,17 +9,17 @@ from audiostack.helpers.request_types import RequestTypes
 
 
 class Project:
-    """Project management class for handling project operations in AudioStack.
+    \"\"\"Project management class for handling project operations in AudioStack.
 
     This class provides methods for creating, retrieving, and deleting projects
     in the AudioStack system.
-    """
+    \"\"\"
 
     FAMILY = "projects"
     interface = RequestInterface(family=FAMILY)
 
     class Item:
-        """Represents a project item in the AudioStack system."""
+        \"\"\"Represents a project item in the AudioStack system.\"\"\"
 
         def __init__(self, response: dict) -> None:
             self.projectId: str = str(response["projectId"])
@@ -27,7 +30,7 @@ class Project:
             self.lastModified: Optional[str] = response.get("lastModified")
 
     class ListResponse:
-        """Represents a list response containing projects."""
+        \"\"\"Represents a list response containing projects.\"\"\"
 
         def __init__(self, response: List[dict]) -> None:
             self.projects: List[Project.Item] = [
@@ -75,20 +78,20 @@ class Project:
 
 
 class Session:
-    """Session management class for handling session operations in AudioStack.
+    \"\"\"Session management class for handling session operations in AudioStack.
 
     This class provides methods for creating, retrieving, updating, and
     deleting sessions in the AudioStack system.
-    """
+    \"\"\"
 
     FAMILY = "projects"
     interface = RequestInterface(family=FAMILY)
 
     class Item:
-        """Represents a session item in the AudioStack system."""
+        \"\"\"Represents a session item in the AudioStack system.\"\"\"
 
         def __init__(self, response: dict) -> None:
-            """Initialise a Session.Item instance from API response data."""
+            \"\"\"Initialise a Session.Item instance from API response data.\"\"\"
             self.sessionId: str = str(response["sessionId"])
             self.sessionName: str = response["sessionName"]
             self.status: str = response["status"]
@@ -106,7 +109,7 @@ class Session:
             )
 
     class ListResponse:
-        """Represents a list response containing sessions."""
+        \"\"\"Represents a list response containing sessions.\"\"\"
 
         def __init__(self, response: List[dict]) -> None:
             self.sessions: List[Session.Item] = [
@@ -122,7 +125,7 @@ class Session:
         state: Dict[str, Any],
         audioformId: Optional[UUID] = None,
     ) -> Item:
-        """Create a new session in AudioStack.
+        \"\"\"Create a new session in AudioStack.
 
         Args:
             projectId: The unique identifier of the project to create the
@@ -135,7 +138,7 @@ class Session:
 
         Returns:
             Session.Item: The created session item with complete metadata.
-        """
+        \"\"\"
         payload = {
             "workflow_id": workflowId,
             "session_name": sessionName,
@@ -219,3 +222,4 @@ class Session:
             rtype=RequestTypes.DELETE,
             route=f"{projectId}/sessions/{sessionId}",
         )
+"""

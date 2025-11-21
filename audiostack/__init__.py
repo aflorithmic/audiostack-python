@@ -6,6 +6,8 @@ app_info = None
 
 TIMEOUT_THRESHOLD_S = 300
 
+# Temporarily disabled - projects and sessions integration
+# from audiostack import projects as Projects  # noqa: F401
 from audiostack import audioform as Audioform  # noqa: F401
 from audiostack import content as Content  # noqa: F401
 from audiostack import creator as Creator  # noqa: F401
@@ -13,7 +15,6 @@ from audiostack import delivery as Delivery  # noqa: F401
 from audiostack import files as Files  # noqa: F401
 from audiostack import folders as Folders  # noqa: F401
 from audiostack import production as Production  # noqa: F401
-from audiostack import projects as Projects  # noqa: F401
 from audiostack import speech as Speech  # noqa: F401
 from audiostack.docs.docs import Documentation  # noqa: F401
 

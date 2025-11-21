@@ -88,15 +88,3 @@ test-folders = "poetry run coverage run -m pytest audiostack/tests/folders/ && p
 
 # Files and Folders Integration
 test-files-folders-integration = "poetry run coverage run -m pytest audiostack/tests/test_files_folders_integration.py && poetry run task export-test-result"
-
-# Projects
-test-projects = "poetry run coverage run -m pytest audiostack/tests/projects/ && poetry run task export-test-result"
-
-# Sessions (unit tests only)
-test-sessions-unit = "poetry run coverage run -m pytest audiostack/tests/projects/test_session.py -m unit -v"
-
-# Sessions (integration tests only)
-test-sessions-integration = "poetry run coverage run -m pytest audiostack/tests/projects/test_session.py -m integration -v"
-
-# Sessions (all tests)
-test-sessions = "poetry run coverage run -m pytest audiostack/tests/projects/test_session.py && poetry run task export-test-result"

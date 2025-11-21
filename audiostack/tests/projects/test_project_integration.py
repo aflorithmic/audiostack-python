@@ -1,3 +1,6 @@
+# Temporarily disabled - projects and sessions integration
+# This file will be re-enabled in the future
+"""
 from uuid import UUID
 
 import pytest
@@ -26,7 +29,7 @@ def test_project_create_and_get(test_project: Project.Item) -> None:
 
 @pytest.mark.integration
 def test_project_listing(test_project: Project.Item) -> None:
-    """Test project listing against real API."""
+    \"\"\"Test project listing against real API.\"\"\"
     response = Project.list()
 
     assert isinstance(response.projects, list)
@@ -49,7 +52,7 @@ def test_project_listing(test_project: Project.Item) -> None:
 
 @pytest.mark.integration
 def test_project_duplicate_name_handling() -> None:
-    """Test that duplicate project names are properly rejected."""
+    \"\"\"Test that duplicate project names are properly rejected.\"\"\"
     project_name = create_test_project_name()
     project1 = Project.create(projectName=project_name)
     # Attempt to create duplicate should fail
@@ -63,7 +66,7 @@ def test_project_duplicate_name_handling() -> None:
 
 @pytest.mark.integration
 def test_project_validation_errors() -> None:
-    """Test project creation validation against real API."""
+    \"\"\"Test project creation validation against real API.\"\"\"
     with pytest.raises(Exception) as exc_info:
         Project.create(projectName="")
     error_str = str(exc_info.value).lower()
@@ -81,7 +84,7 @@ def test_project_validation_errors() -> None:
 
 @pytest.mark.integration
 def test_project_not_found_error() -> None:
-    """Test project retrieval with non-existent ID."""
+    \"\"\"Test project retrieval with non-existent ID.\"\"\"
     with pytest.raises(Exception) as exc_info:
         Project.get(
             projectId=UUID("00000000-0000-0000-0000-000000000000")
@@ -94,7 +97,7 @@ def test_project_not_found_error() -> None:
 def test_multiple_projects_workflow(
     multiple_test_projects: list[Project.Item],
 ) -> None:
-    """Test operations with multiple projects."""
+    \"\"\"Test operations with multiple projects.\"\"\"
     assert len(multiple_test_projects) == 3
 
     all_projects = Project.list()
@@ -106,3 +109,4 @@ def test_multiple_projects_workflow(
         retrieved = Project.get(projectId=UUID(project.projectId))
         assert retrieved.projectId == project.projectId
         assert retrieved.projectName == project.projectName
+"""

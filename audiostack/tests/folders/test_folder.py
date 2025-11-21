@@ -1,4 +1,3 @@
-# TODO: User proper pytest fixtures
 import os
 import random
 from uuid import UUID
@@ -37,12 +36,14 @@ def test_create_with_parent() -> None:
     test_constants["childFolderId"] = r.folderId
     print(f"Created child folder: {r.folderName} under: " f"{parent_folder.folderName}")
 
+
 @pytest.mark.skip(reason="address in next pr")
 def test_get() -> None:
     """Test folder retrieval."""
     r = Folder.get(folderId=UUID(test_constants["folderId"]))
     print(f"Retrieved folder: {r.folderName}")
     assert r.folderId == test_constants["folderId"]
+
 
 @pytest.mark.skip(reason="address in next pr")
 def test_list() -> None:

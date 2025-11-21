@@ -1,4 +1,6 @@
-
+# Temporarily disabled - projects and sessions integration
+# This file will be re-enabled in the future
+"""
 from unittest.mock import MagicMock, patch
 from uuid import UUID, uuid4
 
@@ -14,7 +16,7 @@ from audiostack.projects.project import Project
 
 @pytest.fixture
 def mock_project_response() -> dict:
-    """Mock project response for unit testing."""
+    \"\"\"Mock project response for unit testing.\"\"\"
     return {
         "projectId": str(uuid4()),
         "projectName": "Test Project",
@@ -27,7 +29,7 @@ def mock_project_response() -> dict:
 
 @pytest.fixture
 def mock_projects_list_response() -> list[dict]:
-    """Mock projects list response for unit testing."""
+    \"\"\"Mock projects list response for unit testing.\"\"\"
     return [
         {
             "projectId": str(uuid4()),
@@ -55,7 +57,7 @@ def mock_projects_list_response() -> list[dict]:
 
 @pytest.mark.unit
 def test_project_item_initialisation(mock_project_response: dict) -> None:
-    """Test Project.Item initialisation with mock data."""
+    \"\"\"Test Project.Item initialisation with mock data.\"\"\"
     project = Project.Item(response=mock_project_response)
 
     assert project.projectId == mock_project_response["projectId"]
@@ -68,7 +70,7 @@ def test_project_item_initialisation(mock_project_response: dict) -> None:
 
 @pytest.mark.unit
 def test_project_item_with_last_modified() -> None:
-    """Test Project.Item with lastModified field."""
+    \"\"\"Test Project.Item with lastModified field.\"\"\"
     response = {
         "projectId": str(uuid4()),
         "projectName": "Test Project",
@@ -87,7 +89,7 @@ def test_project_item_with_last_modified() -> None:
 def test_project_create_success(
     mock_send_request: MagicMock, mock_project_response: dict
 ) -> None:
-    """Test successful project creation with mocked response."""
+    \"\"\"Test successful project creation with mocked response.\"\"\"
     mock_send_request.return_value = mock_project_response
 
     project = Project.create(projectName="Test Project")
@@ -104,7 +106,7 @@ def test_project_create_success(
 def test_project_get_success(
     mock_send_request: MagicMock, mock_project_response: dict
 ) -> None:
-    """Test successful project retrieval with mocked response."""
+    \"\"\"Test successful project retrieval with mocked response.\"\"\"
     mock_send_request.return_value = mock_project_response
     project_id = UUID("12345678-1234-5678-9abc-123456789012")
 
@@ -120,7 +122,7 @@ def test_project_get_success(
 def test_project_list_success(
     mock_send_request: MagicMock, mock_projects_list_response: list[dict]
 ) -> None:
-    """Test successful project listing with mocked response."""
+    \"\"\"Test successful project listing with mocked response.\"\"\"
     mock_send_request.return_value = mock_projects_list_response
 
     response = Project.list()
@@ -134,7 +136,7 @@ def test_project_list_success(
 @pytest.mark.unit
 @patch("audiostack.projects.project.Project.interface.send_request")
 def test_project_create_error_handling(mock_send_request: MagicMock) -> None:
-    """Test Project.create error handling."""
+    \"\"\"Test Project.create error handling.\"\"\"
     mock_send_request.side_effect = Exception("422 Validation error")
 
     with pytest.raises(Exception) as exc_info:
@@ -147,7 +149,7 @@ def test_project_create_error_handling(mock_send_request: MagicMock) -> None:
 @pytest.mark.unit
 @patch("audiostack.projects.project.Project.interface.send_request")
 def test_project_get_error_handling(mock_send_request: MagicMock) -> None:
-    """Test Project.get error handling."""
+    \"\"\"Test Project.get error handling.\"\"\"
     mock_send_request.side_effect = Exception("404 Project not found")
 
     with pytest.raises(Exception) as exc_info:
@@ -163,7 +165,7 @@ def test_project_get_error_handling(mock_send_request: MagicMock) -> None:
 def test_project_list_response_initialisation(
     mock_projects_list_response: list[dict],
 ) -> None:
-    """Test Project.ListResponse initialisation."""
+    \"\"\"Test Project.ListResponse initialisation.\"\"\"
     response = Project.ListResponse(response=mock_projects_list_response)
 
     assert len(response.projects) == 2
@@ -187,7 +189,7 @@ def test_project_create_validation_errors(
     invalid_name: str,
     expected_error: str,
 ) -> None:
-    """Test project creation with invalid names."""
+    \"\"\"Test project creation with invalid names.\"\"\"
     mock_send_request.side_effect = Exception(
         f"{expected_error} Validation error"
     )
@@ -198,3 +200,4 @@ def test_project_create_validation_errors(
         expected_error in str(exc_info.value)
         or "validation" in str(exc_info.value).lower()
     )
+"""
