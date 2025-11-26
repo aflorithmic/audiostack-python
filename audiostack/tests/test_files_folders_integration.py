@@ -100,7 +100,7 @@ def test_file_folder_workflow(cleanup_resources: dict) -> None:
     assert (
         len(updated_folder_response.currentPathChain) > 0
     ), "Should have current path chain"
-    updated_folder = updated_folder_response.currentPathChain[-1]
+    updated_folder = updated_folder_response.currentPathChain[0]
     assert updated_folder.folderName == new_folder_name, "Folder name should be updated"
 
     # Verify folder can be listed by new name
