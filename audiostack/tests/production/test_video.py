@@ -1,6 +1,6 @@
 import os
 from typing import Generator
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 import pytest
 
@@ -19,10 +19,10 @@ def _get_audio_file_id() -> Generator:
         localPath="audiostack/tests/fixtures/audio.wav",
         fileName=f"sdk_unit_tests_{str(uuid4())}.wav",
     )
-    r = audiostack.Files.File.get(fileId=r.fileId)
+    r = audiostack.Files.File.get(fileId=UUID(r.fileId))
     yield r.fileId
 
-    audiostack.Files.File.delete(fileId=r.fileId)
+    audiostack.Files.File.delete(fileId=UUID(r.fileId))
 
 
 @pytest.fixture(scope="module")
