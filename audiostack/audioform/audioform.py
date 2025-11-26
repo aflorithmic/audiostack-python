@@ -114,7 +114,7 @@ class Audioform:
 
         Args:
             audioform_id: The unique identifier for the audioform
-            version: Audioform version ("1" or "0.0.1", default: "1")
+            version: Audioform version ("2", "1" or "0.0.1", default: "2")
                 Service will convert stored audioform to requested version
             wait: Whether to poll until status changes from 202 to 200
             timeoutThreshold: Maximum time to wait for completion in seconds
