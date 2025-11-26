@@ -243,6 +243,3 @@ class File:
             route="file-categories",
         )
         return r
-
-
-#
