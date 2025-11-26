@@ -15,7 +15,7 @@ def test_audioform_create_v1(mock_send_request: Mock) -> None:
     mock_response = {
         "metadata": {
             "requestId": "request_id_test",
-            "version": "1",
+            "version": "2",
             "creditUsed": 0.0,
             "creditsRemaining": 0.0,
         },
@@ -230,7 +230,7 @@ def test_audioform_create_validation_error(mock_send_request: Mock) -> None:
     }
     mock_send_request.return_value = mock_response
 
-    audioform_config = {"header": {"version": "1"}}
+    audioform_config = {"header": {"version": "2"}}
 
     result = Audioform.create(audioform_config)
 
@@ -376,6 +376,13 @@ def test_audioform_get_not_found(mock_send_request: Mock) -> None:
     assert result.audioform_id == ""
     assert result.status_code == 404
 
+    mock_send_request.assert_called_once_with(
+        rtype=RequestTypes.GET,
+        route="",
+        path_parameters="nonexistent-audioform-123",
+        headers={"version": "2"},
+    )
+
 
 @patch("audiostack.audioform.audioform.Audioform.interface.send_request")
 def test_audioform_get_success(mock_send_request: Mock) -> None:
@@ -384,13 +391,13 @@ def test_audioform_get_success(mock_send_request: Mock) -> None:
         "data": {
             "audioformId": "success-audioform-123",
             "audioform": {
-                "header": {"version": "1"},
+                "header": {"version": "2"},
                 "assets": {"script 0": {"type": "tts", "text": "test"}},
                 "production": {"masteringPreset": "balanced"},
                 "delivery": {"encoderPreset": "mp3"},
             },
             "result": {
-                "header": {"version": "1", "audioformId": "success-audioform-123"},
+                "header": {"version": "2", "audioformId": "success-audioform-123"},
                 "assets": {"script 0": {"type": "tts", "duration": 4.95}},
                 "production": {"masteringPreset": "balanced"},
                 "delivery": {"encoderPreset": "mp3"},
@@ -401,7 +408,7 @@ def test_audioform_get_success(mock_send_request: Mock) -> None:
     }
     mock_send_request.return_value = mock_response
 
-    result = Audioform.get("success-audioform-123", version="1")
+    result = Audioform.get("success-audioform-123")
 
     assert isinstance(result, Audioform.Item)
     assert result.audioform_id == "success-audioform-123"
@@ -414,7 +421,7 @@ def test_audioform_get_success(mock_send_request: Mock) -> None:
         rtype=RequestTypes.GET,
         route="",
         path_parameters="success-audioform-123",
-        headers={"version": "1"},
+        headers={"version": "2"},
     )
 
 
@@ -425,7 +432,7 @@ def test_audioform_get_failed(mock_send_request: Mock) -> None:
         "data": {
             "audioformId": "failed-audioform-123",
             "audioform": {
-                "header": {"version": "1"},
+                "header": {"version": "2"},
                 "assets": {
                     "script 0": {
                         "type": "tts",
@@ -444,7 +451,7 @@ def test_audioform_get_failed(mock_send_request: Mock) -> None:
     }
     mock_send_request.return_value = mock_response
 
-    result = Audioform.get("failed-audioform-123", version="1")
+    result = Audioform.get("failed-audioform-123")
 
     assert isinstance(result, Audioform.Item)
     assert result.audioform_id == "failed-audioform-123"
@@ -457,7 +464,7 @@ def test_audioform_get_failed(mock_send_request: Mock) -> None:
         rtype=RequestTypes.GET,
         route="",
         path_parameters="failed-audioform-123",
-        headers={"version": "1"},
+        headers={"version": "2"},
     )
 
 
@@ -474,13 +481,13 @@ def test_audioform_get_with_polling(mock_send_request: Mock) -> None:
         "data": {
             "audioformId": "polling-audioform-123",
             "audioform": {
-                "header": {"version": "1"},
+                "header": {"version": "2"},
                 "assets": {"script 0": {"type": "tts", "text": "test"}},
                 "production": {"masteringPreset": "balanced"},
                 "delivery": {"encoderPreset": "mp3"},
             },
             "result": {
-                "header": {"version": "1", "audioformId": "polling-audioform-123"},
+                "header": {"version": "2", "audioformId": "polling-audioform-123"},
                 "assets": {"script 0": {"type": "tts", "duration": 4.95}},
                 "production": {"masteringPreset": "balanced"},
                 "delivery": {"encoderPreset": "mp3"},
@@ -490,9 +497,12 @@ def test_audioform_get_with_polling(mock_send_request: Mock) -> None:
         "message": "Audioform completed",
     }
 
-    mock_send_request.side_effect = [mock_response_in_progress, mock_response_completed]
+    mock_send_request.side_effect = [
+        mock_response_in_progress,
+        mock_response_completed,
+    ]
 
-    result = Audioform.get("polling-audioform-123", version="1")
+    result = Audioform.get("polling-audioform-123")
 
     assert isinstance(result, Audioform.Item)
     assert result.audioform_id == "polling-audioform-123"
@@ -503,6 +513,9 @@ def test_audioform_get_with_polling(mock_send_request: Mock) -> None:
 
     # Should have made 2 calls: GET (in progress), GET (completed)
     assert mock_send_request.call_count == 2
+    # Both calls should use default version "2"
+    for call in mock_send_request.call_args_list:
+        assert call.kwargs["headers"] == {"version": "2"}
 
 
 # ============================================================================
@@ -523,7 +536,7 @@ def test_audioform_item_get(mock_get: Mock) -> None:
     result = item.get()
 
     assert result == mock_response
-    mock_get.assert_called_once_with("test-id", "1", True, TIMEOUT_THRESHOLD_S)
+    mock_get.assert_called_once_with("test-id", "2", True, TIMEOUT_THRESHOLD_S)
 
 
 def test_audioform_item_initialisation_malformed_data() -> None:
