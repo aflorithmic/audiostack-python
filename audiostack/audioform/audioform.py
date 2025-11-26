@@ -39,7 +39,7 @@ class Audioform:
 
         def get(
             self,
-            version: str = "1",
+            version: str = "2",
             wait: bool = True,
             timeoutThreshold: int = TIMEOUT_THRESHOLD_S,
         ) -> "Audioform.Item":
@@ -105,7 +105,7 @@ class Audioform:
     @staticmethod
     def get(
         audioform_id: str,
-        version: str = "1",
+        version: str = "2",
         wait: bool = True,
         timeoutThreshold: int = TIMEOUT_THRESHOLD_S,
     ) -> "Audioform.Item":
