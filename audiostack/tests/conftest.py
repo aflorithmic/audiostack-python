@@ -38,7 +38,7 @@ def speech_item(
 def cleanup_resources() -> Generator[dict, None, None]:
     """Fixture to track and clean up test resources for files/folders tests."""
 
-    resources = {
+    resources: dict[str, list[str | None]] = {
         "file_ids": [],
         "folder_ids": [],
     }
