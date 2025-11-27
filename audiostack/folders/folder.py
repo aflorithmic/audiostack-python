@@ -26,7 +26,7 @@ class Folder:
                 raise Exception(
                     f"Error response received (status {status_code}): {error_msg}"
                 )
-            
+
             self.folderId: str = str(response["folderId"])
             self.folderName: str = response["folderName"]
             parent_folder_id = response.get("parentFolderId")
