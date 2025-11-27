@@ -4,7 +4,7 @@ All notable changes to `audiostack` will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [4.0.0-alpha] - 2025-01-27
+## [4.0.0-alpha] - 2025-11-27
 
 ### New Features
 
