@@ -20,6 +20,13 @@ class Folder:
         """Represents a folder item in the AudioStack system."""
 
         def __init__(self, response: dict) -> None:
+            if "statusCode" in response and "folderId" not in response:
+                error_msg = response.get("message", "Unknown error")
+                status_code = response.get("statusCode", "unknown")
+                raise Exception(
+                    f"Error response received (status {status_code}): {error_msg}"
+                )
+            
             self.folderId: str = str(response["folderId"])
             self.folderName: str = response["folderName"]
             parent_folder_id = response.get("parentFolderId")

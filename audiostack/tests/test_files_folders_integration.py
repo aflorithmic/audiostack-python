@@ -33,6 +33,7 @@ def test_file_folder_workflow(cleanup_resources: dict) -> None:
     # 4. Create another folder for copying
     copy_folder_name = create_test_folder_name()
     copy_folder = Folder.create(name=copy_folder_name)
+    print(f"Copy folder: {copy_folder}")
     cleanup_resources["folder_ids"].append(copy_folder.folderId)
     assert copy_folder.folderId is not None
 
