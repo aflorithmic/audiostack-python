@@ -4,7 +4,7 @@ All notable changes to `audiostack` will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [4.0.0] - 2025-01-XX
+## [4.0.0] - 2025-11-27
 
 ### New Features
 
@@ -30,7 +30,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - **Flexible input options** - accept either brief configuration object or uploaded file ID
 - **Configurable ad generation** - specify number of ads to generate (1-5, default 3)
 
-#### Files and Folders API v2 Integration
+#### Files and Folders API Integration
 - **Complete Files and Folders API overhaul** with new v2 endpoints:
   - **New API endpoints**: `/files` and `/folders` replacing legacy `/v3/file` and `/v3/folder`
   - **Enhanced file operations** with new methods:
@@ -57,38 +57,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   - `Folder.SearchResponse` - Contains folders and files from search operations
 - **Simplified file deletion** - `File.delete(fileId)` no longer requires `folderId`
 - **Enhanced type safety** with proper UUID handling and optional field management
-
-#### Projects and Sessions API Integration
-- **New Project class** for project management:
-  - `Project.create(projectName)` - Create new projects
-  - `Project.get(projectId)` - Retrieve project by ID
-  - `Project.list()` - List all projects
-  - `Project.Item` class with properties:
-    - `projectId`: Unique project identifier
-    - `projectName`: Name of the project
-    - `folderId`: Associated folder ID
-    - `createdBy`: ID of user who created the project
-    - `createdAt`: Creation timestamp
-    - `lastModified`: Last modification timestamp (optional)
-
-- **New Session class** for session management:
-  - `Session.create(projectId, workflowId, sessionName, status, state, audioformId)` - Create new sessions
-  - `Session.get(projectId, sessionId)` - Retrieve session by ID
-  - `Session.list(projectId, workflowId)` - List sessions for a project with optional workflow filtering
-  - `Session.update(projectId, sessionId, sessionName, status, state, audioformId)` - Update session metadata
-  - `Session.delete(projectId, sessionId)` - Delete sessions
-  - `Session.Item` class with properties:
-    - `sessionId`: Unique session identifier
-    - `sessionName`: Name of the session
-    - `status`: Session status
-    - `workflowId`: Associated workflow ID
-    - `projectId`: Parent project ID
-    - `createdBy`: ID of user who created the session
-    - `createdAt`: Creation timestamp
-    - `state`: Session state data (dict)
-    - `lastModifiedBy`: ID of user who last modified the session (optional)
-    - `lastModified`: Last modification timestamp (optional)
-    - `audioformId`: Associated audioform ID (optional)
 
 ### API Changes
 
@@ -127,7 +95,7 @@ audioform_config = {
 audioform = Audioform.create(audioform_config)
 
 # Get build status
-result = Audioform.get(audioform.audioform_id, version="1")
+result = Audioform.get(audioform.audioform_id, version="2")
 ```
 
 #### For Brief Integration
@@ -145,10 +113,10 @@ brief = {
 }
 
 # Generate ads
-ads = Brief.create(brief=brief, num_ads=3, audioform_version="1")
+ads = Brief.create(brief=brief, num_ads=3, audioform_version="2")
 ```
 
-#### For Files and Folders API v2 Integration
+#### For Files and Folders API Integration
 
 ```python
 # Create a folder
@@ -187,60 +155,14 @@ categories = File.get_file_categories()
 File.delete(fileId=file.fileId)
 ```
 
-#### For Projects and Sessions Integration
-```python
-# Create a project
-project = Project.create(projectName="My Audio Project")
-
-# List all projects
-projects = Project.list()
-
-# Create a session within the project
-session = Session.create(
-    projectId=UUID(project.projectId),
-    workflowId="audio_processing_workflow",
-    sessionName="Session 1",
-    status="active",
-    state={"step": "initialization", "progress": 0}
-)
-
-# List sessions for a project
-sessions = Session.list(projectId=UUID(project.projectId))
-
-# Update session
-updated_session = Session.update(
-    projectId=UUID(project.projectId),
-    sessionId=UUID(session.sessionId),
-    sessionName="Updated Session Name",
-    status="completed",
-    state={"step": "completed", "progress": 100}
-)
-
-# Get specific session
-retrieved_session = Session.get(
-    projectId=UUID(project.projectId),
-    sessionId=UUID(session.sessionId)
-)
-
-# Delete session
-Session.delete(
-    projectId=UUID(project.projectId),
-    sessionId=UUID(session.sessionId)
-)
-```
-
 ### Breaking Changes Summary
-
 1. **Python version requirement** - Minimum version 3.8 → 3.10
 2. **New dependencies** - No new external dependencies added
-3. **Files and Folders API v2** - Breaking changes to file and folder operations:
+3. **Files and Folders API integration** - Breaking changes to file and folder operations:
    - `File.create()` now requires `fileName` parameter
    - `File.delete()` simplified to only require `fileId` (no `folderId`)
    - New API endpoints `/files` and `/folders` replace legacy `/v3/file` and `/v3/folder`
-4. **Projects and Sessions API** - New API endpoints for project and session management:
-   - New `/projects` endpoint for project creation, retrieval, and listing
-   - New `/sessions` endpoint for session management within projects
-5. **Recommend IAB** - IAB endpoint support removed
+4. **Recommend IAB** - IAB endpoint support removed
 
 ## [3.1.0] - 2025-08-04
 
