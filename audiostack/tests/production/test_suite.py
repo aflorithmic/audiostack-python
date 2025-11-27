@@ -2,7 +2,7 @@ import os
 from unittest.mock import patch
 
 import audiostack
-from audiostack.content.file import File
+from audiostack.files.file import File
 from audiostack.production.suite import Suite
 
 audiostack.api_base = os.environ.get("AUDIO_STACK_DEV_URL", "https://v2.api.audio")
@@ -12,7 +12,7 @@ test_constants = {}
 
 
 def test_create() -> None:
-    r = File.create(localPath="example.mp3", uploadPath="example.mp3")
+    r = File.create(localPath="example.mp3", fileName="example.mp3")
     test_constants["fileId"] = r.fileId
     print(r)
 

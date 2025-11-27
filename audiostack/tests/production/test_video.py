@@ -1,6 +1,6 @@
 import os
 from typing import Generator
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 import pytest
 
@@ -15,25 +15,25 @@ test_constants = {}  # type: dict
 
 @pytest.fixture(scope="module")
 def _get_audio_file_id() -> Generator:
-    r = audiostack.Content.File.create(
+    r = audiostack.Files.File.create(
         localPath="audiostack/tests/fixtures/audio.wav",
-        uploadPath=f"sdk_unit_tests_{str(uuid4())}.wav",
+        fileName=f"sdk_unit_tests_{str(uuid4())}.wav",
     )
-    r = audiostack.Content.File.get(fileId=r.fileId)
+    r = audiostack.Files.File.get(fileId=UUID(r.fileId))
     yield r.fileId
 
-    audiostack.Content.File.delete(fileId=r.fileId)
+    audiostack.Files.File.delete(fileId=UUID(r.fileId))
 
 
 @pytest.fixture(scope="module")
 def _get_video_file_id() -> Generator:
-    r = audiostack.Content.File.create(
+    r = audiostack.Files.File.create(
         localPath="audiostack/tests/fixtures/video.mp4",
-        uploadPath=f"sdk_unit_tests_{str(uuid4())}.mp4",
+        fileName=f"sdk_unit_tests_{str(uuid4())}.mp4",
     )
     print("my file id", r.fileId)
     yield r.fileId
-    # audiostack.Content.File.delete(fileId=r.fileId)
+    # audiostack.Files.File.delete(fileId=r.fileId)
 
 
 def test_create_from_production_and_image() -> None:

@@ -73,24 +73,3 @@ class RecommendTone:
             json=payload,
         )
         return RecommendTone.Item(r)
-
-
-class RecommendIAB:
-    FAMILY = "content"
-    interface = RequestInterface(family=FAMILY)
-
-    class Item(APIResponseItem):
-        def __init__(self, response: dict) -> None:
-            super().__init__(response)
-
-            self.iab_categories = self.data["tags"]
-
-    @staticmethod
-    def create(text: str, num_tags: int = 3, language: str = "en") -> Item:
-        payload = {"text": text, "num_tags": num_tags, "language": language}
-        r = RecommendIAB.interface.send_request(
-            rtype=RequestTypes.POST,
-            route="recommend/iab_category",
-            json=payload,
-        )
-        return RecommendIAB.Item(r)

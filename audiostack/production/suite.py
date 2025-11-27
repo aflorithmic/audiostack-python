@@ -2,7 +2,7 @@ import time
 from typing import Any, List, Optional, Union
 
 from audiostack import TIMEOUT_THRESHOLD_S
-from audiostack.content.file import File
+from audiostack.files.file import File
 from audiostack.helpers.api_item import APIResponseItem
 from audiostack.helpers.request_interface import RequestInterface
 from audiostack.helpers.request_types import RequestTypes
@@ -79,6 +79,7 @@ class Suite:
         start = time.time()
 
         while r["statusCode"] != 200 and r["statusCode"] != 404:
+            time.sleep(0.05)
             print("Response in progress please wait...")
             r = Suite.interface.send_request(
                 rtype=RequestTypes.POST, route="suite/evaluate", json=body
@@ -132,6 +133,7 @@ class Suite:
 
         while r["statusCode"] == 202:
             print("Response in progress please wait...")
+            time.sleep(0.05)
             r = Suite.interface.send_request(
                 rtype=RequestTypes.GET,
                 route="suite/pipeline",

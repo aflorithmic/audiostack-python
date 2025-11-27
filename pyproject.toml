@@ -1,8 +1,8 @@
 [tool.poetry]
 name = "audiostack"
-version = "3.1.0"
+version = "4.0.0"
 description = "Python SDK for Audiostack API"
-authors = ["Aflorithmic <support@audiostack.ai>"]
+authors = ["Audiostack <support@audiostack.ai>"]
 repository = "https://github.com/aflorithmic/audiostack-python"
 
 readme = "README.md"
@@ -17,7 +17,7 @@ exclude = ["audiostack/tests"]
 Changelog = "https://github.com/aflorithmic/audiostack-python/blob/main/CHANGELOG.md"
 
 [tool.poetry.dependencies]
-python = "^3.8.1"
+python = "^3.10.0"
 requests = "^2.31.0"
 
 [tool.poetry.group.dev.dependencies]
@@ -42,6 +42,10 @@ build-backend = "poetry.core.masonry.api"
 profile = "black"
 
 [tool.pytest.ini_options]
+markers = [
+    "integration: marks tests as integration tests (require API key)",
+    "unit: marks tests as unit tests (use mocks)",
+]
 
 addopts = [
     "--maxfail=1",
@@ -72,3 +76,15 @@ mypy-check = "mypy ."
 yaml-check = "yamllint ."
 test = "coverage run -m pytest -vvv -s -x &&  coverage xml  &&  coverage html"
 vulture-check = "vulture ."
+
+# -------------------------------------------------------- test -------------------------------------------------------
+export-test-result = "poetry run coverage html && poetry run coverage xml -o coverage.xml"
+
+# Files
+test-files = "poetry run coverage run -m pytest audiostack/tests/files/ && poetry run task export-test-result"
+
+# Folders  
+test-folders = "poetry run coverage run -m pytest audiostack/tests/folders/ && poetry run task export-test-result"
+
+# Files and Folders Integration
+test-files-folders-integration = "poetry run coverage run -m pytest audiostack/tests/test_files_folders_integration.py && poetry run task export-test-result"

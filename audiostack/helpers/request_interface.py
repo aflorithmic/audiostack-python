@@ -54,33 +54,64 @@ class RequestInterface:
             new_headers.update(headers)
         return new_headers
 
-    def resolve_response(self, r: Any) -> dict:
+    def resolve_response(self, r: Any) -> Union[dict, list]:
+        if r.status_code == 204:
+            return {"statusCode": r.status_code}
+
+        try:
+            response_json = r.json()
+        except (ValueError, json.JSONDecodeError):
+            return {"statusCode": r.status_code, "message": r.text}
+
         if self.DEBUG_PRINT:
-            print(json.dumps(r.json(), indent=4))
+            print(
+                json.dumps(response_json, indent=4)
+                if isinstance(response_json, (dict, list))
+                else response_json
+            )
+
         if r.status_code >= 500:
             print(r.text)
             raise Exception("Internal server error - aborting")
 
         if r.status_code == 403:
-            exc = r.json().get("message", "Not authorised - check API key is valid")
+            exc = response_json.get(
+                "message", "Not authorised - check API key is valid"
+            )
             raise Exception(exc)
 
         if r.status_code >= 400:
-            if "message" in r.json():
-                msg = (
-                    r.json()["message"]
-                    + ". Errors listed as follows: \n\t"
-                    + "\t".join(r.json()["errors"])
-                )
+            # Error responses should be dicts
+            if isinstance(response_json, dict):
+                if "message" in response_json:
+                    msg = response_json["message"]
+                    if "errors" in response_json and response_json["errors"]:
+                        msg += ". Errors listed as follows: \n\t" + "\t".join(
+                            response_json["errors"]
+                        )
+                    else:
+                        msg += ". No additional error details provided."
+                else:
+                    msg = str(response_json)
+                raise Exception(msg)
             else:
-                msg = r.json()
-            raise Exception(msg)
+                raise Exception(str(response_json))
 
-        if "meta" in r.json():
-            if "creditsUsed" in r.json()["meta"]:
-                audiostack.billing_session += r.json()["meta"]["creditsUsed"]
+        # Handle successful list responses (200-299)
+        if isinstance(response_json, list):
+            return (
+                response_json  # Return list directly for endpoints that return arrays
+            )
 
-        return {**r.json(), **{"statusCode": r.status_code}}
+        # Handle successful dict responses
+        if isinstance(response_json, dict):
+            if "meta" in response_json:
+                if "creditsUsed" in response_json["meta"]:
+                    audiostack.billing_session += response_json["meta"]["creditsUsed"]
+
+            return {**response_json, **{"statusCode": r.status_code}}
+
+        return {"statusCode": r.status_code, "message": str(response_json)}
 
     def send_upload_request(
         self, local_path: str, upload_url: str, mime_type: str
@@ -158,7 +189,27 @@ class RequestInterface:
         r = requests.get(url=url, stream=True, headers=cls.make_header())
 
         if r.status_code >= 400:
-            raise Exception("Failed to download file")
+            # Try to extract error details from response
+            error_msg = f"Failed to download file (status code: {r.status_code})"
+            try:
+                response_json = r.json()
+                if isinstance(response_json, dict):
+                    if "message" in response_json:
+                        error_msg += f": {response_json['message']}"
+                    elif "error" in response_json:
+                        error_msg += f": {response_json['error']}"
+                    else:
+                        error_msg += f". Response: {response_json}"
+                else:
+                    error_msg += f". Response: {response_json}"
+            except (ValueError, json.JSONDecodeError):
+                # If response is not JSON, include the text
+                if r.text:
+                    # Limit to first 200 chars
+                    error_msg += f". Response: {r.text[:200]}"
+
+            error_msg += f" (URL: {url})"
+            raise Exception(error_msg)
 
         local_filename = f"{destination}/{name}"
         with open(local_filename, "wb") as f:

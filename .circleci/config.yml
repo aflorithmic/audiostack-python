@@ -15,7 +15,7 @@ orbs:
 jobs:
   unit-tests:
     docker:
-      - image: cimg/python:3.8
+      - image: cimg/python:3.10
     environment:
       CC_TEST_REPORTER_ID:
         71180b302f2a9ac17cbadc4430c26ef4081672918f2158896af78b37b95b7c00
@@ -25,24 +25,14 @@ jobs:
           pkg-manager: poetry
           args: --no-interaction --no-ansi
       - run:
-          name: Setup Code Climate test-reporter
-          command: |
-            # download test reporter as a static binary
-            curl -L \
-            https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64\
-             > ./cc-test-reporter
-            chmod +x ./cc-test-reporter
-      - run:
           name: "unit-tests"
           command: |
-            ./cc-test-reporter before-build
             export AUDIO_STACK_DEV_KEY=$AFLR_API_KEY_PROD_TEST
             poetry run task test
-            # ./cc-test-reporter after-build \
             # --coverage-input-type coverage.py --exit-code $?
   lint:
     docker:
-      - image: cimg/python:3.8
+      - image: cimg/python:3.10
     steps:
       - checkout
       - python/install-packages:
@@ -54,7 +44,7 @@ jobs:
             poetry run task lint-check
   publish:
     docker:
-      - image: cimg/python:3.8
+      - image: cimg/python:3.10
     steps:
       - checkout
       - python/install-packages:

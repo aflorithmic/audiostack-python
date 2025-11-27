@@ -4,6 +4,166 @@ All notable changes to `audiostack` will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [4.0.0] - 2025-11-27
+
+### New Features
+
+#### Audioform API Integration
+- **New Audioform class** with comprehensive audioform build management:
+  - `Audioform.create(audioform)` - Create new audioform build requests
+  - `Audioform.get(audioform_id, version, wait, timeoutThreshold)` - Retrieve audioform build status and results
+  - `Audioform.Item` class with properties:
+    - `audioform_id`: Unique audioform identifier
+    - `status_code`: Build status code
+    - `audioform`: Original audioform configuration
+    - `result`: Build result with processed assets and metadata
+- **Version support** for "2", "1" and "0.0.1" audioform formats
+- **Automatic version handling** - version parameter automatically added to header
+
+#### Brief API Integration
+- **New Brief class** for AI-powered ad generation:
+  - `Brief.create(brief, file_id, num_ads, audioform_version)` - Generate multiple ads from brief
+  - `Brief.Item` class with properties:
+    - `status_code`: Generation status code
+    - `audioform_id`: Generated audioform identifier
+    - `audioforms`: Array of audioforms
+- **Flexible input options** - accept either brief configuration object or uploaded file ID
+- **Configurable ad generation** - specify number of ads to generate (1-5, default 3)
+
+#### Files and Folders API Integration
+- **Complete Files and Folders API overhaul** with new v2 endpoints:
+  - **New API endpoints**: `/files` and `/folders` replacing legacy `/v3/file` and `/v3/folder`
+  - **Enhanced file operations** with new methods:
+    - `File.copy(fileId, currentFolderId, newFolderId)` - Copy files between folders
+    - `File.patch(fileId, file_name, category_id, category_name)` - Update file metadata
+    - `File.get_file_categories()` - Retrieve available file categories and types
+    - `File.create(localPath, fileName, folderId, categoryId)` - Create files with required fileName parameter
+  - **Enhanced folder operations** with new methods:
+    - `Folder.create(name, parentFolderId)` - Create new folders
+    - `Folder.get(folderId)` - Retrieve folder by ID
+    - `Folder.delete(folderId)` - Delete folders
+    - `Folder.list(path)` - List files and folders in directory (path optional)
+    - `Folder.search(query)` - Search for files and folders
+    - `Folder.patch(folderId, folderName)` - Update folder names
+    - `Folder.get_root_folder_id()` - Get root folder ID
+- **Updated response structures** with new field mappings:
+  - `file_id` → `fileId` (UUID to string conversion)
+  - `folder_id` → `folderId` (UUID to string conversion)
+  - `parent_folder_id` → `parentFolderId` (optional field)
+  - `file_category` → `fileCategory` (now dict instead of string)
+  - `current_path_chain` → `currentPathChain` (list of Folder.Item objects)
+- **New response classes**:
+  - `Folder.ListResponse` - Contains folders, files, and currentPathChain
+  - `Folder.SearchResponse` - Contains folders and files from search operations
+- **Simplified file deletion** - `File.delete(fileId)` no longer requires `folderId`
+- **Enhanced type safety** with proper UUID handling and optional field management
+
+### API Changes
+
+#### Python Version Requirement
+- **BREAKING CHANGE**: Minimum Python version updated from 3.8 to 3.10
+- **Rationale**: Python 3.8 and 3.9 reached End of Life (EOL)
+- **Migration**: Users must upgrade to Python 3.10 or higher
+
+### 📝 Migration Guide
+
+#### For Python Version Upgrade
+```bash
+# Update Python version requirement
+python --version  # Must be 3.10.0 or higher
+
+# Update dependencies
+pip install --upgrade audiostack
+```
+
+#### For Audioform Integration
+```python
+# Create audioform with v1 format
+audioform_config = {
+    "assets": {
+        "script_0": {
+            "type": "tts",
+            "voiceRef": "voice_0",
+            "text": "Sample text"
+        }
+    },
+    "production": {"masteringPreset": "balanced"},
+    "delivery": {"encoderPreset": "mp3"}
+}
+
+# Create audioform
+audioform = Audioform.create(audioform_config)
+
+# Get build status
+result = Audioform.get(audioform.audioform_id, version="2")
+```
+
+#### For Brief Integration
+```python
+# Create brief from configuration
+brief = {
+    "script": {
+        "productName": "Test Product",
+        "productDescription": "A great product",
+        "adLength": 30
+    },
+    "voices": [{"speed": None}],
+    "production": {"masteringPreset": "balanced"},
+    "delivery": {"encoderPreset": "mp3"}
+}
+
+# Generate ads
+ads = Brief.create(brief=brief, num_ads=3, audioform_version="2")
+```
+
+#### For Files and Folders API Integration
+
+```python
+# Create a folder
+folder = Folder.create(name="My Audio Files")
+
+# Upload a file to the folder
+file = File.create(
+    localPath="audio.mp3",
+    fileName="my_audio_file.mp3",
+    folderId=UUID(folder.folderId)
+)
+# List contents of a folder
+folder_contents = Folder.list(path=folder.folderName)
+
+# Copy file to another folder
+copy_folder = Folder.create(name="Backup Folder")
+copied_file = File.copy(
+    fileId=file.fileId,
+    currentFolderId=UUID(folder.folderId),
+    newFolderId=UUID(copy_folder.folderId)
+)
+
+# Update file metadata
+updated_file = File.patch(
+    fileId=file.fileId,
+    file_name="renamed_audio.mp3"
+)
+
+# Search for files
+search_results = Folder.search(query="audio")
+
+# Get file categories
+categories = File.get_file_categories()
+
+# Delete file (simplified - no folderId needed)
+File.delete(fileId=file.fileId)
+```
+
+### Breaking Changes Summary
+1. **Python version requirement** - Minimum version 3.8 → 3.10
+2. **New dependencies** - No new external dependencies added
+3. **Files and Folders API integration** - Breaking changes to file and folder operations:
+   - `File.create()` now requires `fileName` parameter
+   - `File.delete()` simplified to only require `fileId` (no `folderId`)
+   - New API endpoints `/files` and `/folders` replace legacy `/v3/file` and `/v3/folder`
+4. **Recommend IAB** - IAB endpoint support removed
+
 ## [3.1.0] - 2025-08-04
 
 ### Added
