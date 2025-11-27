@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
     - `status_code`: Build status code
     - `audioform`: Original audioform configuration
     - `result`: Build result with processed assets and metadata
-- **Version support** for both "1" and "0.0.1" audioform formats
+- **Version support** for "2", "1" and "0.0.1" audioform formats
 - **Automatic version handling** - version parameter automatically added to header
 
 #### Brief API Integration
