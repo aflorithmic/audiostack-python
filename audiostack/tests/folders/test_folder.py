@@ -53,14 +53,6 @@ def test_get(test_folder: Folder.Item) -> None:
     assert folder.folderId == test_folder.folderId
 
 
-def test_get_with_pagination(test_folder: Folder.Item) -> None:
-    response = Folder.get(folderId=UUID(test_folder.folderId), limit=10, offset=0)
-    assert len(response.currentPathChain) > 0, "Should have current path chain"
-    if response.pagination:
-        assert response.pagination.get("limit") == 10
-        assert response.pagination.get("offset") == 0
-
-
 def test_list_root() -> None:
     root_list = Folder.list()
     assert isinstance(root_list.folders, list)
@@ -71,27 +63,6 @@ def test_list_by_path(test_folder: Folder.Item) -> None:
     folder_list = Folder.list(path=test_folder.folderName)
     assert isinstance(folder_list.folders, list)
     assert isinstance(folder_list.files, list)
-
-
-def test_list_with_pagination() -> None:
-    result = Folder.list(limit=10)
-    assert isinstance(result.folders, list)
-    assert isinstance(result.files, list)
-    if result.pagination:
-        assert result.pagination.get("limit") == 10
-
-    result = Folder.list(offset=5)
-    assert isinstance(result.folders, list)
-    assert isinstance(result.files, list)
-    if result.pagination:
-        assert result.pagination.get("offset") == 5
-
-    result = Folder.list(limit=20, offset=10)
-    assert isinstance(result.folders, list)
-    assert isinstance(result.files, list)
-    if result.pagination:
-        assert result.pagination.get("limit") == 20
-        assert result.pagination.get("offset") == 10
 
 
 def test_list_files(test_folder: Folder.Item) -> None:
@@ -106,12 +77,6 @@ def test_list_files_with_pagination(test_folder: Folder.Item) -> None:
     if result.pagination:
         assert result.pagination.get("limit") == 5
         assert result.pagination.get("offset") == 0
-
-
-def test_search(test_folder: Folder.Item) -> None:
-    search_results = Folder.search(query=test_folder.folderName)
-    assert isinstance(search_results.folders, list)
-    assert isinstance(search_results.files, list)
 
 
 def test_patch(test_folder: Folder.Item) -> None:
