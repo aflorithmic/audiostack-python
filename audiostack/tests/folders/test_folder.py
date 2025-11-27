@@ -25,6 +25,10 @@ def test_create_with_parent(cleanup_resources: dict) -> None:
     parent_folder = Folder.create(name=create_test_folder_name())
     cleanup_resources["folder_ids"].append(parent_folder.folderId)
 
+    assert parent_folder.folderId is not None
+    parent_verification = Folder.get(folderId=UUID(parent_folder.folderId))
+    assert len(parent_verification.currentPathChain) > 0
+
     child_folder = Folder.create(
         name=create_test_folder_name(),
         parentFolderId=UUID(parent_folder.folderId),
