@@ -25,12 +25,12 @@ class Brief:
         def is_success(self) -> bool:
             """Check if the creative brief was successfully processed"""
             errors = self.response.get("errors", [])
-            return self.status_code == 200 and not errors
+            return 200 <= self.status_code < 300 and not errors
 
         def is_failed(self) -> bool:
             """Check if the creative brief processing failed"""
             errors = self.response.get("errors", [])
-            return self.status_code != 200 or bool(errors)
+            return self.status_code >= 400 or bool(errors)
 
         def get_error_message(self) -> str:
             """Get error message if processing failed"""
