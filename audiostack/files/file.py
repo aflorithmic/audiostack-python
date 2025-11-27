@@ -153,7 +153,9 @@ class File:
             file = File.get(fileId=UUID(file_id))
 
         if file.status != "uploaded":
-            return file
+            raise TimeoutError(
+                f"File {file_id} not uploaded after " f"{TIMEOUT_THRESHOLD_S} seconds"
+            )
 
         return file
 

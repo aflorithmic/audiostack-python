@@ -190,9 +190,7 @@ class RequestInterface:
 
         if r.status_code >= 400:
             # Try to extract error details from response
-            error_msg = (
-                f"Failed to download file (status code: {r.status_code})"
-            )
+            error_msg = f"Failed to download file (status code: {r.status_code})"
             try:
                 response_json = r.json()
                 if isinstance(response_json, dict):
