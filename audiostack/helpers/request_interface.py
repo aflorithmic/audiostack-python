@@ -189,7 +189,29 @@ class RequestInterface:
         r = requests.get(url=url, stream=True, headers=cls.make_header())
 
         if r.status_code >= 400:
-            raise Exception("Failed to download file")
+            # Try to extract error details from response
+            error_msg = (
+                f"Failed to download file (status code: {r.status_code})"
+            )
+            try:
+                response_json = r.json()
+                if isinstance(response_json, dict):
+                    if "message" in response_json:
+                        error_msg += f": {response_json['message']}"
+                    elif "error" in response_json:
+                        error_msg += f": {response_json['error']}"
+                    else:
+                        error_msg += f". Response: {response_json}"
+                else:
+                    error_msg += f". Response: {response_json}"
+            except (ValueError, json.JSONDecodeError):
+                # If response is not JSON, include the text
+                if r.text:
+                    # Limit to first 200 chars
+                    error_msg += f". Response: {r.text[:200]}"
+
+            error_msg += f" (URL: {url})"
+            raise Exception(error_msg)
 
         local_filename = f"{destination}/{name}"
         with open(local_filename, "wb") as f:

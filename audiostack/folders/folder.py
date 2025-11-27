@@ -145,7 +145,9 @@ class Folder:
         if parentFolderId:
             payload["parent_folder_id"] = str(parentFolderId)
             # Debug: verify the UUID string format
-            print(f"DEBUG: Creating folder with parent_folder_id: {payload['parent_folder_id']}")
+            print(
+                f"DEBUG: Creating folder with parent_folder_id: {payload['parent_folder_id']}"
+            )
 
         r = Folder.interface.send_request(
             rtype=RequestTypes.POST,
