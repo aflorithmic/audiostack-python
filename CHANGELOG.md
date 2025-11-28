@@ -4,7 +4,7 @@ All notable changes to `audiostack` will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [4.0.0] - 2025-11-27
+## [4.0.0-alpha] - 2025-11-27
 
 ### New Features
 
@@ -43,7 +43,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
     - `Folder.get(folderId)` - Retrieve folder by ID
     - `Folder.delete(folderId)` - Delete folders
     - `Folder.list(path)` - List files and folders in directory (path optional)
-    - `Folder.search(query)` - Search for files and folders
     - `Folder.patch(folderId, folderName)` - Update folder names
     - `Folder.get_root_folder_id()` - Get root folder ID
 - **Updated response structures** with new field mappings:
@@ -54,7 +53,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   - `current_path_chain` → `currentPathChain` (list of Folder.Item objects)
 - **New response classes**:
   - `Folder.ListResponse` - Contains folders, files, and currentPathChain
-  - `Folder.SearchResponse` - Contains folders and files from search operations
 - **Simplified file deletion** - `File.delete(fileId)` no longer requires `folderId`
 - **Enhanced type safety** with proper UUID handling and optional field management
 
@@ -145,15 +143,17 @@ updated_file = File.patch(
     file_name="renamed_audio.mp3"
 )
 
-# Search for files
-search_results = Folder.search(query="audio")
-
 # Get file categories
 categories = File.get_file_categories()
 
 # Delete file (simplified - no folderId needed)
 File.delete(fileId=file.fileId)
 ```
+
+#### For Folder.get() and Folder.list() Methods
+folder = Folder.get(folderId=folder_id)
+
+contents = Folder.list(path="/my/path")
 
 ### Breaking Changes Summary
 1. **Python version requirement** - Minimum version 3.8 → 3.10

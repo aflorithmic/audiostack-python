@@ -89,26 +89,6 @@ class Folder:
                 pagination.get("offset") if pagination else None
             )
 
-    class SearchResponse:
-        """Represents a search response containing folders and files.
-
-        This class is specifically for search operations and contains
-        only folders and files, without currentPathChain.
-        """
-
-        def __init__(self, response: dict) -> None:
-            if isinstance(response, dict) and "data" in response:  # handle pagination
-                data = response["data"]
-            else:
-                data = response
-
-            self.folders: List[Folder.Item] = [
-                Folder.Item(response=x) for x in data.get("folders", [])
-            ]
-            self.files: List[File.Item] = [
-                File.Item(response=x) for x in data.get("files", [])
-            ]
-
     @staticmethod
     def get_root_folder_id() -> str:
         response = Folder.interface.send_request(
@@ -155,38 +135,19 @@ class Folder:
     @staticmethod
     def get(
         folderId: UUID,
-        filter: Optional[str] = None,
-        orderBy: Optional[str] = None,
-        limit: Optional[int] = None,
-        offset: Optional[int] = None,
     ) -> "ListResponse":
         """Retrieve a folder by its ID and list its contents.
 
         Args:
             folderId: The unique identifier of the folder to retrieve.
-            filter: Optional OData $filter expression for filtering files.
-            orderBy: Optional OData $orderBy expression for sorting.
-            limit: Optional limit for pagination (number of items per page).
-            offset: Optional offset for pagination (number of items to skip).
 
         Returns:
             ListResponse: A list response containing folders, files,
                 and path chain with pagination.
         """
-        query_params: dict[str, str | int] = {}
-        if filter:
-            query_params["$filter"] = filter
-        if orderBy:
-            query_params["$orderBy"] = orderBy
-        if limit is not None:
-            query_params["limit"] = limit
-        if offset is not None:
-            query_params["offset"] = offset
-
         r = Folder.interface.send_request(
             rtype=RequestTypes.GET,
             route=f"{folderId}",
-            query_parameters=query_params if query_params else None,
         )
         return Folder.ListResponse(response=r)
 
@@ -201,19 +162,11 @@ class Folder:
     @staticmethod
     def list(
         path: Optional[str] = None,
-        filter: Optional[str] = None,
-        orderBy: Optional[str] = None,
-        limit: Optional[int] = None,
-        offset: Optional[int] = None,
     ) -> "ListResponse":
         """List files and folders in a directory.
 
         Args:
             path: Optional path to list. If None, lists root folder.
-            filter: Optional OData $filter expression for filtering files.
-            orderBy: Optional OData $orderBy expression for sorting.
-            limit: Optional limit for pagination (number of items per page).
-            offset: Optional offset for pagination (number of items to skip).
 
         Returns:
             ListResponse: A list response containing folders, files,
@@ -222,14 +175,6 @@ class Folder:
         query_params: dict[str, str | int] = {}
         if path:
             query_params["path"] = path
-        if filter:
-            query_params["$filter"] = filter
-        if orderBy:
-            query_params["$orderBy"] = orderBy
-        if limit is not None:
-            query_params["limit"] = limit
-        if offset is not None:
-            query_params["offset"] = offset
 
         r = Folder.interface.send_request(
             rtype=RequestTypes.GET,
@@ -237,23 +182,6 @@ class Folder:
             query_parameters=query_params if query_params else None,
         )
         return Folder.ListResponse(response=r)
-
-    @staticmethod
-    def search(query: str) -> "SearchResponse":
-        """Search for files and folders.
-
-        Args:
-            query: Search query string.
-
-        Returns:
-            SearchResponse: Contains matching folders and files.
-        """
-        r = Folder.interface.send_request(
-            rtype=RequestTypes.GET,
-            route="search",
-            query_parameters={"query": query},
-        )
-        return Folder.SearchResponse(response=r)
 
     @staticmethod
     def patch(folderId: UUID, folderName: str) -> "Folder.Item":
@@ -311,28 +239,3 @@ class Folder:
         )
 
         return Folder.FilesListResponse(response=r)
-
-    class StatsResponse:
-        def __init__(self, response: dict) -> None:
-            self.folderId: str = str(response["folderId"])
-            self.fileTypes: List[dict] = response.get("fileTypes", [])
-
-    @staticmethod
-    def get_stats(
-        folderId: UUID,
-    ) -> (
-        "StatsResponse"
-    ):  # todo check what get_stats returns - is it wrapped in a 'data' object? if so, fix
-        """Get folder statistics.
-
-        Args:
-            folderId: The unique identifier of the folder.
-
-        Returns:
-            StatsResponse: Folder statistics including file type counts.
-        """
-        r = Folder.interface.send_request(
-            rtype=RequestTypes.GET,
-            route=f"{folderId}/stats",
-        )
-        return Folder.StatsResponse(response=r)
