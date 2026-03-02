@@ -15,20 +15,14 @@ class Story:
         def __init__(self, response: dict) -> None:
             super().__init__(response)
 
-            self.story_id = ""
-            self.audioform_status_code = None
+            data = response.get("data", {})
+            self.story_id = data.get("storyId", "")
+            self.audioform_status_code = data.get("statusCode", None)
+
             self.audioform_ids = []
             self.audioforms = {}
             self.results = {}
             self._errors = ""
-
-            data = response.get("data", {})
-
-            if "storyId" in data and data["storyId"]:
-                self.story_id = data.get("storyId")
-
-            if "statusCode" in data and data["statusCode"]:
-                self.audioform_status_code = data.get("statusCode")
 
             if self.audioform_status_code != 200:
                 """Retrieve the error message if story build failed"""
@@ -48,12 +42,14 @@ class Story:
             """Check if the story was built successfully"""
             if self.audioform_status_code is None:
                 return False
-            return 200 <= self.audioform_status_code < 300 and not hasattr(self, '_errors')
+            return 200 <= self.audioform_status_code < 300 and not self._errors
 
         @property
         def is_failed(self) -> bool:
             """Check if the story build failed"""
-            return self.status_code >= 400 or bool(self._errors)
+            if self.audioform_status_code is None:
+                return True
+            return self.audioform_status_code >= 300 or bool(self._errors)
 
         @property
         def get_audioform_count(self) -> int:
@@ -128,6 +124,3 @@ class Story:
                 time.sleep(2)
 
         return Story.Item(r)
-    
-if __name__ == "__main__":
-    import os
