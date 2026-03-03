@@ -340,9 +340,8 @@ def test_post_story_response(post_story_response: Dict) -> None:
     item = Story.Item(post_story_response)
     assert item.story_id == post_story_response["data"]["storyId"]
     assert item.audioform_status_code is None
-    assert item.audioform_ids == []
-    assert item.audioforms == {}
-    assert item.results == {}
+    assert item.story_result == {}
+    assert item.audioforms == []
     assert item._errors == ""
 
 
@@ -362,9 +361,8 @@ def test_post_story_no_storyid() -> None:
     item = Story.Item(mock_response)
     assert item.story_id == ""
     assert item.audioform_status_code is None
-    assert item.audioform_ids == []
-    assert item.audioforms == {}
-    assert item.results == {}
+    assert item.story_result == {}
+    assert item.audioforms == []
     assert item._errors == ""
 
 
@@ -376,13 +374,8 @@ def test_get_story_response(get_story_response: Dict) -> None:
     item = Story.Item(get_story_response)
     assert item.story_id == get_story_response["data"]["storyId"]
     assert item.audioform_status_code == 200
-    assert item.audioform_ids == [mock_response_id]
-    assert item.audioforms == {
-        mock_response_id: get_story_response["data"]["audioforms"][0]
-    }
-    assert item.results == {
-        mock_response_id: get_story_response["data"]["audioforms"][0]["delivery"]
-    }
+    assert item.audioforms == get_story_response["data"]["audioforms"]
+    assert item.story_result == get_story_response["data"]["storyResult"]
     assert item.is_success is True
     assert item.is_failed is False
     assert item.get_audioform_count == 1
@@ -403,9 +396,7 @@ def test_get_story_failed_build() -> None:
     item = Story.Item(mock_response)
     assert item.story_id == ""
     assert item.audioform_status_code == 500
-    assert item.audioform_ids == []
-    assert item.audioforms == {}
-    assert item.results == {}
+    assert item.audioforms == []
     assert item._errors == "Failed to generate story"
     assert item.is_success is False
     assert item.is_failed is True
@@ -427,9 +418,8 @@ def test_create_story(
     )
     assert item.story_id == post_story_response["data"]["storyId"]
     assert item.audioform_status_code is None
-    assert item.audioform_ids == []
-    assert item.audioforms == {}
-    assert item.results == {}
+    assert item.audioforms == []
+    assert item.story_result == {}
     assert item._errors == ""
 
 

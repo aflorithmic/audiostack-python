@@ -19,23 +19,17 @@ class Story:
             self.story_id = data.get("storyId", "")
             self.audioform_status_code = data.get("statusCode", None)
 
-            self.audioform_ids = []
-            self.audioforms = {}
-            self.results = {}
+            self.story_result = {}
+            self.audioforms = []
             self._errors = ""
 
-            if self.audioform_status_code != 200:
+            if self.audioform_status_code != 200 and self.audioform_status_code != 202:
                 """Retrieve the error message if story build failed"""
                 self._errors = data.get("message", "")
-
             else:
                 """Standard response for successful story builds"""
-                for audioform in data.get("audioforms", []):
-                    audioform_id = audioform.get("header", {}).get("audioformId", "")
-
-                    self.audioform_ids.append(audioform_id)
-                    self.audioforms[audioform_id] = audioform
-                    self.results[audioform_id] = audioform.get("delivery", {})
+                self.story_result = data.get("storyResult", {})
+                self.audioforms = data.get("audioforms", [])
 
         @property
         def is_success(self) -> bool:
@@ -54,7 +48,7 @@ class Story:
         @property
         def get_audioform_count(self) -> int:
             """Check the number of generated audioforms for the story"""
-            return len(self.audioform_ids)
+            return len(self.audioforms)
 
     @staticmethod
     def create(story: Dict[str, Any]) -> "Story.Item":
