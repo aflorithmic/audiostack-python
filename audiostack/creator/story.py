@@ -106,7 +106,6 @@ class Story:
 
         if wait and r.get("statusCode") == 202:
             start = time.time()
-            print(r)
 
             while r.get("statusCode") == 202:
                 print("Story build in progress, please wait...")

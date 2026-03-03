@@ -474,6 +474,7 @@ def test_get_polling(mock_send) -> None:
     assert result.is_success == True
     assert mock_send.call_count == 4
 
+
 @patch("audiostack.creator.story.Story.interface.send_request")
 def test_get_no_wait(mock_send) -> None:
     mock_send.side_effect = [
@@ -488,6 +489,7 @@ def test_get_no_wait(mock_send) -> None:
 
     assert result.is_success == False
     assert mock_send.call_count == 1
+
 
 @patch("audiostack.creator.story.Story.interface.send_request")
 def test_get_timeout(mock_send) -> None:
