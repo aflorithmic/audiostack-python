@@ -1,5 +1,5 @@
 from typing import Dict
-from unittest.mock import Mock, patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -336,10 +336,10 @@ def get_story_response() -> Dict:
 # ============================================================================
 
 
-def test_post_story_response(post_story_response) -> None:
+def test_post_story_response(post_story_response: Dict) -> None:
     item = Story.Item(post_story_response)
     assert item.story_id == post_story_response["data"]["storyId"]
-    assert item.audioform_status_code == None
+    assert item.audioform_status_code is None
     assert item.audioform_ids == []
     assert item.audioforms == {}
     assert item.results == {}
@@ -361,14 +361,14 @@ def test_post_story_no_storyid() -> None:
 
     item = Story.Item(mock_response)
     assert item.story_id == ""
-    assert item.audioform_status_code == None
+    assert item.audioform_status_code is None
     assert item.audioform_ids == []
     assert item.audioforms == {}
     assert item.results == {}
     assert item._errors == ""
 
 
-def test_get_story_response(get_story_response) -> None:
+def test_get_story_response(get_story_response: Dict) -> None:
     mock_response_id = get_story_response["data"]["audioforms"][0]["header"][
         "audioformId"
     ]
@@ -383,8 +383,8 @@ def test_get_story_response(get_story_response) -> None:
     assert item.results == {
         mock_response_id: get_story_response["data"]["audioforms"][0]["delivery"]
     }
-    assert item.is_success == True
-    assert item.is_failed == False
+    assert item.is_success is True
+    assert item.is_failed is False
     assert item.get_audioform_count == 1
 
 
@@ -407,8 +407,8 @@ def test_get_story_failed_build() -> None:
     assert item.audioforms == {}
     assert item.results == {}
     assert item._errors == "Failed to generate story"
-    assert item.is_success == False
-    assert item.is_failed == True
+    assert item.is_success is False
+    assert item.is_failed is True
 
 
 # ============================================================================
@@ -417,14 +417,16 @@ def test_get_story_failed_build() -> None:
 
 
 @patch("audiostack.creator.story.Story.interface.send_request")
-def test_create_story(mock_send, correct_story_sample, post_story_response) -> None:
+def test_create_story(
+    mock_send: MagicMock, correct_story_sample: Dict, post_story_response: Dict
+) -> None:
     mock_send.return_value = post_story_response
     item = Story.create(story=correct_story_sample)
     mock_send.assert_called_once_with(
         rtype="POST", route="story", json={"story": correct_story_sample}
     )
     assert item.story_id == post_story_response["data"]["storyId"]
-    assert item.audioform_status_code == None
+    assert item.audioform_status_code is None
     assert item.audioform_ids == []
     assert item.audioforms == {}
     assert item.results == {}
@@ -434,12 +436,12 @@ def test_create_story(mock_send, correct_story_sample, post_story_response) -> N
 def test_create_not_dict() -> None:
     story = "hello engineer, hope you're having a good day"
     with pytest.raises(Exception):
-        Story.create(story=story)
+        Story.create(story=story)  # type: ignore
 
 
 def test_create_no_story() -> None:
     with pytest.raises(Exception):
-        Story.create()
+        Story.create()  # type: ignore
 
 
 # ============================================================================
@@ -448,19 +450,19 @@ def test_create_no_story() -> None:
 
 
 @patch("audiostack.creator.story.Story.interface.send_request")
-def test_get_story(mock_send, get_story_response) -> None:
+def test_get_story(mock_send: MagicMock, get_story_response: Dict) -> None:
     mock_send.return_value = get_story_response
 
     item = Story.get("test", wait=True)
     assert item.story_id == get_story_response["data"]["storyId"]
     assert item.audioform_status_code == 200
-    assert item.is_success == True
-    assert item.is_failed == False
+    assert item.is_success is True
+    assert item.is_failed is False
     assert item.get_audioform_count == 1
 
 
 @patch("audiostack.creator.story.Story.interface.send_request")
-def test_get_polling(mock_send) -> None:
+def test_get_polling(mock_send: MagicMock) -> None:
     mock_send.side_effect = [
         {"statusCode": 202},
         {"statusCode": 202},
@@ -471,12 +473,12 @@ def test_get_polling(mock_send) -> None:
     with patch("time.sleep", return_value=None):
         result = Story.get("test", wait=True)
 
-    assert result.is_success == True
+    assert result.is_success is True
     assert mock_send.call_count == 4
 
 
 @patch("audiostack.creator.story.Story.interface.send_request")
-def test_get_no_wait(mock_send) -> None:
+def test_get_no_wait(mock_send: MagicMock) -> None:
     mock_send.side_effect = [
         {"statusCode": 202},
         {"statusCode": 202},
@@ -487,12 +489,12 @@ def test_get_no_wait(mock_send) -> None:
     with patch("time.sleep", return_value=None):
         result = Story.get("test", wait=False)
 
-    assert result.is_success == False
+    assert result.is_success is False
     assert mock_send.call_count == 1
 
 
 @patch("audiostack.creator.story.Story.interface.send_request")
-def test_get_timeout(mock_send) -> None:
+def test_get_timeout(mock_send: MagicMock) -> None:
     mock_send.return_value = {"statusCode": 202}
 
     with patch("time.sleep", return_value=None):
