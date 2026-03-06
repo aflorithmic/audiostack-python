@@ -12,7 +12,7 @@ from audiostack.creator import Story
 
 def test_post_story_response(post_story_good_response: Dict) -> None:
     item = Story.Item(post_story_good_response)
-    assert item.story_id == post_story_good_response.get("data").get("storyId")
+    assert item.story_id == post_story_good_response["data"].get("storyId")
     assert item.story_result == {}
     assert item.audioforms == []
     assert item._errors == ""
@@ -36,10 +36,10 @@ def test_post_story_no_storyid() -> None:
 
 def test_get_story_response(get_story_good_response: Dict) -> None:
     item = Story.Item(get_story_good_response)
-    assert item.story_id == get_story_good_response.get("data").get("storyId")
+    assert item.story_id == get_story_good_response["data"].get("storyId")
     assert item.story_build_status_code == 200
-    assert item.story_result == get_story_good_response.get("data").get("storyResult")
-    assert item.audioforms == get_story_good_response.get("data").get("audioforms")
+    assert item.story_result == get_story_good_response["data"].get("storyResult")
+    assert item.audioforms == get_story_good_response["data"].get("audioforms")
     assert item.is_success is True
 
 
@@ -81,7 +81,7 @@ def test_create_story(
     mock_send.assert_called_once_with(
         rtype="POST", route="story", json={"story": correct_story_sample}
     )
-    assert item.story_id == post_story_good_response.get("data").get("storyId")
+    assert item.story_id == post_story_good_response["data"].get("storyId")
     assert item.story_build_status_code is None
     assert item.audioforms == []
     assert item.story_result == {}
@@ -135,7 +135,7 @@ def test_get_story(mock_send: MagicMock, get_story_good_response: Dict) -> None:
         route="story",
         path_parameters="4550fde5-4c63-4fd0-853f-148010cd6278",
     )
-    assert item.story_id == get_story_good_response.get("data").get("storyId")
+    assert item.story_id == get_story_good_response["data"].get("storyId")
     assert item.story_build_status_code == 200
     assert item.is_success is True
 

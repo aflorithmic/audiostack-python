@@ -91,10 +91,7 @@ class Story:
             path_parameters=story_id,
         )
 
-        if r.get("statusCode") == 200:
-            return Story.Item(r)
-
-        elif r.get("statusCode") == 202:
+        if r.get("statusCode") == 202:
             start = time.time()
 
             print("Story build starting...")
@@ -117,44 +114,4 @@ class Story:
 
             return Story.Item(r)
 
-
-if __name__ == "__main__":
-    import requests
-
-    import audiostack
-
-    audiostack.api_key = "82c62049-6010-47e8-9826-59ec89a4539a"
-    audiostack.api_base = "https://staging-v2.api.audio"
-
-    story = {
-        "title": "Robot Revolution - SINGLE VOICE STORY",
-        "textSettings": {"useVoiceIntelligenceLayer": True, "language": "en"},
-        "voices": [
-            {
-                "speakerIdentifier": "narrator",
-                "alias": "wren",
-                "voicePreset": "standard",
-                "speed": "222",
-            }
-        ],
-        "production": {"masteringPreset": "balanced"},
-        "delivery": {"encoderPreset": "mp3", "public": True},
-        "chapters": [
-            {
-                "title": "PT1 - discovery and hiding",
-                "narratives": [
-                    {"foreground": [{"speakerIdentifier": "narrator", "text": "test"}]}
-                ],
-            }
-        ],
-    }
-
-    # story_item = Story.create(story=story)
-    # start = time.time()
-    # end = time.time()
-
-    # r = requests.get(url=f"{audiostack.api_base}/story/754d0c3a-5c1f-444b-836b-e126d4956851", headers={"x-api-key": audiostack.api_key})
-    # print(r.json)
-
-    post_item = Story.create(story=story)
-    # get_item = Story.get(story_id="754d0c3a-5c1f-444b-83")
+        return Story.Item(r)
