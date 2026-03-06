@@ -26,6 +26,8 @@ class Story:
             self.audioforms = []
             self._errors = ""
 
+            # Story build status codes handled here
+            # e.g. 200 external status code but 40X in {"data": {"statusCode": 40X, "message": "Error message"}}
             if (
                 self.story_build_status_code != 200
                 and self.story_build_status_code != 202
@@ -65,6 +67,9 @@ class Story:
             raise Exception("Story must be a dictionary")
 
         body = {"story": story}
+
+        # Handle external status code errors here in resolve_response
+        # e.g. 40X & 50X status codes raise Exceptions including the error message
         r = Story.interface.send_request(
             rtype=RequestTypes.POST, route="story", json=body
         )
@@ -85,6 +90,8 @@ class Story:
         Returns:
             Story.Item: Response containing story status and result
         """
+        # Handle external status code errors here in resolve_response
+        # e.g. 40X & 50X status codes raise Exceptions including the error message
         r = Story.interface.send_request(
             rtype=RequestTypes.GET,
             route="story",
