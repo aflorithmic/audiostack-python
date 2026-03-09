@@ -53,16 +53,18 @@ class Story:
 
         Args:
             story: The story configuration object containing:
-                - title: Title of the story
-                - voices: Array of voice configurations
-                - sounds: Sound design and sound effect configuration
-                - production: Production configurations
-                - delivery: Delivery configurations
-                - chapters: Desired story structure
-            For more information see the AudioStack API docs: https://docs.audiostack.ai/reference/poststory
+                * title: Title of the story
+                * voices: Array of voice configurations
+                * sounds: Sound design and sound effect configuration
+                * production: Production configurations
+                * delivery: Delivery configurations
+                * chapters: Desired story structure
 
         Returns:
             Story.Item: Response containing story_id
+
+        See Also:
+            AudioStack API docs: https://docs.audiostack.ai/reference/poststory
         """
         if not isinstance(story, dict):
             raise Exception("Story must be a dictionary")
@@ -87,10 +89,13 @@ class Story:
         Args:
             story_id: Unique identifier for the story
             timeoutThreshold: Maximum time to wait for completion in seconds. Set to 0 to do a single check of the status of your story.
-            For more information see the AudioStack API docs: https://docs.audiostack.ai/reference/getstory
+            For more information see the 
 
         Returns:
             Story.Item: Response containing story status and result
+
+        See Also:
+            AudioStack API docs: https://docs.audiostack.ai/reference/getstory
         """
         # Handle external status code errors here in resolve_response
         # e.g. 40X & 50X status codes raise Exceptions including the error message
