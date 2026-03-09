@@ -5,6 +5,7 @@ assume_org_id = None
 app_info = None
 
 TIMEOUT_THRESHOLD_S = 300
+TIMEOUT_THRESHOLD_STORY_S = 900
 
 # Temporarily disabled - projects and sessions integration
 # from audiostack import projects as Projects  # noqa: F401

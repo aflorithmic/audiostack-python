@@ -58,6 +58,9 @@ class RequestInterface:
         if r.status_code == 204:
             return {"statusCode": r.status_code}
 
+        if r.status_code >= 500:
+            raise Exception("Internal server error - aborting")
+
         try:
             response_json = r.json()
         except (ValueError, json.JSONDecodeError):
@@ -69,10 +72,6 @@ class RequestInterface:
                 if isinstance(response_json, (dict, list))
                 else response_json
             )
-
-        if r.status_code >= 500:
-            print(r.text)
-            raise Exception("Internal server error - aborting")
 
         if r.status_code == 403:
             exc = response_json.get(
@@ -89,6 +88,14 @@ class RequestInterface:
                         msg += ". Errors listed as follows: \n\t" + "\t".join(
                             response_json["errors"]
                         )
+                    elif "details" in response_json and response_json["details"]:
+                        msg += ". Errors listed as follows: \n\t"
+                        if isinstance(response_json["details"], list):
+                            for error in response_json["details"]:
+                                msg += str(error) + "\n\t"
+                        else:
+                            msg += response_json["details"]
+
                     else:
                         msg += ". No additional error details provided."
                 else:
