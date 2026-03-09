@@ -89,7 +89,6 @@ class Story:
         Args:
             story_id: Unique identifier for the story
             timeoutThreshold: Maximum time to wait for completion in seconds. Set to 0 to do a single check of the status of your story.
-            For more information see the 
 
         Returns:
             Story.Item: Response containing story status and result
