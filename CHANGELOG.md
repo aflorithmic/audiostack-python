@@ -4,6 +4,52 @@ All notable changes to `audiostack` will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [4.0.0] - 2026-03-09
+
+### New Features
+
+#### Story API Integration
+- **New Story class** for AI-powered audio story generation
+  - `Story.create(story)` - Create new story build requests
+  - `Story.get(story_id, timeoutThreshold)` - Retrieve story build result and status
+
+### 📝 Migration Guide
+
+#### For Story Integration
+```python
+# Create story
+story_config = {
+    "title": "Story Title",
+    "textSettings": {"useVoiceIntelligenceLayer": True, "language": "en"},
+    "voices": [
+        {
+            "speakerIdentifier": "narrator",
+            "alias": "audiostack_voice_alias",
+            "voicePreset": "standard",
+            "speed": 1.1,
+        }
+    ],
+    "production": {"masteringPreset": "balanced"},
+    "delivery": {"encoderPreset": "mp3", "public": True},
+    "chapters": [
+        {
+            "title": "Chapter Title",
+            "narratives": [
+                {"foreground": [{"speakerIdentifier": "narrator", "text": "A great story"}]}
+            ],
+        }
+    ],
+}
+# Create story
+story = Story.create(story_config)
+
+# Get story build status
+result = Story.get(story.story_id)
+```
+
+### Breaking Changes Summary
+1. **Video class removal** - Removed legacy video class as this is no longer supported
+
 ## [4.0.0-alpha] - 2025-11-27
 
 ### New Features
