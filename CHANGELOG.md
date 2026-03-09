@@ -12,6 +12,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - **New Story class** for AI-powered audio story generation
   - `Story.create(story)` - Create new story build requests
   - `Story.get(story_id, timeoutThreshold)` - Retrieve story build result and status
+  - `Story.Item` class with properties:
+    - `story_id`: Unique story identifier
+    - `story_build_status_code`: Story build status code
+    - `story_result`: Result of the story build
+    - `audioforms`: Output audioforms of the story build
+    - `_errors`: Error messages of failed story builds
 
 ### 📝 Migration Guide
 
