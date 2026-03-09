@@ -59,6 +59,7 @@ class Story:
                 - production: Production configurations
                 - delivery: Delivery configurations
                 - chapters: Desired story structure
+            For more information see the AudioStack API docs: https://docs.audiostack.ai/reference/poststory
 
         Returns:
             Story.Item: Response containing story_id
@@ -85,7 +86,8 @@ class Story:
 
         Args:
             story_id: Unique identifier for the story
-            timeoutThreshold: Maximum time to wait for completion in seconds
+            timeoutThreshold: Maximum time to wait for completion in seconds. Set to 0 to do a single check of the status of your story.
+            For more information see the AudioStack API docs: https://docs.audiostack.ai/reference/getstory
 
         Returns:
             Story.Item: Response containing story status and result
