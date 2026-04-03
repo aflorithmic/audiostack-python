@@ -20,10 +20,18 @@ class Audioform:
 
             if "data" in response and response["data"]:
                 # Standard response with data field
-                self.audioform_id = response["data"].get("audioformId", "")
-                self.audioform = response["data"].get("audioform", {})
-                self.result = response["data"].get("result", {})
-                self._errors = response["data"].get("errors", [])
+                data = response["data"]
+                self.audioform_id = data.get("audioformId", "")
+                self.audioform = data.get("audioform", {})
+                self.result = data.get("result", {})
+                self._errors = data.get("errors", [])
+
+                # Handle nested status code
+                self.status_code = data.get("statusCode", self.status_code)
+
+                if self.status_code not in (200, 202) and not self._errors:
+                    message = data.get("message", "")
+                    self._errors = [message] if message else []
             elif "audioformId" in response:
                 # In-progress response with audioformId directly in response
                 self.audioform_id = response.get("audioformId", "")
@@ -64,7 +72,7 @@ class Audioform:
         @property
         def is_failed(self) -> bool:
             """Check if the audioform processing failed"""
-            return self.status_code == 200 and bool(self._errors)
+            return self.status_code != 202 and not self.is_success
 
         @property
         def is_in_progress(self) -> bool:
